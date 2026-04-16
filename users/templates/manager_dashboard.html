@@ -1,178 +1,57 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Дашборд менеджера</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #f8f8f8;
-            color: #333;
-        }
+{% extends "base_manager.html" %}
 
-        .header {
-            background: #417690;
-            color: white;
-            padding: 15px 30px;
-            font-size: 24px;
-            font-weight: bold;
-        }
+{% block content %}
+    <h1>Дашборд менеджера</h1>
 
-        .sub-header {
-            background: #79aec8;
-            color: white;
-            padding: 10px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .sub-header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-
-        .sub-header a:hover {
-            text-decoration: underline;
-        }
-
-        .container {
-            padding: 30px;
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #666;
-            font-size: 28px;
-        }
-
-        .module {
-            background: white;
-            border: 1px solid #ddd;
-            margin-bottom: 25px;
-        }
-
-        .module h2 {
-            margin: 0;
-            padding: 12px 15px;
-            background: #79aec8;
-            color: white;
-            font-size: 18px;
-        }
-
-        .module-content {
-            padding: 15px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        table th {
-            text-align: left;
-            background: #f5f5f5;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            color: #666;
-        }
-
-        table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .action-link {
-            color: #447e9b;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        .action-link:hover {
-            text-decoration: underline;
-        }
-
-        .note {
-            color: #777;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="header">
-        Warehouse Administration
-    </div>
-
-    <div class="sub-header">
-        <div>
-            Добро пожаловать, <strong>{{ username }}</strong>
-        </div>
-        <div>
-            <a href="/logout/">Выйти</a>
+    <div class="module">
+        <h2>Информация о пользователе</h2>
+        <div class="module-content">
+            <table>
+                <tr>
+                    <th>Поле</th>
+                    <th>Значение</th>
+                </tr>
+                <tr>
+                    <td>Пользователь</td>
+                    <td>{{ request.user.username }}</td>
+                </tr>
+                <tr>
+                    <td>Роль</td>
+                    <td>{{ request.user.role }}</td>
+                </tr>
+            </table>
         </div>
     </div>
 
-    <div class="container">
-        <h1>Дашборд менеджера</h1>
+    <div class="module">
+        <h2>Доступные действия</h2>
+        <div class="module-content">
+            <table>
+                <tr>
+                    <th>Раздел</th>
+                    <th>Доступ</th>
+                </tr>
+                <tr>
+                    <td>Просмотр товаров</td>
+                    <td>Разрешено</td>
+                </tr>
+                <tr>
+                    <td><a href="{% url 'add_product' %}" class="action-link">Добавить товар</a></td>
+                    <td>Разрешено</td>
+                </tr>
+                <tr>
+                    <td>Управление пользователями</td>
+                    <td>Запрещено</td>
+                </tr>
+                <tr>
+                    <td>Админка Django</td>
+                    <td>Запрещено</td>
+                </tr>
+            </table>
 
-        <div class="module">
-            <h2>Информация о пользователе</h2>
-            <div class="module-content">
-                <table>
-                    <tr>
-                        <th>Поле</th>
-                        <th>Значение</th>
-                    </tr>
-                    <tr>
-                        <td>Пользователь</td>
-                        <td>{{ username }}</td>
-                    </tr>
-                    <tr>
-                        <td>Роль</td>
-                        <td>{{ role }}</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <div class="module">
-            <h2>Доступные действия</h2>
-            <div class="module-content">
-                <table>
-                    <tr>
-                        <th>Раздел</th>
-                        <th>Доступ</th>
-                    </tr>
-                    <tr>
-                        <td>Просмотр товаров</td>
-                        <td>Разрешено</td>
-                    </tr>
-                    <tr>
-                        <td>Редактирование товаров</td>
-                        <td>Разрешено</td>
-                    </tr>
-                    <tr>
-                        <td>Управление пользователями</td>
-                        <td>Запрещено</td>
-                    </tr>
-                    <tr>
-                        <td>Админка Django</td>
-                        <td>Запрещено</td>
-                    </tr>
-                </table>
-
-                <p class="note">
-                    Менеджер может работать только с товарами.
-                </p>
-            </div>
+            <p class="note">
+                Менеджер может работать только с товарами.
+            </p>
         </div>
     </div>
-
-</body>
-</html>
+{% endblock %}

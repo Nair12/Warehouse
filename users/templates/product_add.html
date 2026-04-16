@@ -1,0 +1,15 @@
+{% extends "base_manager.html" %}
+
+{% block manager_content %}
+    <h1>Создание продукта</h1>
+    <div class="module">
+        <h2>Новый товар</h2>
+        <div class="module-content">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn-save">Сохранить</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

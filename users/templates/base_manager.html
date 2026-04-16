@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Дашборд менеджера{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        .header {
+            background: #417690;
+            color: white;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sub-header {
+            background: #79aec8;
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .sub-header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .sub-header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #666;
+            font-size: 28px;
+        }
+
+        .module {
+            background: white;
+            border: 1px solid #ddd;
+            margin-bottom: 25px;
+        }
+
+        .module h2 {
+            margin: 0;
+            padding: 12px 15px;
+            background: #79aec8;
+            color: white;
+            font-size: 18px;
+        }
+
+        .module-content {
+            padding: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table th {
+            text-align: left;
+            background: #f5f5f5;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .action-link {
+            color: #447e9b;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .action-link:hover {
+            text-decoration: underline;
+        }
+
+        .note {
+            color: #777;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        /* Добавил базовый стиль для кнопок, чтобы они вписывались в твой дизайн */
+        .btn-save {
+            background: #417690;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-save:hover { background: #2b5063; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Warehouse Administration
+    </div>
+
+    <div class="sub-header">
+        <div>
+            Добро пожаловать, <strong>{{ request.user.username }}</strong>
+        </div>
+        <div>
+            <a href="{% url 'logout' %}">Выйти</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Сюда будет вставляться контент (например, форма продукта) -->
+        {% block manager_content %}
+        <h1>Дашборд менеджера</h1>
+        <div class="module">
+            <h2>Информация</h2>
+            <div class="module-content">
+                <p>Выберите раздел для работы.</p>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+</body>
+</html>

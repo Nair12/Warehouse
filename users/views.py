@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+from products.forms import ProductForm
 from .decorators import role_required
 
 
@@ -12,6 +14,8 @@ def home_view(request):
 
 
 def role_redirect_view(request):
+    print(
+        f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}")
     if not request.user.is_authenticated:
         return redirect('/login/')
 
@@ -43,6 +47,19 @@ def reader_dashboard(request):
         "role": request.user.role,
     }
     return render(request, "reader_dashboard.html", context)
+
+
+@role_required(["manager"])
+def add_product_view(request):
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('manager_dashboard')
+    else:
+        form = ProductForm()
+
+    return render(request, 'product_add.html', {'form': form})
 
 
 @role_required(["admin"])
