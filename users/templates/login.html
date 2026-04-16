@@ -1,0 +1,11 @@
+<form method="post">
+    {% csrf_token %}
+    <h2>Вход</h2>
+
+    {{ form.username }}
+    <br><br>
+    {{ form.password }}
+
+    <br><br>
+    <button type="submit">Войти</button>
+</form>

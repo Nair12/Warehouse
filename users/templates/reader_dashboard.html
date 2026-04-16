@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Дашборд читателя</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+            color: #333;
+        }
+
+        .header {
+            background: #417690;
+            color: white;
+            padding: 15px 30px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .sub-header {
+            background: #79aec8;
+            color: white;
+            padding: 10px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .sub-header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+        }
+
+        .sub-header a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        h1 {
+            margin-top: 0;
+            color: #666;
+            font-size: 28px;
+        }
+
+        .module {
+            background: white;
+            border: 1px solid #ddd;
+            margin-bottom: 25px;
+        }
+
+        .module h2 {
+            margin: 0;
+            padding: 12px 15px;
+            background: #79aec8;
+            color: white;
+            font-size: 18px;
+        }
+
+        .module-content {
+            padding: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        table th {
+            text-align: left;
+            background: #f5f5f5;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            color: #666;
+        }
+
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .note {
+            color: #777;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        Warehouse Administration
+    </div>
+
+    <div class="sub-header">
+        <div>
+            Добро пожаловать, <strong>{{ username }}</strong>
+        </div>
+        <div>
+            <a href="/logout/">Выйти</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>Дашборд читателя</h1>
+
+        <div class="module">
+            <h2>Информация о пользователе</h2>
+            <div class="module-content">
+                <table>
+                    <tr>
+                        <th>Поле</th>
+                        <th>Значение</th>
+                    </tr>
+                    <tr>
+                        <td>Пользователь</td>
+                        <td>{{ username }}</td>
+                    </tr>
+                    <tr>
+                        <td>Роль</td>
+                        <td>{{ role }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div class="module">
+            <h2>Доступ</h2>
+            <div class="module-content">
+                <table>
+                    <tr>
+                        <th>Раздел</th>
+                        <th>Доступ</th>
+                    </tr>
+                    <tr>
+                        <td>Просмотр информации</td>
+                        <td>Разрешено</td>
+                    </tr>
+                    <tr>
+                        <td>Редактирование</td>
+                        <td>Запрещено</td>
+                    </tr>
+                    <tr>
+                        <td>Управление пользователями</td>
+                        <td>Запрещено</td>
+                    </tr>
+                    <tr>
+                        <td>Админка Django</td>
+                        <td>Запрещено</td>
+                    </tr>
+                </table>
+
+                <p class="note">
+                    Читатель может только просматривать информацию.
+                </p>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
