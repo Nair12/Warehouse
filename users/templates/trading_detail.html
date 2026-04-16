@@ -1,0 +1,48 @@
+{% extends 'manager/base_manager.html' %}
+
+{% block title %}Сделка #{{ trading.id }}{% endblock %}
+
+{% block manager_content %}
+<h1>Сделка #{{ trading.id }}</h1>
+
+<div class="module">
+    <h2>Информация о сделке</h2>
+    <div class="module-content">
+        <table>
+            <tbody>
+                <tr>
+                    <th>ID</th>
+                    <td>{{ trading.id }}</td>
+                </tr>
+                <tr>
+                    <th>Продукт</th>
+                    <td>{{ trading.product }}</td>
+                </tr>
+                <tr>
+                    <th>Пользователь</th>
+                    <td>{{ trading.user.username }}</td>
+                </tr>
+                <tr>
+                    <th>Количество</th>
+                    <td>{{ trading.quantity }}</td>
+                </tr>
+                <tr>
+                    <th>Дата создания</th>
+                    <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% if trading.updated_at %}
+                <tr>
+                    <th>Последнее обновление</th>
+                    <td>{{ trading.updated_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+
+        <p style="margin-top: 15px;">
+            <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a>
+            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

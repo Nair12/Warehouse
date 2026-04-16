@@ -1,0 +1,37 @@
+{% extends 'manager/base_manager.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
+{% endblock %}
+
+{% block manager_content %}
+<h1>
+    {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
+</h1>
+
+<div class="module">
+    <h2>
+        {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
+    </h2>
+    <div class="module-content">
+        <form method="post">
+            {% csrf_token %}
+
+            {% for field in form %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="errors">
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="btn-save">Сохранить</button>
+            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -8,4 +8,5 @@ urlpatterns = [
     path('manager-dashboard/', manager_dashboard, name='manager_dashboard'),
     path('manager/product-add/', add_product_view, name='add_product_view'),
     path('reader-dashboard/', reader_dashboard, name='reader_dashboard'),
+    
 ]
