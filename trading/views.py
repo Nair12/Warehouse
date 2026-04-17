@@ -28,7 +28,7 @@ def trading_create(request):
     else:
         form = TradingForm()
 
-    return render(request, 'trading/trading_form.html', {'form': form})
+    return render(request, 'trading/trading_add.html', {'form': form})
 
 
 @role_required(['admin', 'manager'])

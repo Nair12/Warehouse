@@ -1,0 +1,15 @@
+{% extends "users/../../../users/templates/base_manager.html" %}
+
+{% block content %}
+<h1>Создать товар</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input type="text" name="name" placeholder="Название"><br><br>
+    <input type="number" name="price" placeholder="Цена"><br><br>
+
+    <button type="submit">Сохранить</button>
+</form>
+
+{% endblock %}

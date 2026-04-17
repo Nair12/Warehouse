@@ -105,3 +105,4 @@ AUTH_USER_MODEL = 'users.CustomUser'
 LOGIN_REDIRECT_URL = '/redirect-by-role/'
 LOGOUT_REDIRECT_URL = '/login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+LOGOUT_REDIRECT_URL = '/login/'

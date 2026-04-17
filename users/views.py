@@ -37,16 +37,7 @@ def manager_dashboard(request):
         "username": request.user.username,
         "role": request.user.role,
     }
-    return render(request, "manager_dashboard.html", context)
-
-
-@role_required(["reader"])
-def reader_dashboard(request):
-    context = {
-        "username": request.user.username,
-        "role": request.user.role,
-    }
-    return render(request, "reader_dashboard.html", context)
+    return render(request, "users/manager_dashboard.html", context)
 
 
 @role_required(["manager"])
@@ -55,7 +46,7 @@ def add_product_view(request):
         form = ProductForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('products:list')
+            return redirect('product_list')
     else:
         form = ProductForm()
 
@@ -65,3 +56,11 @@ def add_product_view(request):
 @role_required(["admin"])
 def users_manage_view(request):
     pass
+
+@role_required(["reader"])
+def reader_dashboard(request):
+    context = {
+        "username": request.user.username,
+        "role": request.user.role,
+    }
+    return render(request, "users/reader_dashboard.html", context)

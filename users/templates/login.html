@@ -1,11 +1,95 @@
-<form method="post">
-    {% csrf_token %}
-    <h2>Вход</h2>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Вход</title>
 
-    {{ form.username }}
-    <br><br>
-    {{ form.password }}
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
 
-    <br><br>
-    <button type="submit">Войти</button>
-</form>
+        .header {
+            background-color: #5f8ea3;
+            color: white;
+            padding: 15px 30px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .login-container {
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+            width: 350px;
+            margin: 80px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #5f8ea3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #4a7487;
+        }
+
+        .error {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    Warehouse
+</div>
+
+<div class="login-container">
+    <h2>Вход в систему</h2>
+
+    {% if form.errors %}
+        <div class="error">
+            Неверный логин или пароль
+        </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <input type="text" name="username" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+
+        <button type="submit">Войти</button>
+    </form>
+</div>
+
+</body>
+</html>

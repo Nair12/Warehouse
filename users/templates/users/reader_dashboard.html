@@ -1,0 +1,16 @@
+{% extends "base_manager.html" %}
+
+{% block content %}
+<h1>Кабинет reader</h1>
+
+<p>Добро пожаловать, {{ username }}!</p>
+<p>Ваша роль: {{ role }}</p>
+
+<div style="margin-top: 20px;">
+    <a href="{% url 'product_list' %}">Открыть список товаров</a>
+</div>
+
+<p style="margin-top: 20px;">
+    Вы можете только просматривать товары.
+</p>
+{% endblock %}
