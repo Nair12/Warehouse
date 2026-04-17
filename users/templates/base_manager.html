@@ -179,7 +179,7 @@
 <body>
 
     <div class="header">
-        Warehouse Administration
+        Warehouse Manager
     </div>
 
     <div class="sub-header">
@@ -188,6 +188,7 @@
         </div>
         <div>
             <a href="{% url 'manager_dashboard' %}">Дашборд</a>
+            <a href="{% url 'products:list' %}"></a>
             <a href="{% url 'trading_list' %}">Trading</a>
             <a href="{% url 'logout' %}">Выйти</a>
         </div>

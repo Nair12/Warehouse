@@ -55,7 +55,7 @@ def add_product_view(request):
         form = ProductForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('manager_dashboard')
+            return redirect('products:list')
     else:
         form = ProductForm()
 

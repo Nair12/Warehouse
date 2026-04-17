@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 1300px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        margin-bottom: 30px;
+    }
+
+    .title {
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .products {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+        gap: 25px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+        transition: 0.25s;
+    }
+
+    .card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+
+    .card img,
+    .placeholder {
+        width: 100%;
+        height: 240px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .placeholder {
+        background: #f0f0f0;
+        color: #aaa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+    }
+
+    .card-body {
+        padding: 18px;
+    }
+
+    .name {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .desc {
+        font-size: 14px;
+        color: #666;
+        margin-bottom: 12px;
+        min-height: 40px;
+    }
+
+
+
+    .empty {
+        text-align: center;
+        margin-top: 60px;
+        color: #777;
+        font-size: 18px;
+    }
+</style>
+
+<div class="container">
+    <div class="header">
+        <div class="title">Продукты</div>
+    </div>
+
+    {% if products %}
+        <div class="products">
+            {% for product in products %}
+                <div class="card">
+                    {% if product.picture %}
+                        <img src="{{ product.picture.url }}" alt="{{ product.name }}">
+                    {% else %}
+                        <div class="placeholder">Нет изображения</div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <div class="name">{{ product.name }}</div>
+
+                        <div class="desc">
+                            {{ product.description|default:"Без описания"|truncatechars:100 }}
+                        </div>
+
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty">Нет продуктов</div>
+    {% endif %}
+</div>
+{% endblock %}
