@@ -188,8 +188,11 @@
         </div>
         <div>
             <a href="{% url 'manager_dashboard' %}">Дашборд</a>
-            <a href="{% url 'product_list' %}"></a>
-            <a href="{% url 'trading_list' %}">Trading</a>
+            <a href="{% url 'trading_list' %}">Сделки</a>
+             <a href="{% url 'warehouse_list' %}">Склады</a>
+            <a href="{% url 'add_wsarehouse_view' %}">+ Создать склад</a>
+            <a href="{% url 'logout' %}">Выйти</a>
+            <a href="{% url 'products:list' %}">Продукты</a>
             <form method="post" action="{% url 'logout' %}" style="display:inline;">
     {% csrf_token %}
     <button type="submit" style="

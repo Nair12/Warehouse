@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from products.forms import ProductForm
+from warehouses.forms import WarehouseForm
+from warehouses.models import Warehouse
 from .decorators import role_required
 
 
@@ -43,7 +45,7 @@ def manager_dashboard(request):
 @role_required(["manager"])
 def add_product_view(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST)
+        form = ProductForm(request.POST,request.FILES)
         if form.is_valid():
             form.save()
             return redirect('product_list')
@@ -51,6 +53,27 @@ def add_product_view(request):
         form = ProductForm()
 
     return render(request, 'product_add.html', {'form': form})
+
+
+
+
+def warehouse_create_view(request):
+    if request.method == 'POST':
+        form = WarehouseForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('warehouse_list')
+    else:
+        form = WarehouseForm()
+
+    return render(request, 'warehouse_add.html', {'form': form})
+
+
+
+def warehouse_list_view(request):
+    warehouses = Warehouse.objects.all().order_by('-created_at')
+    return render(request, 'warehouse_list.html', {'warehouses': warehouses})
+
 
 
 @role_required(["admin"])

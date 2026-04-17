@@ -1,0 +1,41 @@
+{% extends "base_manager.html" %}
+
+{% block manager_content %}
+    <h1>Список складов</h1>
+
+    <div class="module">
+        <h2>Зарегистрированные локации</h2>
+        <div class="module-content">
+            {% if warehouses %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Город</th>
+                            <th>ID (UUID)</th>
+                            <th>Дата создания</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for warehouse in warehouses %}
+                            <tr>
+                                <td><strong>{{ warehouse.city }}</strong></td>
+                                <td style="color: #999; font-size: 12px;">{{ warehouse.id }}</td>
+                                <td>{{ warehouse.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <a href="#" class="action-link">Изменить</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Склады еще не созданы. <a href="{% url 'add_wsarehouse_view' %}" class="action-link">Создать первый склад</a></p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <a href="{% url 'add_wsarehouse_view' %}" class="btn-save" style="text-decoration: none;">+ Добавить склад</a>
+    </div>
+{% endblock %}
