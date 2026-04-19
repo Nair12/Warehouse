@@ -10,11 +10,27 @@
 
     .header {
         margin-bottom: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
     }
 
     .title {
         font-size: 34px;
         font-weight: 700;
+    }
+
+    .btn-add {
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-weight: bold;
+    }
+
+    .btn-add:hover {
+        background: #2b5063;
     }
 
     .products {
@@ -85,11 +101,20 @@
 
 <div class="container">
 
+    <div class="header">
+        <div class="title">Товары</div>
+
+        {% if request.user.role == "manager" or request.user.role == "admin" %}
+            <a href="{% url 'products:product_create' %}" class="btn-add">
+                + Добавить продукт
+            </a>
+        {% endif %}
+    </div>
 
     {% if products %}
         <div class="products">
             {% for product in products %}
-                <a href="{% url 'products:product_detail' product.pk %}" class="card-link" style="text-decoration: none; color: inherit; display: block;">
+                <a href="{% url 'products:product_detail' product.pk %}" style="text-decoration: none; color: inherit;">
                     <div class="card">
                         {% if product.picture %}
                             <img src="{{ product.picture.url }}" alt="{{ product.name }}">
@@ -102,6 +127,7 @@
                             <div class="desc">
                                 {{ product.description|default:"Без описания"|truncatechars:100 }}
                             </div>
+                            <div class="price">{{ product.price }} $</div>
                         </div>
                     </div>
                 </a>
@@ -111,4 +137,5 @@
         <div class="empty">Нет продуктов</div>
     {% endif %}
 </div>
+
 {% endblock %}
