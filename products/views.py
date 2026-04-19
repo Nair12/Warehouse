@@ -36,4 +36,5 @@ def product_create_view(request):
 @role_required(["admin", "manager", "reader"])
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, id=pk)
-    return render(request, "product_detail.html", {"product": product})
+    inventory_items = product.inventory_items.select_related('warehouse').all()
+    return render(request, "product_detail.html", {"product": product,'inventory_items': inventory_items})
