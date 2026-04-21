@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .form-page {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 30px;
+    }
+
+    .page-title {
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        background: #f8f8f8;
+        border: 1px solid #e5e5e5;
+        padding: 18px 20px;
+        margin-bottom: 25px;
+    }
+
+    .info-row {
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-label {
+        display: inline-block;
+        min-width: 110px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    .quantity-form p {
+        margin-bottom: 18px;
+    }
+
+    .quantity-form label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+        color: #444;
+    }
+
+    .quantity-form input,
+    .quantity-form select,
+    .quantity-form textarea {
+        width: 100%;
+        max-width: 320px;
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .quantity-form .helptext {
+        display: block;
+        margin-top: 6px;
+        color: #777;
+        font-size: 13px;
+    }
+
+    .quantity-form .errorlist {
+        margin: 0 0 8px 0;
+        padding: 0;
+        list-style: none;
+        color: #ba2121;
+        font-size: 14px;
+    }
+
+    .form-actions {
+        margin-top: 25px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .btn-primary {
+        display: inline-block;
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .btn-primary:hover {
+        background: #30596e;
+    }
+
+    .btn-secondary {
+        display: inline-block;
+        background: #f3f3f3;
+        color: #444;
+        text-decoration: none;
+        border: 1px solid #ccc;
+        padding: 10px 18px;
+        border-radius: 4px;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .btn-secondary:hover {
+        background: #e9e9e9;
+    }
+
+    .mode-badge {
+        display: inline-block;
+        margin-left: 10px;
+        padding: 4px 10px;
+        background: #eef5f8;
+        color: #417690;
+        border: 1px solid #cfe0e8;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: bold;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="form-page">
+    <h1 class="page-title">
+        {% if inventory.id %}
+            Изменение остатка
+            <span class="mode-badge">Редактирование</span>
+        {% else %}
+            Добавление товара на склад
+            <span class="mode-badge">Новая запись</span>
+        {% endif %}
+    </h1>
+
+    <div class="module">
+        <div class="module-content">
+            <div class="form-card">
+
+                <div class="info-box">
+                    <div class="info-row">
+                        <span class="info-label">Товар:</span>
+                        {{ inventory.product.name }}
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Склад:</span>
+                        {{ inventory.warehouse }}
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Сейчас:</span>
+                        {% if inventory.id %}
+                            {{ inventory.quantity }}
+                        {% else %}
+                            0
+                        {% endif %}
+                    </div>
+                </div>
+
+                <form method="post" class="quantity-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            {% if inventory.id %}
+                                Сохранить изменения
+                            {% else %}
+                                Добавить на склад
+                            {% endif %}
+                        </button>
+
+                        <a href="{% url 'products:product_detail' inventory.product.id %}" class="btn-secondary">
+                            Отмена
+                        </a>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

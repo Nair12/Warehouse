@@ -1,0 +1,69 @@
+{% extends "base_manager.html" %}
+
+{% block manager_content %}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1 style="margin:0;">История операций (Админ)</h1>
+    </div>
+
+    <div class="module">
+        <h2>Все действия менеджеров</h2>
+        <div class="module-content">
+
+            {% if tradings %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Дата</th>
+                            <th>Кто сделал</th>
+                            <th>Тип</th>
+                            <th>Товар</th>
+                            <th>Склад</th>
+                            <th>Количество</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trading in tradings %}
+                            <tr>
+                                <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+
+                                <td>
+                                    {{ trading.user.username }}
+                                </td>
+
+                                <td>
+                                    {% if trading.trade_type == "purchase" %}
+                                        <span style="color:green; font-weight:bold;">
+                                            Покупка
+                                        </span>
+                                    {% else %}
+                                        <span style="color:#b94a48; font-weight:bold;">
+                                            Продажа
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ trading.product }}</td>
+
+                                <td>
+                                    {{ trading.warehouse|default:"—" }}
+                                </td>
+
+                                <td>{{ trading.quantity }}</td>
+
+                                <td>{{ trading.quantity_before }}</td>
+
+                                <td>{{ trading.quantity_after }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+            {% else %}
+                <p>История пуста</p>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

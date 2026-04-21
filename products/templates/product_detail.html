@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .product-detail-container {
+        display: flex;
+        gap: 30px;
+        background: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+    }
+
+    .product-image {
+        flex: 0 0 350px;
+        max-width: 350px;
+    }
+
+    .product-image img,
+    .placeholder-detail {
+        width: 100%;
+        height: 350px;
+        object-fit: cover;
+        border: 1px solid #eee;
+    }
+
+    .placeholder-detail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        color: #999;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .product-info {
+        flex: 1;
+    }
+
+    .info-table,
+    .inventory-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .info-table th {
+        text-align: left;
+        color: #666;
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        width: 150px;
+        font-size: 14px;
+    }
+
+    .info-table td {
+        padding: 12px 0;
+        border-bottom: 1px solid #eee;
+        font-weight: bold;
+    }
+
+    .inventory-table {
+        margin-top: 15px;
+    }
+
+    .inventory-table th {
+        text-align: left;
+        padding: 12px 10px;
+        border-bottom: 1px solid #ddd;
+        background: #f8f8f8;
+        color: #444;
+        font-size: 14px;
+    }
+
+    .inventory-table td {
+        padding: 12px 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .stock-badge {
+        display: inline-block;
+        background: #417690;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-size: 14px;
+        min-width: 50px;
+        text-align: center;
+    }
+
+    .action-link {
+        display: inline-block;
+        color: #447e9b;
+        text-decoration: none;
+        font-weight: bold;
+        margin-right: 12px;
+    }
+
+    .action-link:hover {
+        text-decoration: underline;
+    }
+
+    .back-btn {
+        display: inline-block;
+        margin-top: 25px;
+        color: #447e9b;
+        text-decoration: none;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .back-btn:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<h1>{{ product.name }}</h1>
+
+<div class="module">
+    <h2>Информация о товаре</h2>
+    <div class="module-content">
+        <div class="product-detail-container">
+
+            <div class="product-image">
+                {% if product.picture %}
+                    <img src="{{ product.picture.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="placeholder-detail">
+                        Фотография отсутствует
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <table class="info-table">
+                    <tr>
+                        <th>ID товара:</th>
+                        <td style="font-weight: normal; color: #999;">#{{ product.id }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Описание:</th>
+                        <td style="font-weight: normal;">
+                            {{ product.description|default:"Описание еще не добавлено." }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>Добавлен:</th>
+                        <td style="font-weight: normal;">
+                            {{ product.created_at|date:"d E Y" }} в {{ product.created_at|time:"H:i" }}
+                        </td>
+                    </tr>
+                </table>
+
+                <h3 style="margin-top:20px;">Остатки по складам</h3>
+
+                <table class="inventory-table">
+                    <thead>
+                        <tr>
+                            <th>Склад</th>
+                            <th>Количество</th>
+                            {% if request.user.role == "admin" or request.user.role == "manager" %}
+                                <th>Действие</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in warehouse_rows %}
+                            <tr>
+                                <td>{{ row.warehouse }}</td>
+                                <td>
+                                    <span class="stock-badge">{{ row.quantity }}</span>
+                                </td>
+
+                                {% if request.user.role == "admin" or request.user.role == "manager" %}
+                                    <td>
+                                        {% if row.inventory %}
+                                            <a href="{% url 'products:inventory_edit' row.inventory.id %}" class="action-link">
+                                                Изменить
+                                            </a>
+                                        {% else %}
+                                            <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}" class="action-link">
+                                                Добавить
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <a href="{% url 'products:product_list' %}" class="back-btn">
+                    ← Вернуться к списку товаров
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>История операций по складу</h1>
+
+<div style="margin: 20px 0;">
+    <a href="{% url 'admin:trading_trading_changelist' %}" class="button">
+        Назад к списку истории
+    </a>
+</div>
+
+<table id="result_list">
+    <thead>
+        <tr>
+            <th>Когда</th>
+            <th>Кто сделал</th>
+            <th>Тип</th>
+            <th>Товар</th>
+            <th>Склад</th>
+            <th>Количество</th>
+            <th>Было</th>
+            <th>Стало</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trading in tradings %}
+            <tr>
+                <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+                <td>{{ trading.user.username }}</td>
+                <td>
+                    {% if trading.trade_type == "purchase" %}
+                        <strong style="color: green;">Покупка</strong>
+                    {% else %}
+                        <strong style="color: #b94a48;">Продажа</strong>
+                    {% endif %}
+                </td>
+                <td>{{ trading.product }}</td>
+                <td>{{ trading.warehouse|default:"—" }}</td>
+                <td>{{ trading.quantity }}</td>
+                <td>{{ trading.quantity_before }}</td>
+                <td>{{ trading.quantity_after }}</td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8">История пуста</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

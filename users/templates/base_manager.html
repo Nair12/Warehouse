@@ -39,23 +39,6 @@
             text-decoration: underline;
         }
 
-        .nav {
-            background: #e9f2f7;
-            padding: 12px 30px;
-            border-bottom: 1px solid #d5e3ec;
-        }
-
-        .nav a {
-            color: #417690;
-            text-decoration: none;
-            font-weight: bold;
-            margin-right: 20px;
-        }
-
-        .nav a:hover {
-            text-decoration: underline;
-        }
-
         .container {
             padding: 30px;
         }
@@ -190,9 +173,11 @@
         <div>
             <a href="{% url 'manager_dashboard' %}">Дашборд</a>
             <a href="{% url 'trading_list' %}">Сделки</a>
+            {% if request.user.role == "admin" %}
+                <a href="{% url 'admin_trading_history' %}">История</a>
+            {% endif %}
             <a href="{% url 'warehouse_list' %}">Склады</a>
-            <a href="{% url 'add_wsarehouse_view' %}">+ Создать склад</a>
-            <a href="{% url 'products:list' %}">Продукты</a>
+            <a href="{% url 'products:product_list' %}">Продукты</a>
 
             <form method="post" action="{% url 'logout' %}" style="display:inline; margin-left:15px;">
                 {% csrf_token %}

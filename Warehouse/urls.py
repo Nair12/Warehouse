@@ -22,9 +22,10 @@ urlpatterns = [
         auth_views.LogoutView.as_view(next_page='/login/'),
         name='logout'
     ),
-    path('products/', include('products.urls')),
+    path('products/', include(('products.urls', 'products'), namespace='products')),
     path('redirect-by-role/', role_redirect_view, name='redirect_by_role'),
     path('trading/', include('trading.urls')),
+    path('warehouses/', include(('warehouses.urls', 'warehouses'), namespace='warehouses')),
 ]
 
 if settings.DEBUG:

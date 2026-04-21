@@ -48,7 +48,7 @@ def add_product_view(request):
         form = ProductForm(request.POST,request.FILES)
         if form.is_valid():
             form.save()
-            return redirect('product_list')
+            return redirect('products:product_list')
     else:
         form = ProductForm()
 
