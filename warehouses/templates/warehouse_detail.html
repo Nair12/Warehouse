@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 1000px;
+        margin: 40px auto;
+    }
+
+    .title {
+        font-size: 32px;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        background: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        margin-bottom: 15px;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .qty {
+        font-weight: bold;
+        color: #417690;
+    }
+</style>
+
+<div class="container">
+    <div class="title">Склад: {{ warehouse.name }}</div>
+
+    {% if inventory %}
+        {% for item in inventory %}
+            <div class="card">
+                <div class="row">
+                    <div>
+                        <a href="{% url 'products:product_detail' item.product.pk %}">
+                            {{ item.product.name }}
+                        </a>
+                    </div>
+                    <div class="qty">
+                        {{ item.quantity }} шт.
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>На складе нет товаров</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base_manager.html" %}
+
+{% block manager_content %}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1 style="margin:0;">История сделок</h1>
+
+        {% if request.user.role == "admin" or request.user.role == "manager" %}
+            <a href="{% url 'trading_create' %}" class="btn-save" style="text-decoration:none;">
+                + Создать сделку
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="module">
+        <h2>Журнал операций по складу</h2>
+        <div class="module-content">
+            {% if tradings %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Когда</th>
+                            <th>Менеджер</th>
+                            <th>Тип операции</th>
+                            <th>Товар</th>
+                            <th>Склад</th>
+                            <th>Количество</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                            <th>Детали</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trading in tradings %}
+                            <tr>
+                                <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    {% if trading.user %}
+                                        {{ trading.user.username }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if trading.trade_type == "purchase" %}
+                                        <span style="color:green; font-weight:bold;">Покупка</span>
+                                    {% elif trading.trade_type == "sell" %}
+                                        <span style="color:#b94a48; font-weight:bold;">Продажа</span>
+                                    {% else %}
+                                        {{ trading.get_trade_type_display }}
+                                    {% endif %}
+                                </td>
+                                <td>{{ trading.product }}</td>
+                                <td>{{ trading.warehouse|default:"—" }}</td>
+                                <td>{{ trading.quantity }}</td>
+                                <td>{{ trading.quantity_before }}</td>
+                                <td>{{ trading.quantity_after }}</td>
+                                <td>
+                                    <a href="{% url 'trading_detail' trading.pk %}" class="action-link">
+                                        Открыть
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>Сделок пока нет.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

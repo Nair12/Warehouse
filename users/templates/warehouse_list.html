@@ -1,7 +1,15 @@
 {% extends "base_manager.html" %}
 
 {% block manager_content %}
-    <h1>Список складов</h1>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1 style="margin:0;">Список складов</h1>
+
+        {% if request.user.role == "admin" or request.user.role == "manager" %}
+            <a href="{% url 'add_wsarehouse_view' %}" class="btn-save" style="text-decoration:none;">
+                + Создать склад
+            </a>
+        {% endif %}
+    </div>
 
     <div class="module">
         <h2>Зарегистрированные локации</h2>
@@ -13,29 +21,43 @@
                             <th>Город</th>
                             <th>ID (UUID)</th>
                             <th>Дата создания</th>
-                            <th>Действия</th>
+                            {% if request.user.role == "admin" or request.user.role == "manager" %}
+                                <th>Действия</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for warehouse in warehouses %}
                             <tr>
-                                <td><strong>{{ warehouse.city }}</strong></td>
+                                <td>
+                                    <strong>
+                                        <a href="{% url 'warehouses:warehouse_detail' warehouse.pk %}">
+                                            {{ warehouse.city }}
+                                        </a>
+                                    </strong>
+                                </td>
                                 <td style="color: #999; font-size: 12px;">{{ warehouse.id }}</td>
                                 <td>{{ warehouse.created_at|date:"d.m.Y H:i" }}</td>
-                                <td>
-                                    <a href="#" class="action-link">Изменить</a>
-                                </td>
+
+                                {% if request.user.role == "admin" or request.user.role == "manager" %}
+                                    <td>
+                                        <a href="#" class="action-link">Изменить</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <p>Склады еще не созданы. <a href="{% url 'add_wsarehouse_view' %}" class="action-link">Создать первый склад</a></p>
+                <p>
+                    Склады еще не созданы.
+                    {% if request.user.role == "admin" or request.user.role == "manager" %}
+                        <a href="{% url 'add_wsarehouse_view' %}" class="action-link">
+                            Создать первый склад
+                        </a>
+                    {% endif %}
+                </p>
             {% endif %}
         </div>
-    </div>
-
-    <div style="margin-top: 20px;">
-        <a href="{% url 'add_wsarehouse_view' %}" class="btn-save" style="text-decoration: none;">+ Добавить склад</a>
     </div>
 {% endblock %}
