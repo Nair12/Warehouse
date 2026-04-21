@@ -1,0 +1,54 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+<h1>{{ product.name }}</h1>
+
+<div class="module">
+    <h2>Информация о товаре</h2>
+    <div class="module-content">
+        <p><strong>ID:</strong> {{ product.id }}</p>
+        <p><strong>Описание:</strong> {{ product.description|default:"Нет описания" }}</p>
+        <p><strong>Добавлен:</strong> {{ product.created_at|date:"d.m.Y H:i" }}</p>
+
+        <h3>Остатки по складам</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Склад</th>
+                    <th>Количество</th>
+                    {% if request.user.role == "admin" or request.user.role == "manager" %}
+                        <th>Действие</th>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in warehouse_rows %}
+                    <tr>
+                        <td>{{ row.warehouse }}</td>
+                        <td>{{ row.quantity }}</td>
+
+                        {% if request.user.role == "admin" or request.user.role == "manager" %}
+                            <td>
+                                {% if row.inventory %}
+                                    <a href="{% url 'products:inventory_edit' row.inventory.id %}">
+                                        Изменить
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}">
+                                        Добавить
+                                    </a>
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p style="margin-top:20px;">
+            <a href="{% url 'products:product_list' %}">← Вернуться к списку товаров</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

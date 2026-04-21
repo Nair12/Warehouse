@@ -1,7 +1,10 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from products.forms import ProductForm
+from products.models import Product, Inventory
+from trading.models import Trading
 from warehouses.forms import WarehouseForm
 from warehouses.models import Warehouse
 from .decorators import role_required
@@ -35,9 +38,23 @@ def role_redirect_view(request):
 
 @role_required(["manager"])
 def manager_dashboard(request):
+    products_count = Product.objects.count()
+    warehouses_count = Warehouse.objects.count()
+    total_inventory = Inventory.objects.aggregate(total=Sum("quantity"))["total"] or 0
+
+    last_trades = Trading.objects.select_related(
+        "product",
+        "warehouse",
+        "user",
+    ).order_by("-created_at")[:5]
+
     context = {
         "username": request.user.username,
         "role": request.user.role,
+        "products_count": products_count,
+        "warehouses_count": warehouses_count,
+        "total_inventory": total_inventory,
+        "last_trades": last_trades,
     }
     return render(request, "users/manager_dashboard.html", context)
 
@@ -45,7 +62,7 @@ def manager_dashboard(request):
 @role_required(["manager"])
 def add_product_view(request):
     if request.method == 'POST':
-        form = ProductForm(request.POST,request.FILES)
+        form = ProductForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             return redirect('products:product_list')
@@ -55,8 +72,7 @@ def add_product_view(request):
     return render(request, 'product_add.html', {'form': form})
 
 
-
-
+@role_required(["admin", "manager"])
 def warehouse_create_view(request):
     if request.method == 'POST':
         form = WarehouseForm(request.POST)
@@ -69,16 +85,16 @@ def warehouse_create_view(request):
     return render(request, 'warehouse_add.html', {'form': form})
 
 
-
+@role_required(["admin", "manager", "reader"])
 def warehouse_list_view(request):
     warehouses = Warehouse.objects.all().order_by('-created_at')
     return render(request, 'warehouse_list.html', {'warehouses': warehouses})
 
 
-
 @role_required(["admin"])
 def users_manage_view(request):
     pass
+
 
 @role_required(["reader"])
 def reader_dashboard(request):
