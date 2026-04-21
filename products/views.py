@@ -8,7 +8,7 @@ from users.decorators import role_required
 @role_required(["admin", "manager", "reader"])
 def product_list_view(request):
     products = Product.objects.all().order_by("-created_at")
-    return render(request, "product_list.html", {"products": products})
+    return render(request, "products/product_list.html", {"products": products})
 
 
 @role_required(["admin", "manager"])
@@ -23,7 +23,7 @@ def product_create_view(request):
     else:
         form = ProductForm()
 
-    return render(request, "product_form.html", {"form": form})
+    return render(request, "products/product_form.html", {"form": form})
 
 
 @role_required(["admin", "manager", "reader"])
@@ -43,7 +43,7 @@ def product_detail_view(request, pk):
             "quantity": inventory_item.quantity if inventory_item else 0,
         })
 
-    return render(request, "product_detail.html", {
+    return render(request, "products/product_detail.html", {
         "product": product,
         "warehouse_rows": warehouse_rows,
     })
@@ -64,7 +64,7 @@ def inventory_create_view(request, product_id, warehouse_id):
     else:
         form = InventoryQuantityForm(instance=inventory)
 
-    return render(request, "inventory_quantity_form.html", {
+    return render(request, "products/inventory_quantity_form.html", {
         "form": form,
         "inventory": inventory
     })
@@ -82,7 +82,7 @@ def inventory_update_view(request, pk):
     else:
         form = InventoryQuantityForm(instance=inventory)
 
-    return render(request, "inventory_quantity_form.html", {
+    return render(request, "products/inventory_quantity_form.html", {
         "form": form,
         "inventory": inventory
     })
