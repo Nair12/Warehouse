@@ -1,26 +1,17 @@
 from django import forms
-from .models import Trading
+from .models import Trading, TradingItem
 
 
 class TradingForm(forms.ModelForm):
     class Meta:
         model = Trading
-        fields = ['name', 'product', 'warehouse', 'quantity', 'trade_type', 'comment']
+        # ❗ УБРАЛИ product, warehouse, quantity
+        fields = ['name', 'trade_type', 'comment']
 
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Введите название сделки'
-            }),
-            'product': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'warehouse': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'quantity': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'min': 1
             }),
             'trade_type': forms.Select(attrs={
                 'class': 'form-control'
@@ -34,9 +25,31 @@ class TradingForm(forms.ModelForm):
 
         labels = {
             'name': 'Название сделки',
-            'product': 'Продукт',
-            'warehouse': 'Склад',
-            'quantity': 'Количество',
             'trade_type': 'Тип операции',
             'comment': 'Комментарий',
+        }
+
+
+class TradingItemForm(forms.ModelForm):
+    class Meta:
+        model = TradingItem
+        fields = ['product', 'warehouse', 'quantity']
+
+        widgets = {
+            'product': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'warehouse': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'quantity': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1
+            }),
+        }
+
+        labels = {
+            'product': 'Товар',
+            'warehouse': 'Склад',
+            'quantity': 'Количество',
         }

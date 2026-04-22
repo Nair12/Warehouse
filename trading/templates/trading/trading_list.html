@@ -21,9 +21,8 @@
                             <th>Когда</th>
                             <th>Название сделки</th>
                             <th>Тип операции</th>
-                            <th>Товар</th>
-                            <th>Склад</th>
-                            <th>Количество</th>
+                            <th>Позиции</th>
+                            <th>Комментарий</th>
                             <th>Детали</th>
                         </tr>
                     </thead>
@@ -41,9 +40,26 @@
                                         {{ trading.get_trade_type_display }}
                                     {% endif %}
                                 </td>
-                                <td>{{ trading.product }}</td>
-                                <td>{{ trading.warehouse|default:"—" }}</td>
-                                <td>{{ trading.quantity }}</td>
+                                <td>
+                                    {% if trading.items.all %}
+                                        <ul style="margin:0; padding-left:18px;">
+                                            {% for item in trading.items.all %}
+                                                <li>
+                                                    {{ item.product }} —
+                                                    {{ item.warehouse|default:"—" }} —
+                                                    {{ item.quantity }} шт
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% else %}
+                                        {{ trading.product }} —
+                                        {{ trading.warehouse|default:"—" }} —
+                                        {{ trading.quantity }} шт
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ trading.comment|default:"—" }}
+                                </td>
                                 <td>
                                     <a href="{% url 'trading_detail' trading.pk %}" class="action-link">
                                         Открыть

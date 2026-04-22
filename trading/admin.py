@@ -1,13 +1,26 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
 from django.urls import path
-from .models import Trading
+from .models import Trading, TradingItem
+
+
+class TradingItemInline(admin.TabularInline):
+    model = TradingItem
+    extra = 1
+    fields = (
+        'product',
+        'warehouse',
+        'quantity',
+        'quantity_before',
+        'quantity_after',
+    )
 
 
 @admin.register(Trading)
 class TradingAdmin(admin.ModelAdmin):
     list_display = (
         'created_at',
+        'name',
         'user',
         'trade_type',
         'product',
@@ -25,11 +38,14 @@ class TradingAdmin(admin.ModelAdmin):
     )
 
     search_fields = (
+        'name',
         'product__name',
         'user__username',
+        'warehouse__city',
     )
 
     ordering = ('-created_at',)
+    inlines = [TradingItemInline]
 
     def get_urls(self):
         urls = super().get_urls()
@@ -60,3 +76,29 @@ class TradingAdmin(admin.ModelAdmin):
             'admin/trading/history_page.html',
             context,
         )
+
+
+@admin.register(TradingItem)
+class TradingItemAdmin(admin.ModelAdmin):
+    list_display = (
+        'trading',
+        'product',
+        'warehouse',
+        'quantity',
+        'quantity_before',
+        'quantity_after',
+        'created_at',
+    )
+
+    list_filter = (
+        'warehouse',
+        'created_at',
+    )
+
+    search_fields = (
+        'trading__name',
+        'product__name',
+        'warehouse__city',
+    )
+
+    ordering = ('-created_at',)
