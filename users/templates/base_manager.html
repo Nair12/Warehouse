@@ -39,6 +39,32 @@
             text-decoration: underline;
         }
 
+        .search-form {
+            display: inline-block;
+            margin-left: 20px;
+        }
+
+        .search-input {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .search-btn {
+            padding: 6px 10px;
+            border: none;
+            background: #2b5063;
+            color: white;
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 3px;
+        }
+
+        .search-btn:hover {
+            background: #1f3b4a;
+        }
+
         .container {
             padding: 30px;
         }
@@ -179,6 +205,12 @@
             <a href="{% url 'warehouse_list' %}">Склады</a>
             <a href="{% url 'products:product_list' %}">Продукты</a>
 
+            <!-- 🔍 ПОИСК -->
+            <form method="get" action="{% url 'global_search' %}" class="search-form">
+                <input type="text" name="q" placeholder="Поиск..." class="search-input">
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+
             <form method="post" action="{% url 'logout' %}" style="display:inline; margin-left:15px;">
                 {% csrf_token %}
                 <button type="submit" style="
@@ -189,7 +221,6 @@
                     color:white;
                     cursor:pointer;
                     font:inherit;
-                    text-decoration:none;
                 ">
                     Выйти
                 </button>

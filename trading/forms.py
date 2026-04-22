@@ -5,9 +5,13 @@ from .models import Trading
 class TradingForm(forms.ModelForm):
     class Meta:
         model = Trading
-        fields = ['product', 'warehouse', 'quantity', 'trade_type']
+        fields = ['name', 'product', 'warehouse', 'quantity', 'trade_type', 'comment']
 
         widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Введите название сделки'
+            }),
             'product': forms.Select(attrs={
                 'class': 'form-control'
             }),
@@ -21,11 +25,18 @@ class TradingForm(forms.ModelForm):
             'trade_type': forms.Select(attrs={
                 'class': 'form-control'
             }),
+            'comment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Комментарий (необязательно)'
+            }),
         }
 
         labels = {
+            'name': 'Название сделки',
             'product': 'Продукт',
             'warehouse': 'Склад',
             'quantity': 'Количество',
             'trade_type': 'Тип операции',
+            'comment': 'Комментарий',
         }

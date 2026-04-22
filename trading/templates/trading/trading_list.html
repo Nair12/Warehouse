@@ -19,13 +19,11 @@
                     <thead>
                         <tr>
                             <th>Когда</th>
-                            <th>Менеджер</th>
+                            <th>Название сделки</th>
                             <th>Тип операции</th>
                             <th>Товар</th>
                             <th>Склад</th>
                             <th>Количество</th>
-                            <th>Было</th>
-                            <th>Стало</th>
                             <th>Детали</th>
                         </tr>
                     </thead>
@@ -33,13 +31,7 @@
                         {% for trading in tradings %}
                             <tr>
                                 <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
-                                <td>
-                                    {% if trading.user %}
-                                        {{ trading.user.username }}
-                                    {% else %}
-                                        —
-                                    {% endif %}
-                                </td>
+                                <td>{{ trading.name|default:"Без названия" }}</td>
                                 <td>
                                     {% if trading.trade_type == "purchase" %}
                                         <span style="color:green; font-weight:bold;">Покупка</span>
@@ -52,8 +44,6 @@
                                 <td>{{ trading.product }}</td>
                                 <td>{{ trading.warehouse|default:"—" }}</td>
                                 <td>{{ trading.quantity }}</td>
-                                <td>{{ trading.quantity_before }}</td>
-                                <td>{{ trading.quantity_after }}</td>
                                 <td>
                                     <a href="{% url 'trading_detail' trading.pk %}" class="action-link">
                                         Открыть

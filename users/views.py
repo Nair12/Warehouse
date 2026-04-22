@@ -1,4 +1,4 @@
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -20,7 +20,8 @@ def home_view(request):
 
 def role_redirect_view(request):
     print(
-        f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}")
+        f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}"
+    )
     if not request.user.is_authenticated:
         return redirect('/login/')
 
@@ -103,3 +104,36 @@ def reader_dashboard(request):
         "role": request.user.role,
     }
     return render(request, "users/reader_dashboard.html", context)
+
+
+@role_required(["admin", "manager", "reader"])
+def global_search(request):
+    query = request.GET.get("q", "").strip()
+
+    products = Product.objects.none()
+    warehouses = Warehouse.objects.none()
+    tradings = Trading.objects.none()
+
+    if query:
+        products = Product.objects.filter(
+            name__icontains=query
+        ).order_by("name")
+
+        warehouses = Warehouse.objects.filter(
+            city__icontains=query
+        ).order_by("city")
+
+        tradings = Trading.objects.filter(
+            Q(name__icontains=query) |
+            Q(product__name__icontains=query) |
+            Q(warehouse__city__icontains=query)
+        ).select_related("product", "warehouse").order_by("-created_at")
+
+    context = {
+        "query": query,
+        "products": products,
+        "warehouses": warehouses,
+        "tradings": tradings,
+    }
+
+    return render(request, "users/search_results.html", context)
