@@ -7,6 +7,19 @@ class Trading(models.Model):
         SELL = "sell", "Продажа"
         PURCHASE = "purchase", "Покупка"
 
+    # 👇 НОВОЕ ПОЛЕ — название сделки
+    name = models.CharField(
+        max_length=255,
+        verbose_name="Название сделки"
+    )
+
+    # 👇 НОВОЕ ПОЛЕ — комментарий (необязательный)
+    comment = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name="Комментарий"
+    )
+
     trade_type = models.CharField(
         max_length=20,
         choices=TradeType.choices,
@@ -25,8 +38,8 @@ class Trading(models.Model):
         on_delete=models.CASCADE,
         related_name="trades",
         verbose_name="Склад",
-        null=True,          # 👈 ВАЖНО
-        blank=True          # 👈 ВАЖНО
+        null=True,
+        blank=True
     )
 
     user = models.ForeignKey(
@@ -57,5 +70,9 @@ class Trading(models.Model):
         verbose_name = "История склада"
         verbose_name_plural = "История склада"
 
+    @property
+    def title(self):
+        return self.name
+
     def __str__(self):
-        return f"{self.get_trade_type_display()} | {self.product} | {self.warehouse} | {self.quantity}"
+        return self.name

@@ -1,0 +1,114 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Результаты поиска{% endblock %}
+
+{% block manager_content %}
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h1 style="margin:0;">Результаты поиска</h1>
+    </div>
+
+    <div class="module">
+        <h2>По запросу: "{{ query }}"</h2>
+        <div class="module-content">
+            {% if query %}
+                
+                <h3>Товары</h3>
+                {% if products %}
+                    <table style="margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th>Название</th>
+                                <th>Детали</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                                <tr>
+                                    <td>{{ product.name }}</td>
+                                    <td>
+                                        <a href="{% url 'products:product_detail' product.pk %}" class="action-link">
+                                            Открыть
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>По товарам ничего не найдено.</p>
+                {% endif %}
+
+                <h3>Склады</h3>
+                {% if warehouses %}
+                    <table style="margin-bottom: 25px;">
+                        <thead>
+                            <tr>
+                                <th>Город</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for warehouse in warehouses %}
+                                <tr>
+                                    <td>{{ warehouse.city }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>По складам ничего не найдено.</p>
+                {% endif %}
+
+                <h3>Сделки</h3>
+                {% if tradings %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Когда</th>
+                                <th>Название сделки</th>
+                                <th>Тип операции</th>
+                                <th>Товар</th>
+                                <th>Склад</th>
+                                <th>Количество</th>
+                                <th>Детали</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for trading in tradings %}
+                                <tr>
+                                    <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+                                    <td>{{ trading.name|default:"Без названия" }}</td>
+                                    <td>
+                                        {% if trading.trade_type == "purchase" %}
+                                            <span style="color:green; font-weight:bold;">Покупка</span>
+                                        {% elif trading.trade_type == "sell" %}
+                                            <span style="color:#b94a48; font-weight:bold;">Продажа</span>
+                                        {% else %}
+                                            {{ trading.get_trade_type_display }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ trading.product }}</td>
+                                    <td>{{ trading.warehouse|default:"—" }}</td>
+                                    <td>{{ trading.quantity }}</td>
+                                    <td>
+                                        <a href="{% url 'trading_detail' trading.pk %}" class="action-link">
+                                            Открыть
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>По сделкам ничего не найдено.</p>
+                {% endif %}
+
+                {% if not products and not warehouses and not tradings %}
+                    <p>Ничего не найдено по вашему запросу.</p>
+                {% endif %}
+
+            {% else %}
+                <p>Введите запрос в строку поиска.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

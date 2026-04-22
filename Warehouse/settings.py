@@ -5,7 +5,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-jv!8x+vx78217(v3#69m3ckaus2kr5)j$@sub!ysc+3_hltg=e'
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.dev",
+    "https://*.ngrok-free.app",
+]
 
 
 # Application definition
@@ -21,7 +26,6 @@ INSTALLED_APPS = [
     'products',
     'warehouses',
     'trading',
-
 ]
 
 MIDDLEWARE = [
@@ -39,8 +43,7 @@ ROOT_URLCONF = 'Warehouse.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': []
-        ,
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -107,7 +110,7 @@ LOGIN_REDIRECT_URL = '/redirect-by-role/'
 LOGOUT_REDIRECT_URL = '/login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
-LOGOUT_REDIRECT_URL = '/login/'
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

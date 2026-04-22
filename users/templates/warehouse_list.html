@@ -5,7 +5,7 @@
         <h1 style="margin:0;">Список складов</h1>
 
         {% if request.user.role == "admin" or request.user.role == "manager" %}
-            <a href="{% url 'add_wsarehouse_view' %}" class="btn-save" style="text-decoration:none;">
+            <a href="{% url 'add_warehouse_view' %}" class="btn-save" style="text-decoration:none;">
                 + Создать склад
             </a>
         {% endif %}
@@ -52,7 +52,7 @@
                 <p>
                     Склады еще не созданы.
                     {% if request.user.role == "admin" or request.user.role == "manager" %}
-                        <a href="{% url 'add_wsarehouse_view' %}" class="action-link">
+                        <a href="{% url 'add_warehouse_view' %}" class="action-link">
                             Создать первый склад
                         </a>
                     {% endif %}
