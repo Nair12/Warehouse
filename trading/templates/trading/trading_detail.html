@@ -15,16 +15,28 @@
                     <td>{{ trading.id }}</td>
                 </tr>
                 <tr>
-                    <th>Продукт</th>
-                    <td>{{ trading.product }}</td>
+                    <th>Название сделки</th>
+                    <td>{{ trading.name|default:"Без названия" }}</td>
+                </tr>
+                <tr>
+                    <th>Тип операции</th>
+                    <td>
+                        {% if trading.trade_type == "purchase" %}
+                            <span style="color:green; font-weight:bold;">Покупка</span>
+                        {% elif trading.trade_type == "sell" %}
+                            <span style="color:#b94a48; font-weight:bold;">Продажа</span>
+                        {% else %}
+                            {{ trading.get_trade_type_display }}
+                        {% endif %}
+                    </td>
                 </tr>
                 <tr>
                     <th>Пользователь</th>
                     <td>{{ trading.user.username }}</td>
                 </tr>
                 <tr>
-                    <th>Количество</th>
-                    <td>{{ trading.quantity }}</td>
+                    <th>Комментарий</th>
+                    <td>{{ trading.comment|default:"—" }}</td>
                 </tr>
                 <tr>
                     <th>Дата создания</th>
@@ -38,6 +50,56 @@
                 {% endif %}
             </tbody>
         </table>
+
+        <div style="margin-top: 25px;">
+            <h3 style="margin-bottom: 15px;">Позиции сделки</h3>
+
+            {% if trading.items.all %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Склад</th>
+                            <th>Количество</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in trading.items.all %}
+                            <tr>
+                                <td>{{ item.product }}</td>
+                                <td>{{ item.warehouse|default:"—" }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.quantity_before }}</td>
+                                <td>{{ item.quantity_after }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Товар</th>
+                            <th>Склад</th>
+                            <th>Количество</th>
+                            <th>Было</th>
+                            <th>Стало</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ trading.product }}</td>
+                            <td>{{ trading.warehouse|default:"—" }}</td>
+                            <td>{{ trading.quantity }}</td>
+                            <td>{{ trading.quantity_before }}</td>
+                            <td>{{ trading.quantity_after }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
 
         <p style="margin-top: 15px;">
             <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a>

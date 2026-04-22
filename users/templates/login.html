@@ -19,30 +19,36 @@
             font-weight: bold;
         }
 
-        .login-container {
+        .page-wrapper {
             display: flex;
-            align-items: center;
-            flex-direction: column;
             justify-content: center;
+            align-items: flex-start;
+            min-height: calc(100vh - 60px);
+            padding-top: 80px;
+            box-sizing: border-box;
+        }
+
+        .login-container {
             width: 350px;
-            margin: 80px auto;
             background: white;
             padding: 30px;
             border-radius: 6px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
         }
 
         h2 {
             margin-top: 0;
+            margin-bottom: 20px;
         }
 
         input {
             width: 100%;
             padding: 10px;
-            margin-top: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            box-sizing: border-box;
         }
 
         button {
@@ -53,6 +59,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: bold;
         }
 
         button:hover {
@@ -72,23 +79,25 @@
     Warehouse
 </div>
 
-<div class="login-container">
-    <h2>Вход в систему</h2>
+<div class="page-wrapper">
+    <div class="login-container">
+        <h2>Вход в систему</h2>
 
-    {% if form.errors %}
-        <div class="error">
-            Неверный логин или пароль
-        </div>
-    {% endif %}
+        {% if form.errors %}
+            <div class="error">
+                Неверный логин или пароль
+            </div>
+        {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
+        <form method="post">
+            {% csrf_token %}
 
-        <input type="text" name="username" placeholder="Логин" required>
-        <input type="password" name="password" placeholder="Пароль" required>
+            <input type="text" name="username" placeholder="Логин" required>
+            <input type="password" name="password" placeholder="Пароль" required>
 
-        <button type="submit">Войти</button>
-    </form>
+            <button type="submit">Войти</button>
+        </form>
+    </div>
 </div>
 
 </body>

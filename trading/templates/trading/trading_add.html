@@ -17,6 +17,12 @@
         <form method="post">
             {% csrf_token %}
 
+            {% if form.non_field_errors %}
+                <div class="errors" style="margin-bottom: 15px;">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
             {% for field in form %}
                 <div class="form-row">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -29,9 +35,190 @@
                 </div>
             {% endfor %}
 
+            <hr style="margin: 25px 0;">
+
+            <h3 style="margin:0 0 15px 0;">Товары в сделке</h3>
+
+            {{ item_formset.management_form }}
+
+            <div id="items-container">
+                {% for item_form in item_formset %}
+                    <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <h4 class="item-title" style="margin:0;">Позиция {{ forloop.counter }}</h4>
+                            <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                        </div>
+
+                        {% if item_form.non_field_errors %}
+                            <div class="errors" style="margin-bottom: 10px;">
+                                {{ item_form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        {% for field in item_form %}
+                            <div class="form-row">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                                {% if field.errors %}
+                                    <div class="errors">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="form-row">
+                            <label>Остаток на складе</label>
+                            <div class="stock-info" style="font-weight:bold; color:#417690;">
+                                Выберите товар и склад
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <button type="button" id="add-item-btn" class="btn-save">+ Добавить товар</button>
+            </div>
+
+            <template id="empty-item-template">
+                <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h4 class="item-title" style="margin:0;">Позиция __number__</h4>
+                        <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                    </div>
+
+                    {% for field in item_formset.empty_form %}
+                        <div class="form-row">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+
+                    <div class="form-row">
+                        <label>Остаток на складе</label>
+                        <div class="stock-info" style="font-weight:bold; color:#417690;">
+                            Выберите товар и склад
+                        </div>
+                    </div>
+                </div>
+            </template>
+
             <button type="submit" class="btn-save">Сохранить</button>
             <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
         </form>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const itemsContainer = document.getElementById("items-container");
+    const addItemBtn = document.getElementById("add-item-btn");
+    const totalFormsInput = document.getElementById("id_items-TOTAL_FORMS");
+    const emptyTemplate = document.getElementById("empty-item-template");
+
+    function updateTitles() {
+        const blocks = itemsContainer.querySelectorAll(".item-block");
+        blocks.forEach(function (block, index) {
+            const title = block.querySelector(".item-title");
+            if (title) {
+                title.innerText = `Позиция ${index + 1}`;
+            }
+        });
+    }
+
+    function bindStockLogic(block) {
+        const productSelect = block.querySelector('select[name$="-product"]');
+        const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+        const stockInfo = block.querySelector(".stock-info");
+
+        function updateStock() {
+            const productId = productSelect ? productSelect.value : "";
+            const warehouseId = warehouseSelect ? warehouseSelect.value : "";
+
+            if (!productId || !warehouseId) {
+                stockInfo.innerText = "Выберите товар и склад";
+                return;
+            }
+
+            fetch(`/trading/get-stock/?product=${productId}&warehouse=${warehouseId}`)
+                .then(response => response.json())
+                .then(data => {
+                    stockInfo.innerText = `На складе: ${data.quantity} шт`;
+                })
+                .catch(() => {
+                    stockInfo.innerText = "Ошибка загрузки";
+                });
+        }
+
+        if (productSelect && warehouseSelect) {
+            productSelect.addEventListener("change", updateStock);
+            warehouseSelect.addEventListener("change", updateStock);
+        }
+    }
+
+    function bindRemoveButton(block) {
+        const removeBtn = block.querySelector(".remove-item-btn");
+        if (!removeBtn) return;
+
+        removeBtn.addEventListener("click", function () {
+            const blocks = itemsContainer.querySelectorAll(".item-block");
+            if (blocks.length === 1) {
+                return;
+            }
+            block.remove();
+            rebuildIndexes();
+        });
+    }
+
+    function rebuildIndexes() {
+        const blocks = itemsContainer.querySelectorAll(".item-block");
+        blocks.forEach(function (block, index) {
+            block.querySelectorAll("input, select, textarea, label").forEach(function (el) {
+                if (el.name) {
+                    el.name = el.name.replace(/items-\d+-/g, `items-${index}-`);
+                }
+                if (el.id) {
+                    el.id = el.id.replace(/id_items-\d+-/g, `id_items-${index}-`);
+                }
+                if (el.htmlFor) {
+                    el.htmlFor = el.htmlFor.replace(/id_items-\d+-/g, `id_items-${index}-`);
+                }
+            });
+        });
+
+        totalFormsInput.value = blocks.length;
+        updateTitles();
+    }
+
+    function addNewItem() {
+        const formIndex = parseInt(totalFormsInput.value, 10);
+        let html = emptyTemplate.innerHTML.replace(/__prefix__/g, formIndex);
+        html = html.replace(/__number__/g, formIndex + 1);
+
+        const tempDiv = document.createElement("div");
+        tempDiv.innerHTML = html.trim();
+
+        const newBlock = tempDiv.firstElementChild;
+        itemsContainer.appendChild(newBlock);
+
+        totalFormsInput.value = formIndex + 1;
+
+        bindStockLogic(newBlock);
+        bindRemoveButton(newBlock);
+        updateTitles();
+    }
+
+    const existingBlocks = itemsContainer.querySelectorAll(".item-block");
+    existingBlocks.forEach(function (block) {
+        bindStockLogic(block);
+        bindRemoveButton(block);
+    });
+
+    updateTitles();
+
+    addItemBtn.addEventListener("click", addNewItem);
+});
+</script>
+
 {% endblock %}
