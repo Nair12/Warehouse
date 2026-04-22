@@ -1,10 +1,13 @@
+from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import transaction
 from django.http import JsonResponse
 from django.forms import formset_factory
 
 from .models import Trading, TradingItem
-from .forms import TradingForm, TradingItemForm
+from .forms import TradingForm, TradingItemForm, AttachmentFormSet
+from .models import Trading, TradingAttachment
+from .forms import TradingForm
 from products.models import Inventory
 from users.decorators import role_required
 
@@ -47,13 +50,15 @@ def trading_detail(request, pk):
     return render(request, 'trading/trading_detail.html', {'trading': trading})
 
 
+
 @role_required(['admin', 'manager'])
 def trading_create(request):
     if request.method == 'POST':
         form = TradingForm(request.POST)
         item_formset = TradingItemFormSet(request.POST, prefix='items')
+        formset = AttachmentFormSet(request.POST, request.FILES)
 
-        if form.is_valid() and item_formset.is_valid():
+        if form.is_valid() and item_formset.is_valid() and formset.is_valid():
             filled_forms = [
                 item_form for item_form in item_formset
                 if item_form.cleaned_data and not item_form.cleaned_data.get('DELETE', False)
@@ -69,12 +74,14 @@ def trading_create(request):
                     valid_items.append(item_form)
 
             if not valid_items:
+                form.add_error(None, 'Добавьте хотя бы одну позицию сделки.')
                 return render(
                     request,
                     'trading/trading_add.html',
                     {
                         'form': form,
                         'item_formset': item_formset,
+                        'formset': formset,
                     }
                 )
 
@@ -82,14 +89,12 @@ def trading_create(request):
                 trading = form.save(commit=False)
                 trading.user = request.user
 
-                # Для совместимости со старой моделью:
-                # записываем первую позицию сделки в legacy-поля Trading
                 first_item_data = valid_items[0].cleaned_data
                 first_product = first_item_data['product']
                 first_warehouse = first_item_data['warehouse']
                 first_quantity = first_item_data['quantity']
 
-                first_inventory, created = Inventory.objects.get_or_create(
+                first_inventory, _ = Inventory.objects.get_or_create(
                     product=first_product,
                     warehouse=first_warehouse,
                     defaults={'quantity': 0},
@@ -103,7 +108,8 @@ def trading_create(request):
                     if first_inventory.quantity < first_quantity:
                         form.add_error(
                             None,
-                            f'Недостаточно товара "{first_product}" на складе "{first_warehouse}". Сейчас в наличии: {first_inventory.quantity}'
+                            f'Недостаточно товара "{first_product}" на складе "{first_warehouse}". '
+                            f'Сейчас в наличии: {first_inventory.quantity}'
                         )
                         return render(
                             request,
@@ -111,10 +117,12 @@ def trading_create(request):
                             {
                                 'form': form,
                                 'item_formset': item_formset,
+                                'formset': formset,
                             }
                         )
                     first_quantity_after = first_quantity_before - first_quantity
 
+                # legacy-поля в Trading
                 trading.product = first_product
                 trading.warehouse = first_warehouse
                 trading.quantity = first_quantity
@@ -127,7 +135,7 @@ def trading_create(request):
                     warehouse = item_form.cleaned_data['warehouse']
                     quantity = item_form.cleaned_data['quantity']
 
-                    inventory, created = Inventory.objects.get_or_create(
+                    inventory, _ = Inventory.objects.get_or_create(
                         product=product,
                         warehouse=warehouse,
                         defaults={'quantity': 0},
@@ -137,33 +145,37 @@ def trading_create(request):
 
                     if trading.trade_type == Trading.TradeType.PURCHASE:
                         inventory.quantity += quantity
-
                     elif trading.trade_type == Trading.TradeType.SELL:
                         if inventory.quantity < quantity:
                             form.add_error(
                                 None,
-                                f'Недостаточно товара "{product}" на складе "{warehouse}". Сейчас в наличии: {inventory.quantity}'
+                                f'Недостаточно товара "{product}" на складе "{warehouse}". '
+                                f'В наличии: {inventory.quantity}'
                             )
-                            raise transaction.TransactionManagementError("Недостаточно товара на складе")
-
+                            return render(
+                                request,
+                                'trading/trading_add.html',
+                                {
+                                    'form': form,
+                                    'item_formset': item_formset,
+                                    'formset': formset,
+                                }
+                            )
                         inventory.quantity -= quantity
 
-                    quantity_after = inventory.quantity
                     inventory.save()
 
-                    TradingItem.objects.create(
-                        trading=trading,
-                        product=product,
-                        warehouse=warehouse,
-                        quantity=quantity,
-                        quantity_before=quantity_before,
-                        quantity_after=quantity_after,
-                    )
+                attachments = formset.save(commit=False)
+                for attachment in attachments:
+                    attachment.trade = trading
+                    attachment.save()
 
                 return redirect('trading_list')
+
     else:
         form = TradingForm()
         item_formset = TradingItemFormSet(prefix='items')
+        formset = AttachmentFormSet()
 
     return render(
         request,
@@ -171,9 +183,9 @@ def trading_create(request):
         {
             'form': form,
             'item_formset': item_formset,
+            'formset': formset,
         }
     )
-
 
 @role_required(['admin', 'manager'])
 def trading_update(request, pk):

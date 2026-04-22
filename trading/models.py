@@ -7,10 +7,12 @@ class Trading(models.Model):
         SELL = "sell", "Продажа"
         PURCHASE = "purchase", "Покупка"
 
+
     name = models.CharField(
         max_length=255,
         verbose_name="Название сделки"
     )
+
 
     comment = models.TextField(
         blank=True,
@@ -24,7 +26,6 @@ class Trading(models.Model):
         verbose_name="Тип операции"
     )
 
-    # ОСТАВЛЯЕМ ТЕКУЩИЕ ПОЛЯ, ЧТОБЫ НИЧЕГО НЕ СЛОМАТЬ
     product = models.ForeignKey(
         "products.Product",
         on_delete=models.CASCADE,
@@ -66,8 +67,8 @@ class Trading(models.Model):
 
     class Meta:
         ordering = ["-created_at"]
-        verbose_name = "Сделка"
-        verbose_name_plural = "Сделки"
+        verbose_name = "История склада"
+        verbose_name_plural = "История склада"
 
     @property
     def title(self):
@@ -129,3 +130,19 @@ class TradingItem(models.Model):
 
     def __str__(self):
         return f"{self.trading.name} — {self.product} ({self.quantity})"
+        return f"{self.get_trade_type_display()} | {self.product} | {self.warehouse} | {self.quantity}"
+
+
+
+
+class TradingAttachment(models.Model):
+    trade = models.ForeignKey(
+        Trading,
+        on_delete=models.CASCADE,
+        related_name="attachments"
+    )
+    file = models.FileField(upload_to="trades/attachments/%Y/%m/%d/")
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Файл для сделки #{self.trade.id}"

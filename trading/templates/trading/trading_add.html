@@ -14,7 +14,7 @@
         {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
     </h2>
     <div class="module-content">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -34,6 +34,26 @@
                     {% endif %}
                 </div>
             {% endfor %}
+         <div class="module">
+        <h2>Прикрепить файлы</h2>
+
+
+        {{ formset.management_form }}
+
+        <div id="attachment-list">
+            {% for attachment_form in formset %}
+                <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
+                    {{ attachment_form.id }}
+                    <label>Файл {{ forloop.counter }}:</label>
+                    {{ attachment_form.file }}
+
+                    {% if attachment_form.file.errors %}
+                        <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
             <hr style="margin: 25px 0;">
 
