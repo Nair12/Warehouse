@@ -1,10 +1,13 @@
+import json
+
 from django.db.models import Sum, Q
+from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from products.forms import ProductForm
 from products.models import Product, Inventory
-from trading.models import Trading
+from trading.models import Trading, TradingItem
 from warehouses.forms import WarehouseForm
 from warehouses.models import Warehouse
 from .decorators import role_required
@@ -37,6 +40,16 @@ def role_redirect_view(request):
     return redirect('/login/')
 
 
+import json
+
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
+
+import json
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
+
+
 @role_required(["manager"])
 def manager_dashboard(request):
     products_count = Product.objects.count()
@@ -49,6 +62,33 @@ def manager_dashboard(request):
         "user",
     ).order_by("-created_at")[:5]
 
+    trades_by_day = (
+        Trading.objects
+        .annotate(day=TruncDate("created_at"))
+        .values("day", "trade_type")
+        .annotate(total=Sum("quantity"))
+        .order_by("day")
+    )
+
+    grouped = {}
+    for row in trades_by_day:
+        day = row["day"]
+        if not day:
+            continue
+
+        day_str = day.strftime("%d.%m.%Y")
+        if day_str not in grouped:
+            grouped[day_str] = {
+                "purchase": 0,
+                "sell": 0,
+            }
+
+        grouped[day_str][row["trade_type"]] = row["total"] or 0
+
+    chart_labels = list(grouped.keys())
+    purchase_values = [grouped[day]["purchase"] for day in chart_labels]
+    sales_values = [grouped[day]["sell"] for day in chart_labels]
+
     context = {
         "username": request.user.username,
         "role": request.user.role,
@@ -56,6 +96,9 @@ def manager_dashboard(request):
         "warehouses_count": warehouses_count,
         "total_inventory": total_inventory,
         "last_trades": last_trades,
+        "sales_labels": json.dumps(chart_labels),
+        "purchase_values": json.dumps(purchase_values),
+        "sales_values": json.dumps(sales_values),
     }
     return render(request, "users/manager_dashboard.html", context)
 
