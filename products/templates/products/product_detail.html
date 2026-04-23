@@ -1,54 +1,370 @@
 {% extends "products/base.html" %}
 
 {% block content %}
-<h1>{{ product.name }}</h1>
+<style>
+    .product-page {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px 40px;
+    }
 
-<div class="module">
-    <h2>Информация о товаре</h2>
-    <div class="module-content">
-        <p><strong>ID:</strong> {{ product.id }}</p>
-        <p><strong>Описание:</strong> {{ product.description|default:"Нет описания" }}</p>
-        <p><strong>Добавлен:</strong> {{ product.created_at|date:"d.m.Y H:i" }}</p>
+    .product-card {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        gap: 32px;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
 
-        <h3>Остатки по складам</h3>
+    .product-media {
+        background: #f5f6f8;
+        min-height: 420px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Склад</th>
-                    <th>Количество</th>
-                    {% if request.user.role == "admin" or request.user.role == "manager" %}
-                        <th>Действие</th>
-                    {% endif %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in warehouse_rows %}
+    .product-media img {
+        width: 100%;
+        height: 100%;
+        min-height: 420px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .product-placeholder {
+        width: 100%;
+        height: 100%;
+        min-height: 420px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        color: #9aa3ad;
+        font-size: 16px;
+        background:
+            linear-gradient(135deg, #f7f8fa 25%, #eef1f4 25%, #eef1f4 50%, #f7f8fa 50%, #f7f8fa 75%, #eef1f4 75%, #eef1f4 100%);
+        background-size: 28px 28px;
+    }
+
+    .product-placeholder-icon {
+        font-size: 54px;
+        line-height: 1;
+    }
+
+    .product-info {
+        padding: 32px 32px 28px 0;
+    }
+
+    .product-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #eef6ff;
+        color: #2f6fed;
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 14px;
+    }
+
+    .product-title {
+        margin: 0 0 14px;
+        font-size: 34px;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .product-description {
+        margin: 0 0 24px;
+        font-size: 16px;
+        line-height: 1.7;
+        color: #5b6470;
+    }
+
+    .product-meta {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
+        gap: 16px;
+        margin-bottom: 10px;
+    }
+
+    .meta-box {
+        background: #f8fafc;
+        border: 1px solid #edf1f5;
+        border-radius: 14px;
+        padding: 16px 18px;
+    }
+
+    .meta-label {
+        display: block;
+        font-size: 13px;
+        color: #7b8794;
+        margin-bottom: 6px;
+    }
+
+    .meta-value {
+        font-size: 16px;
+        font-weight: 600;
+        color: #1f2937;
+        word-break: break-word;
+    }
+
+    .stock-card {
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+
+    .stock-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 24px 24px 18px;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .stock-title {
+        margin: 0;
+        font-size: 24px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .stock-subtitle {
+        margin: 6px 0 0;
+        font-size: 14px;
+        color: #7b8794;
+    }
+
+    .table-wrap {
+        overflow-x: auto;
+    }
+
+    .stock-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .stock-table thead th {
+        text-align: left;
+        font-size: 14px;
+        font-weight: 700;
+        color: #4b5563;
+        background: #f8fafc;
+        padding: 16px 20px;
+        border-bottom: 1px solid #eef2f6;
+    }
+
+    .stock-table tbody td {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 15px;
+        color: #374151;
+        vertical-align: middle;
+    }
+
+    .stock-table tbody tr:hover {
+        background: #fafcff;
+    }
+
+    .qty-badge {
+        display: inline-block;
+        min-width: 44px;
+        text-align: center;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecfdf3;
+        color: #027a48;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    .qty-badge.zero {
+        background: #fef2f2;
+        color: #b42318;
+    }
+
+    .action-btn {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        transition: 0.2s ease;
+        border: 1px solid transparent;
+    }
+
+    .action-btn.edit {
+        background: #eef4ff;
+        color: #2f6fed;
+    }
+
+    .action-btn.edit:hover {
+        background: #dfeaff;
+    }
+
+    .action-btn.add {
+        background: #ecfdf3;
+        color: #027a48;
+    }
+
+    .action-btn.add:hover {
+        background: #dafbe8;
+    }
+
+    .footer-actions {
+        margin-top: 24px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #2f6fed;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 12px;
+        background: #eef4ff;
+        transition: 0.2s ease;
+    }
+
+    .back-link:hover {
+        background: #dfeaff;
+    }
+
+    .empty-row {
+        text-align: center;
+        color: #7b8794;
+        padding: 28px 20px;
+    }
+
+    @media (max-width: 900px) {
+        .product-card {
+            grid-template-columns: 1fr;
+        }
+
+        .product-info {
+            padding: 0 24px 24px;
+        }
+
+        .product-media,
+        .product-media img,
+        .product-placeholder {
+            min-height: 320px;
+        }
+
+        .product-meta {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="product-page">
+    <div class="product-card">
+        <div class="product-media">
+            {% if product.picture %}
+                <img src="{{ product.picture.url }}" alt="{{ product.name }}">
+            {% else %}
+                <div class="product-placeholder">
+                    <div class="product-placeholder-icon">🖼️</div>
+                    <div>Изображение товара отсутствует</div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="product-info">
+            <div class="product-badge">Карточка товара</div>
+            <h1 class="product-title">{{ product.name }}</h1>
+
+            <p class="product-description">
+                {{ product.description|default:"Описание для этого товара пока не добавлено." }}
+            </p>
+
+            <div class="product-meta">
+                <div class="meta-box">
+                    <span class="meta-label">ID товара</span>
+                    <span class="meta-value">{{ product.id }}</span>
+                </div>
+
+                <div class="meta-box">
+                    <span class="meta-label">Дата добавления</span>
+                    <span class="meta-value">{{ product.created_at|date:"d.m.Y H:i" }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="stock-card">
+        <div class="stock-header">
+            <div>
+                <h2 class="stock-title">Остатки по складам</h2>
+                <p class="stock-subtitle">Наличие товара на каждом складе</p>
+            </div>
+        </div>
+
+        <div class="table-wrap">
+            <table class="stock-table">
+                <thead>
                     <tr>
-                        <td>{{ row.warehouse }}</td>
-                        <td>{{ row.quantity }}</td>
-
+                        <th>Склад</th>
+                        <th>Количество</th>
                         {% if request.user.role == "admin" or request.user.role == "manager" %}
-                            <td>
-                                {% if row.inventory %}
-                                    <a href="{% url 'products:inventory_edit' row.inventory.id %}">
-                                        Изменить
-                                    </a>
-                                {% else %}
-                                    <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}">
-                                        Добавить
-                                    </a>
-                                {% endif %}
-                            </td>
+                            <th>Действие</th>
                         {% endif %}
                     </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    {% for row in warehouse_rows %}
+                        <tr>
+                            <td>{{ row.warehouse }}</td>
+                            <td>
+                                <span class="qty-badge {% if row.quantity == 0 %}zero{% endif %}">
+                                    {{ row.quantity }}
+                                </span>
+                            </td>
 
-        <p style="margin-top:20px;">
-            <a href="{% url 'products:product_list' %}">← Вернуться к списку товаров</a>
-        </p>
+                            {% if request.user.role == "admin" or request.user.role == "manager" %}
+                                <td>
+                                    {% if row.inventory %}
+                                        <a href="{% url 'products:inventory_edit' row.inventory.id %}" class="action-btn edit">
+                                            Изменить
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}" class="action-btn add">
+                                            Добавить
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            {% endif %}
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="{% if request.user.role == 'admin' or request.user.role == 'manager' %}3{% else %}2{% endif %}" class="empty-row">
+                                Нет данных по остаткам на складах.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <a href="{% url 'products:product_list' %}" class="back-link">
+            ← Вернуться к списку товаров
+        </a>
     </div>
 </div>
 {% endblock %}

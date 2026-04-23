@@ -22,9 +22,9 @@
                     <th>Тип операции</th>
                     <td>
                         {% if trading.trade_type == "purchase" %}
-                            <span style="color:green; font-weight:bold;">Покупка</span>
+                            <span style="color: green; font-weight: bold;">Покупка</span>
                         {% elif trading.trade_type == "sell" %}
-                            <span style="color:#b94a48; font-weight:bold;">Продажа</span>
+                            <span style="color: #b94a48; font-weight: bold;">Продажа</span>
                         {% else %}
                             {{ trading.get_trade_type_display }}
                         {% endif %}
@@ -50,61 +50,87 @@
                 {% endif %}
             </tbody>
         </table>
-
-        <div style="margin-top: 25px;">
-            <h3 style="margin-bottom: 15px;">Позиции сделки</h3>
-
-            {% if trading.items.all %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Товар</th>
-                            <th>Склад</th>
-                            <th>Количество</th>
-                            <th>Было</th>
-                            <th>Стало</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in trading.items.all %}
-                            <tr>
-                                <td>{{ item.product }}</td>
-                                <td>{{ item.warehouse|default:"—" }}</td>
-                                <td>{{ item.quantity }}</td>
-                                <td>{{ item.quantity_before }}</td>
-                                <td>{{ item.quantity_after }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Товар</th>
-                            <th>Склад</th>
-                            <th>Количество</th>
-                            <th>Было</th>
-                            <th>Стало</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>{{ trading.product }}</td>
-                            <td>{{ trading.warehouse|default:"—" }}</td>
-                            <td>{{ trading.quantity }}</td>
-                            <td>{{ trading.quantity_before }}</td>
-                            <td>{{ trading.quantity_after }}</td>
-                        </tr>
-                    </tbody>
-                </table>
-            {% endif %}
-        </div>
-
-        <p style="margin-top: 15px;">
-            <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a>
-            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
-        </p>
     </div>
+</div>
+
+<div class="module">
+    <h2>Позиции сделки</h2>
+    <div class="module-content">
+        {% if trading.items.all %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Склад</th>
+                        <th>Количество</th>
+                        <th>Было</th>
+                        <th>Стало</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in trading.items.all %}
+                        <tr>
+                            <td>{{ item.product }}</td>
+                            <td>{{ item.warehouse|default:"—" }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.quantity_before }}</td>
+                            <td>{{ item.quantity_after }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Склад</th>
+                        <th>Количество</th>
+                        <th>Было</th>
+                        <th>Стало</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ trading.product }}</td>
+                        <td>{{ trading.warehouse|default:"—" }}</td>
+                        <td>{{ trading.quantity }}</td>
+                        <td>{{ trading.quantity_before }}</td>
+                        <td>{{ trading.quantity_after }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>
+
+<div class="module">
+    <h2>📎 Прикрепленные документы</h2>
+    <div class="module-content">
+        {% if trading.attachments.all %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
+                {% for attachment in trading.attachments.all %}
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; text-align: center; transition: 0.2s;">
+                        <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
+
+                        <div style="font-size: 14px; word-break: break-word; margin-bottom: 10px;">
+                            {{ attachment.file.name|cut:"trading_attachments/" }}
+                        </div>
+
+                        <a href="{{ attachment.file.url }}" target="_blank" class="action-link">
+                            Открыть
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Нет прикрепленных документов.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div style="margin-top: 15px;">
+    <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a> |
+    <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
 </div>
 {% endblock %}

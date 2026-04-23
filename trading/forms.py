@@ -1,5 +1,7 @@
 from django import forms
-from .models import Trading, TradingItem
+from django.forms import inlineformset_factory
+
+from .models import Trading, TradingItem, TradingAttachment
 
 
 class TradingForm(forms.ModelForm):
@@ -19,7 +21,7 @@ class TradingForm(forms.ModelForm):
                 'class': 'form-control',
                 'rows': 3,
                 'placeholder': 'Комментарий (необязательно)'
-            }),
+            })
         }
 
         labels = {
@@ -63,3 +65,35 @@ class TradingItemForm(forms.ModelForm):
             raise forms.ValidationError('Количество должно быть больше нуля.')
 
         return quantity
+TradingItemFormSet = inlineformset_factory(
+    Trading,
+    TradingItem,
+    form=TradingItemForm,
+    extra=1,
+    can_delete=True
+)
+
+
+class TradingAttachmentForm(forms.ModelForm):
+    class Meta:
+        model = TradingAttachment
+        fields = ['file']
+
+        widgets = {
+            'file': forms.ClearableFileInput(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+        labels = {
+            'file': 'Файл',
+        }
+
+
+AttachmentFormSet = inlineformset_factory(
+    Trading,
+    TradingAttachment,
+    form=TradingAttachmentForm,
+    extra=1,
+    can_delete=True
+)

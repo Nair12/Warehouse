@@ -1,3 +1,5 @@
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, Inventory
 from warehouses.models import Warehouse
@@ -5,11 +7,47 @@ from .forms import ProductForm, InventoryQuantityForm
 from users.decorators import role_required
 
 
+
+from django.db.models import Sum, Q
+from django.db.models.functions import Coalesce
+
 @role_required(["admin", "manager", "reader"])
 def product_list_view(request):
-    products = Product.objects.all().order_by("-created_at")
-    return render(request, "products/product_list.html", {"products": products})
+    query = request.GET.get("q", "").strip()
+    in_stock = request.GET.get("in_stock")
+    sort = request.GET.get("sort")
 
+    products = Product.objects.annotate(
+        total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
+    )
+
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) |
+            Q(description__icontains=query)
+        )
+
+    if in_stock == "1":
+        products = products.filter(total_quantity__gt=0)
+
+    # 🔥 сортировка
+    if sort == "price_asc":
+        products = products.order_by("price")
+    elif sort == "price_desc":
+        products = products.order_by("-price")
+    elif sort == "qty_asc":
+        products = products.order_by("total_quantity")
+    elif sort == "qty_desc":
+        products = products.order_by("-total_quantity")
+    else:
+        products = products.order_by("-created_at")
+
+    return render(request, "products/product_list.html", {
+        "products": products,
+        "query": query,
+        "in_stock": in_stock,
+        "sort": sort,
+    })
 
 @role_required(["admin", "manager"])
 def product_create_view(request):
