@@ -1,4 +1,4 @@
-from django.db.models import Sum, Q
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
@@ -110,24 +110,38 @@ def reader_dashboard(request):
 def global_search(request):
     query = request.GET.get("q", "").strip()
 
-    products = Product.objects.none()
-    warehouses = Warehouse.objects.none()
-    tradings = Trading.objects.none()
+    products = []
+    warehouses = []
+    tradings = []
 
     if query:
-        products = Product.objects.filter(
-            name__icontains=query
-        ).order_by("name")
+        query_lower = query.casefold()
 
-        warehouses = Warehouse.objects.filter(
-            city__icontains=query
-        ).order_by("city")
+        all_products = list(Product.objects.all())
+        all_warehouses = list(Warehouse.objects.all())
+        all_tradings = list(
+            Trading.objects.select_related("product", "warehouse").order_by("-created_at")
+        )
 
-        tradings = Trading.objects.filter(
-            Q(name__icontains=query) |
-            Q(product__name__icontains=query) |
-            Q(warehouse__city__icontains=query)
-        ).select_related("product", "warehouse").order_by("-created_at")
+        products = [
+            product for product in all_products
+            if query_lower in (product.name or "").casefold()
+            or query_lower in (product.description or "").casefold()
+        ]
+        products = sorted(products, key=lambda x: (x.name or "").casefold())
+
+        warehouses = [
+            warehouse for warehouse in all_warehouses
+            if query_lower in (warehouse.city or "").casefold()
+        ]
+        warehouses = sorted(warehouses, key=lambda x: (x.city or "").casefold())
+
+        tradings = [
+            trading for trading in all_tradings
+            if query_lower in str(getattr(trading, "name", "") or "").casefold()
+            or query_lower in str(getattr(getattr(trading, "product", None), "name", "") or "").casefold()
+            or query_lower in str(getattr(getattr(trading, "warehouse", None), "city", "") or "").casefold()
+        ]
 
     context = {
         "query": query,

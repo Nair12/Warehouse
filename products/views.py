@@ -1,53 +1,72 @@
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
+
 from .models import Product, Inventory
 from warehouses.models import Warehouse
 from .forms import ProductForm, InventoryQuantityForm
 from users.decorators import role_required
 
 
-
-from django.db.models import Sum, Q
-from django.db.models.functions import Coalesce
-
 @role_required(["admin", "manager", "reader"])
 def product_list_view(request):
     query = request.GET.get("q", "").strip()
     in_stock = request.GET.get("in_stock")
     sort = request.GET.get("sort")
+    warehouse_id = request.GET.get("warehouse")
 
-    products = Product.objects.annotate(
-        total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
-    )
+    products = Product.objects.all()
 
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) |
-            Q(description__icontains=query)
+    if warehouse_id:
+        products = products.annotate(
+            total_quantity=Coalesce(
+                Sum(
+                    "inventory_items__quantity",
+                    filter=Q(inventory_items__warehouse_id=warehouse_id)
+                ),
+                0
+            )
+        )
+    else:
+        products = products.annotate(
+            total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
         )
 
-    if in_stock == "1":
-        products = products.filter(total_quantity__gt=0)
+    products = list(products)
 
-    # 🔥 сортировка
+    if query:
+        query_lower = query.casefold()
+        products = [
+            product for product in products
+            if query_lower in (product.name or "").casefold()
+            or query_lower in (product.description or "").casefold()
+        ]
+
+    if in_stock == "1":
+        products = [product for product in products if product.total_quantity > 0]
+
     if sort == "price_asc":
-        products = products.order_by("price")
+        products = sorted(products, key=lambda x: x.price)
     elif sort == "price_desc":
-        products = products.order_by("-price")
+        products = sorted(products, key=lambda x: x.price, reverse=True)
     elif sort == "qty_asc":
-        products = products.order_by("total_quantity")
+        products = sorted(products, key=lambda x: x.total_quantity)
     elif sort == "qty_desc":
-        products = products.order_by("-total_quantity")
+        products = sorted(products, key=lambda x: x.total_quantity, reverse=True)
     else:
-        products = products.order_by("-created_at")
+        products = sorted(products, key=lambda x: x.created_at, reverse=True)
+
+    warehouses = Warehouse.objects.all().order_by("city")
 
     return render(request, "products/product_list.html", {
         "products": products,
         "query": query,
         "in_stock": in_stock,
         "sort": sort,
+        "warehouses": warehouses,
+        "selected_warehouse": warehouse_id,
     })
+
 
 @role_required(["admin", "manager"])
 def product_create_view(request):

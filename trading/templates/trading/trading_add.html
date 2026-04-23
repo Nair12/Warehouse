@@ -14,7 +14,7 @@
         {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
     </h2>
     <div class="module-content">
-        <form method="post" enctype="multipart/form-data">
+        <form method="post" enctype="multipart/form-data" id="trading-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -34,26 +34,26 @@
                     {% endif %}
                 </div>
             {% endfor %}
-         <div class="module">
-        <h2>Прикрепить файлы</h2>
 
+            <div class="module">
+                <h2>Прикрепить файлы</h2>
 
-        {{ formset.management_form }}
+                {{ formset.management_form }}
 
-        <div id="attachment-list">
-            {% for attachment_form in formset %}
-                <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
-                    {{ attachment_form.id }}
-                    <label>Файл {{ forloop.counter }}:</label>
-                    {{ attachment_form.file }}
+                <div id="attachment-list">
+                    {% for attachment_form in formset %}
+                        <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
+                            {{ attachment_form.id }}
+                            <label>Файл {{ forloop.counter }}:</label>
+                            {{ attachment_form.file }}
 
-                    {% if attachment_form.file.errors %}
-                        <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
-                    {% endif %}
+                            {% if attachment_form.file.errors %}
+                                <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
-    </div>
+            </div>
 
             <hr style="margin: 25px 0;">
 
@@ -93,6 +93,10 @@
                                 Выберите товар и склад
                             </div>
                         </div>
+
+                        <div class="form-row stock-error-row" style="display:none;">
+                            <div class="stock-error" style="color:#ba2121; font-weight:bold;"></div>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
@@ -121,19 +125,28 @@
                             Выберите товар и склад
                         </div>
                     </div>
+
+                    <div class="form-row stock-error-row" style="display:none;">
+                        <div class="stock-error" style="color:#ba2121; font-weight:bold;"></div>
+                    </div>
                 </div>
             </template>
 
-            <button type="submit" class="btn-save">Сохранить</button>
+            <button type="submit" id="save-btn" class="btn-save">Сохранить</button>
             <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
         </form>
     </div>
 </div>
 
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("trading-form");
     const itemsContainer = document.getElementById("items-container");
     const addItemBtn = document.getElementById("add-item-btn");
+    const saveBtn = document.getElementById("save-btn");
     const totalFormsInput = document.getElementById("id_items-TOTAL_FORMS");
     const emptyTemplate = document.getElementById("empty-item-template");
 
@@ -147,33 +160,241 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function getTradingTypeValue() {
+        const possibleSelectors = [
+            '#id_trading_type',
+            '#id_type',
+            '#id_operation_type',
+            '#id_trade_type',
+            'select[name="trading_type"]',
+            'select[name="type"]',
+            'select[name="operation_type"]',
+            'select[name="trade_type"]'
+        ];
+
+        for (const selector of possibleSelectors) {
+            const el = document.querySelector(selector);
+            if (el && el.value) {
+                return String(el.value).toLowerCase();
+            }
+        }
+
+        return '';
+    }
+
+    function isSaleOperation() {
+        const value = getTradingTypeValue();
+
+        const saleValues = [
+            'sale',
+            'sell',
+            'selling',
+            'out',
+            'expense',
+            'расход',
+            'продажа',
+            'продать'
+        ];
+
+        return saleValues.includes(value);
+    }
+
+    function setFieldError(input, message) {
+        if (!input) return;
+
+        input.style.border = '2px solid #ba2121';
+        input.style.backgroundColor = '#fff5f5';
+
+        let errorBox = input.parentElement.querySelector('.instant-quantity-error');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.className = 'instant-quantity-error';
+            errorBox.style.color = '#ba2121';
+            errorBox.style.fontSize = '12px';
+            errorBox.style.marginTop = '4px';
+            input.parentElement.appendChild(errorBox);
+        }
+
+        errorBox.innerText = message;
+    }
+
+    function clearFieldError(input) {
+        if (!input) return;
+
+        input.style.border = '';
+        input.style.backgroundColor = '';
+
+        const errorBox = input.parentElement.querySelector('.instant-quantity-error');
+        if (errorBox) {
+            errorBox.remove();
+        }
+    }
+
+    function updateSaveButtonState() {
+        const hasErrors = itemsContainer.querySelectorAll('.instant-quantity-error').length > 0;
+        saveBtn.disabled = hasErrors;
+        saveBtn.style.opacity = hasErrors ? '0.6' : '1';
+        saveBtn.style.cursor = hasErrors ? 'not-allowed' : 'pointer';
+    }
+
+    function initTomSelectForSelect(selectElement) {
+        if (!selectElement) return;
+        if (selectElement.tomselect) return;
+        if (typeof TomSelect === "undefined") return;
+
+        new TomSelect(selectElement, {
+            create: false,
+            sortField: {
+                field: "text",
+                direction: "asc"
+            },
+            allowEmptyOption: true,
+            placeholder: "Начните вводить для поиска..."
+        });
+    }
+
+    function initSearch(block) {
+        const productSelect = block.querySelector('select[name$="-product"]');
+        const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+
+        initTomSelectForSelect(productSelect);
+        initTomSelectForSelect(warehouseSelect);
+    }
+
     function bindStockLogic(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+        const quantityInput = block.querySelector('input[name$="-quantity"]');
         const stockInfo = block.querySelector(".stock-info");
+        const stockErrorRow = block.querySelector(".stock-error-row");
+        const stockError = block.querySelector(".stock-error");
+
+        block.dataset.stockQuantity = '';
+
+        function clearStockError() {
+            if (stockErrorRow) stockErrorRow.style.display = 'none';
+            if (stockError) stockError.innerText = '';
+            clearFieldError(quantityInput);
+            updateSaveButtonState();
+        }
+
+        function showStockError(message) {
+            if (stockErrorRow) stockErrorRow.style.display = 'block';
+            if (stockError) stockError.innerText = message;
+            setFieldError(quantityInput, message);
+            updateSaveButtonState();
+        }
+
+        function validateQuantity() {
+            clearFieldError(quantityInput);
+
+            const quantity = parseFloat(quantityInput ? quantityInput.value : '');
+            const stock = parseFloat(block.dataset.stockQuantity || '');
+
+            if (!isSaleOperation()) {
+                clearStockError();
+                return;
+            }
+
+            if (!productSelect || !warehouseSelect || !productSelect.value || !warehouseSelect.value) {
+                clearStockError();
+                return;
+            }
+
+            if (isNaN(stock)) {
+                clearStockError();
+                return;
+            }
+
+            if (!quantityInput || quantityInput.value === '') {
+                clearStockError();
+                return;
+            }
+
+            if (isNaN(quantity) || quantity <= 0) {
+                clearStockError();
+                return;
+            }
+
+            if (quantity > stock) {
+                showStockError(`Недостаточно товара на складе. Доступно: ${stock} шт.`);
+            } else {
+                clearStockError();
+            }
+        }
 
         function updateStock() {
             const productId = productSelect ? productSelect.value : "";
             const warehouseId = warehouseSelect ? warehouseSelect.value : "";
 
+            clearStockError();
+
             if (!productId || !warehouseId) {
                 stockInfo.innerText = "Выберите товар и склад";
+                block.dataset.stockQuantity = '';
+                updateSaveButtonState();
                 return;
             }
+
+            stockInfo.innerText = "Загрузка...";
+            block.dataset.stockQuantity = '';
 
             fetch(`/trading/get-stock/?product=${productId}&warehouse=${warehouseId}`)
                 .then(response => response.json())
                 .then(data => {
-                    stockInfo.innerText = `На складе: ${data.quantity} шт`;
+                    const quantity = Number(data.quantity || 0);
+                    block.dataset.stockQuantity = String(quantity);
+                    stockInfo.innerText = `На складе: ${quantity} шт`;
+
+                    if (isSaleOperation() && quantity <= 0) {
+                        showStockError('Этого товара нет на складе.');
+                    } else {
+                        validateQuantity();
+                    }
                 })
                 .catch(() => {
                     stockInfo.innerText = "Ошибка загрузки";
+                    block.dataset.stockQuantity = '';
+                    updateSaveButtonState();
                 });
         }
 
-        if (productSelect && warehouseSelect) {
+        if (productSelect) {
             productSelect.addEventListener("change", updateStock);
+        }
+
+        if (warehouseSelect) {
             warehouseSelect.addEventListener("change", updateStock);
+        }
+
+        if (quantityInput) {
+            quantityInput.addEventListener("input", validateQuantity);
+            quantityInput.addEventListener("change", validateQuantity);
+        }
+
+        const tradingTypeSelectors = [
+            '#id_trading_type',
+            '#id_type',
+            '#id_operation_type',
+            '#id_trade_type',
+            'select[name="trading_type"]',
+            'select[name="type"]',
+            'select[name="operation_type"]',
+            'select[name="trade_type"]'
+        ];
+
+        tradingTypeSelectors.forEach(function (selector) {
+            const el = document.querySelector(selector);
+            if (el) {
+                el.addEventListener('change', function () {
+                    validateQuantity();
+                    updateStock();
+                });
+            }
+        });
+
+        if ((productSelect && productSelect.value) || (warehouseSelect && warehouseSelect.value)) {
+            updateStock();
         }
     }
 
@@ -186,14 +407,31 @@ document.addEventListener("DOMContentLoaded", function () {
             if (blocks.length === 1) {
                 return;
             }
+
+            const selects = block.querySelectorAll('select');
+            selects.forEach(function(select) {
+                if (select.tomselect) {
+                    select.tomselect.destroy();
+                }
+            });
+
             block.remove();
             rebuildIndexes();
+            updateSaveButtonState();
         });
     }
 
     function rebuildIndexes() {
         const blocks = itemsContainer.querySelectorAll(".item-block");
+
         blocks.forEach(function (block, index) {
+            const selects = block.querySelectorAll('select');
+            selects.forEach(function(select) {
+                if (select.tomselect) {
+                    select.tomselect.destroy();
+                }
+            });
+
             block.querySelectorAll("input, select, textarea, label").forEach(function (el) {
                 if (el.name) {
                     el.name = el.name.replace(/items-\d+-/g, `items-${index}-`);
@@ -209,6 +447,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         totalFormsInput.value = blocks.length;
         updateTitles();
+
+        blocks.forEach(function (block) {
+            initSearch(block);
+        });
     }
 
     function addNewItem() {
@@ -224,20 +466,31 @@ document.addEventListener("DOMContentLoaded", function () {
 
         totalFormsInput.value = formIndex + 1;
 
+        initSearch(newBlock);
         bindStockLogic(newBlock);
         bindRemoveButton(newBlock);
         updateTitles();
+        updateSaveButtonState();
     }
 
     const existingBlocks = itemsContainer.querySelectorAll(".item-block");
     existingBlocks.forEach(function (block) {
+        initSearch(block);
         bindStockLogic(block);
         bindRemoveButton(block);
     });
 
     updateTitles();
+    updateSaveButtonState();
 
     addItemBtn.addEventListener("click", addNewItem);
+
+    form.addEventListener("submit", function (e) {
+        updateSaveButtonState();
+        if (saveBtn.disabled) {
+            e.preventDefault();
+        }
+    });
 });
 </script>
 

@@ -12,6 +12,7 @@ from products.models import Inventory
 from users.decorators import role_required
 
 
+
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
 
@@ -225,21 +226,18 @@ def trading_update(request, pk):
         }
     )
 
-
-@role_required(['admin', 'manager'])
 def get_stock(request):
-    product_id = request.GET.get('product')
-    warehouse_id = request.GET.get('warehouse')
+    product_id = request.GET.get("product")
+    warehouse_id = request.GET.get("warehouse")
 
-    quantity = 0
+    if not product_id or not warehouse_id:
+        return JsonResponse({"quantity": 0})
 
-    if product_id and warehouse_id:
-        inventory = Inventory.objects.filter(
-            product_id=product_id,
-            warehouse_id=warehouse_id
-        ).first()
+    inventory = Inventory.objects.filter(
+        product_id=product_id,
+        warehouse_id=warehouse_id
+    ).first()
 
-        if inventory:
-            quantity = inventory.quantity
-
-    return JsonResponse({'quantity': quantity})
+    return JsonResponse({
+        "quantity": inventory.quantity if inventory else 0
+    })
