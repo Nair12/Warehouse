@@ -5,7 +5,6 @@ from .models import Trading, TradingItem
 class TradingForm(forms.ModelForm):
     class Meta:
         model = Trading
-        # ❗ УБРАЛИ product, warehouse, quantity
         fields = ['name', 'trade_type', 'comment']
 
         widgets = {
@@ -53,3 +52,14 @@ class TradingItemForm(forms.ModelForm):
             'warehouse': 'Склад',
             'quantity': 'Количество',
         }
+
+    def clean_quantity(self):
+        quantity = self.cleaned_data.get('quantity')
+
+        if quantity is None:
+            return quantity
+
+        if quantity <= 0:
+            raise forms.ValidationError('Количество должно быть больше нуля.')
+
+        return quantity

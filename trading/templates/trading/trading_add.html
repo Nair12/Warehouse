@@ -9,17 +9,85 @@
     {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
 </h1>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+<style>
+    .item-block {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 15px;
+        background: #fafafa;
+    }
+
+    .form-errors,
+    .errors {
+        margin-top: 8px;
+        margin-bottom: 10px;
+        padding: 10px 12px;
+        background: #fff1f1;
+        border: 1px solid #e0b4b4;
+        color: #a94442;
+        border-radius: 4px;
+    }
+
+    .field-invalid {
+        border: 1px solid #dc3545 !important;
+        background-color: #fff8f8;
+    }
+
+    .stock-info {
+        font-weight: bold;
+        color: #417690;
+    }
+
+    .stock-info.error {
+        color: #a94442;
+    }
+
+    .quantity-error {
+        display: none;
+        color: #ba2121;
+        font-weight: bold;
+        margin-top: 6px;
+    }
+
+    .remove-item-btn[disabled] {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .ts-wrapper .ts-control {
+        min-height: 38px;
+        border-radius: 0;
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+
+    .ts-wrapper.focus .ts-control {
+        border-color: #417690;
+        box-shadow: none;
+    }
+
+    .ts-wrapper.field-invalid .ts-control {
+        border: 1px solid #dc3545 !important;
+        background-color: #fff8f8 !important;
+    }
+</style>
+
 <div class="module">
     <h2>
         {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
     </h2>
     <div class="module-content">
-        <form method="post">
+        <form method="post" id="trading-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
                 <div class="errors" style="margin-bottom: 15px;">
-                    {{ form.non_field_errors }}
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
                 </div>
             {% endif %}
 
@@ -29,7 +97,9 @@
                     {{ field }}
                     {% if field.errors %}
                         <div class="errors">
-                            {{ field.errors }}
+                            {% for error in field.errors %}
+                                <div>{{ error }}</div>
+                            {% endfor %}
                         </div>
                     {% endif %}
                 </div>
@@ -43,15 +113,17 @@
 
             <div id="items-container">
                 {% for item_form in item_formset %}
-                    <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
+                    <div class="item-block">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <h4 class="item-title" style="margin:0;">Позиция {{ forloop.counter }}</h4>
                             <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
                         </div>
 
                         {% if item_form.non_field_errors %}
-                            <div class="errors" style="margin-bottom: 10px;">
-                                {{ item_form.non_field_errors }}
+                            <div class="form-errors">
+                                {% for error in item_form.non_field_errors %}
+                                    <div>{{ error }}</div>
+                                {% endfor %}
                             </div>
                         {% endif %}
 
@@ -59,9 +131,24 @@
                             <div class="form-row">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                                 {{ field }}
+
+                                {% if field.name == "quantity" %}
+                                    <div class="quantity-error"></div>
+                                {% endif %}
+
                                 {% if field.errors %}
+                                    <script>
+                                        document.addEventListener("DOMContentLoaded", function () {
+                                            const fieldEl = document.getElementById("{{ field.id_for_label }}");
+                                            if (fieldEl) {
+                                                fieldEl.classList.add("field-invalid");
+                                            }
+                                        });
+                                    </script>
                                     <div class="errors">
-                                        {{ field.errors }}
+                                        {% for error in field.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
                                     </div>
                                 {% endif %}
                             </div>
@@ -69,7 +156,7 @@
 
                         <div class="form-row">
                             <label>Остаток на складе</label>
-                            <div class="stock-info" style="font-weight:bold; color:#417690;">
+                            <div class="stock-info" data-stock="0">
                                 Выберите товар и склад
                             </div>
                         </div>
@@ -81,8 +168,11 @@
                 <button type="button" id="add-item-btn" class="btn-save">+ Добавить товар</button>
             </div>
 
+            <button type="submit" id="submit-btn" class="btn-save">Сохранить</button>
+            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+
             <template id="empty-item-template">
-                <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
+                <div class="item-block">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <h4 class="item-title" style="margin:0;">Позиция __number__</h4>
                         <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
@@ -92,20 +182,21 @@
                         <div class="form-row">
                             <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                             {{ field }}
+
+                            {% if field.name == "quantity" %}
+                                <div class="quantity-error"></div>
+                            {% endif %}
                         </div>
                     {% endfor %}
 
                     <div class="form-row">
                         <label>Остаток на складе</label>
-                        <div class="stock-info" style="font-weight:bold; color:#417690;">
+                        <div class="stock-info" data-stock="0">
                             Выберите товар и склад
                         </div>
                     </div>
                 </div>
             </template>
-
-            <button type="submit" class="btn-save">Сохранить</button>
-            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
         </form>
     </div>
 </div>
@@ -116,6 +207,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const addItemBtn = document.getElementById("add-item-btn");
     const totalFormsInput = document.getElementById("id_items-TOTAL_FORMS");
     const emptyTemplate = document.getElementById("empty-item-template");
+    const submitBtn = document.getElementById("submit-btn");
 
     function updateTitles() {
         const blocks = itemsContainer.querySelectorAll(".item-block");
@@ -125,19 +217,136 @@ document.addEventListener("DOMContentLoaded", function () {
                 title.innerText = `Позиция ${index + 1}`;
             }
         });
+        updateRemoveButtonsState();
+    }
+
+    function updateRemoveButtonsState() {
+        const blocks = itemsContainer.querySelectorAll(".item-block");
+        const isSingle = blocks.length === 1;
+
+        blocks.forEach(function (block) {
+            const removeBtn = block.querySelector(".remove-item-btn");
+            if (removeBtn) {
+                removeBtn.disabled = isSingle;
+            }
+        });
+    }
+
+    function updateSubmitState() {
+        const hasErrors = itemsContainer.querySelector(".quantity-error.active");
+        if (submitBtn) {
+            submitBtn.disabled = !!hasErrors;
+        }
+    }
+
+    function markSelectInvalid(selectElement, isInvalid) {
+        if (!selectElement) return;
+
+        if (selectElement.tomselect) {
+            selectElement.tomselect.wrapper.classList.toggle("field-invalid", isInvalid);
+        } else {
+            selectElement.classList.toggle("field-invalid", isInvalid);
+        }
+    }
+
+    function initSearchableSelect(selectElement, placeholderText) {
+        if (!selectElement || selectElement.tomselect) {
+            return;
+        }
+
+        new TomSelect(selectElement, {
+            create: false,
+            allowEmptyOption: true,
+            maxItems: 1,
+            closeAfterSelect: true,
+            openOnFocus: true,
+            searchField: ['text'],
+            placeholder: placeholderText,
+            sortField: {
+                field: 'text',
+                direction: 'asc'
+            },
+            render: {
+                no_results: function () {
+                    return '<div class="no-results">Ничего не найдено</div>';
+                }
+            },
+            onChange: function () {
+                selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+        });
+    }
+
+    function initBlockSearch(block) {
+        const productSelect = block.querySelector('select[name$="-product"]');
+        const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+
+        initSearchableSelect(productSelect, "Выберите товар...");
+        initSearchableSelect(warehouseSelect, "Выберите склад...");
+    }
+
+    function validateQuantity(block) {
+        const quantityInput = block.querySelector('input[name$="-quantity"]');
+        const stockInfo = block.querySelector(".stock-info");
+        const errorBox = block.querySelector(".quantity-error");
+
+        if (!quantityInput || !stockInfo || !errorBox) {
+            return;
+        }
+
+        const quantityValue = parseInt(quantityInput.value, 10);
+        const stockValue = parseInt(stockInfo.dataset.stock || "0", 10);
+
+        errorBox.textContent = "";
+        errorBox.style.display = "none";
+        errorBox.classList.remove("active");
+        quantityInput.classList.remove("field-invalid");
+
+        if (!quantityInput.value) {
+            updateSubmitState();
+            return;
+        }
+
+        if (isNaN(quantityValue) || quantityValue <= 0) {
+            errorBox.textContent = "Количество должно быть больше нуля.";
+            errorBox.style.display = "block";
+            errorBox.classList.add("active");
+            quantityInput.classList.add("field-invalid");
+            updateSubmitState();
+            return;
+        }
+
+        const tradeTypeSelect = document.getElementById("id_trade_type");
+        const tradeType = tradeTypeSelect ? tradeTypeSelect.value : "";
+
+        if (tradeType === "sell" && quantityValue > stockValue) {
+            errorBox.textContent = `Недостаточно товара. На складе: ${stockValue}`;
+            errorBox.style.display = "block";
+            errorBox.classList.add("active");
+            quantityInput.classList.add("field-invalid");
+        }
+
+        updateSubmitState();
     }
 
     function bindStockLogic(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+        const quantityInput = block.querySelector('input[name$="-quantity"]');
         const stockInfo = block.querySelector(".stock-info");
 
         function updateStock() {
             const productId = productSelect ? productSelect.value : "";
             const warehouseId = warehouseSelect ? warehouseSelect.value : "";
 
+            markSelectInvalid(productSelect, false);
+            markSelectInvalid(warehouseSelect, false);
+
             if (!productId || !warehouseId) {
                 stockInfo.innerText = "Выберите товар и склад";
+                stockInfo.dataset.stock = "0";
+                stockInfo.classList.remove("error");
+                validateQuantity(block);
                 return;
             }
 
@@ -145,15 +354,44 @@ document.addEventListener("DOMContentLoaded", function () {
                 .then(response => response.json())
                 .then(data => {
                     stockInfo.innerText = `На складе: ${data.quantity} шт`;
+                    stockInfo.dataset.stock = String(data.quantity);
+                    stockInfo.classList.remove("error");
+                    validateQuantity(block);
                 })
                 .catch(() => {
                     stockInfo.innerText = "Ошибка загрузки";
+                    stockInfo.dataset.stock = "0";
+                    stockInfo.classList.add("error");
+                    validateQuantity(block);
                 });
         }
 
         if (productSelect && warehouseSelect) {
             productSelect.addEventListener("change", updateStock);
             warehouseSelect.addEventListener("change", updateStock);
+        }
+
+        if (quantityInput) {
+            quantityInput.addEventListener("input", function () {
+                validateQuantity(block);
+            });
+        }
+
+        const tradeTypeSelect = document.getElementById("id_trade_type");
+        if (tradeTypeSelect && !tradeTypeSelect.dataset.boundValidation) {
+            tradeTypeSelect.addEventListener("change", function () {
+                const blocks = itemsContainer.querySelectorAll(".item-block");
+                blocks.forEach(function (itemBlock) {
+                    validateQuantity(itemBlock);
+                });
+            });
+            tradeTypeSelect.dataset.boundValidation = "true";
+        }
+
+        if (productSelect && warehouseSelect && productSelect.value && warehouseSelect.value) {
+            updateStock();
+        } else {
+            validateQuantity(block);
         }
     }
 
@@ -166,13 +404,27 @@ document.addEventListener("DOMContentLoaded", function () {
             if (blocks.length === 1) {
                 return;
             }
+
+            const productSelect = block.querySelector('select[name$="-product"]');
+            const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+
+            if (productSelect && productSelect.tomselect) {
+                productSelect.tomselect.destroy();
+            }
+
+            if (warehouseSelect && warehouseSelect.tomselect) {
+                warehouseSelect.tomselect.destroy();
+            }
+
             block.remove();
             rebuildIndexes();
+            updateSubmitState();
         });
     }
 
     function rebuildIndexes() {
         const blocks = itemsContainer.querySelectorAll(".item-block");
+
         blocks.forEach(function (block, index) {
             block.querySelectorAll("input, select, textarea, label").forEach(function (el) {
                 if (el.name) {
@@ -204,18 +456,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
         totalFormsInput.value = formIndex + 1;
 
+        initBlockSearch(newBlock);
         bindStockLogic(newBlock);
         bindRemoveButton(newBlock);
         updateTitles();
+        updateSubmitState();
     }
 
     const existingBlocks = itemsContainer.querySelectorAll(".item-block");
     existingBlocks.forEach(function (block) {
+        initBlockSearch(block);
         bindStockLogic(block);
         bindRemoveButton(block);
     });
 
     updateTitles();
+    updateSubmitState();
 
     addItemBtn.addEventListener("click", addNewItem);
 });

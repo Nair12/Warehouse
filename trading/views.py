@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import transaction
 from django.http import JsonResponse
@@ -41,10 +43,70 @@ def admin_trading_history(request):
 @role_required(['admin', 'manager'])
 def trading_detail(request, pk):
     trading = get_object_or_404(
-        Trading.objects.select_related('product', 'warehouse', 'user').prefetch_related('items'),
+        Trading.objects.select_related(
+            'product',
+            'warehouse',
+            'user'
+        ).prefetch_related('items'),
         pk=pk
     )
     return render(request, 'trading/trading_detail.html', {'trading': trading})
+
+
+def _get_filled_item_forms(item_formset):
+    filled_forms = []
+
+    for item_form in item_formset:
+        cleaned_data = getattr(item_form, 'cleaned_data', None)
+        if not cleaned_data:
+            continue
+
+        product = cleaned_data.get('product')
+        warehouse = cleaned_data.get('warehouse')
+        quantity = cleaned_data.get('quantity')
+
+        if product and warehouse and quantity:
+            filled_forms.append(item_form)
+
+    return filled_forms
+
+
+def _validate_sell_stock(item_forms):
+    grouped_quantities = defaultdict(int)
+    grouped_forms = defaultdict(list)
+
+    for item_form in item_forms:
+        product = item_form.cleaned_data['product']
+        warehouse = item_form.cleaned_data['warehouse']
+        quantity = item_form.cleaned_data['quantity']
+
+        key = (product.id, warehouse.id)
+        grouped_quantities[key] += quantity
+        grouped_forms[key].append(item_form)
+
+    has_errors = False
+
+    for (product_id, warehouse_id), total_quantity in grouped_quantities.items():
+        inventory = Inventory.objects.filter(
+            product_id=product_id,
+            warehouse_id=warehouse_id
+        ).first()
+
+        stock = inventory.quantity if inventory else 0
+
+        if total_quantity > stock:
+            has_errors = True
+            related_forms = grouped_forms[(product_id, warehouse_id)]
+
+            error_message = (
+                f'Недостаточно товара на складе. '
+                f'Доступно: {stock}, запрошено суммарно: {total_quantity}'
+            )
+
+            for item_form in related_forms:
+                item_form.add_error('quantity', error_message)
+
+    return not has_errors
 
 
 @role_required(['admin', 'manager'])
@@ -54,21 +116,10 @@ def trading_create(request):
         item_formset = TradingItemFormSet(request.POST, prefix='items')
 
         if form.is_valid() and item_formset.is_valid():
-            filled_forms = [
-                item_form for item_form in item_formset
-                if item_form.cleaned_data and not item_form.cleaned_data.get('DELETE', False)
-            ]
-
-            valid_items = []
-            for item_form in filled_forms:
-                product = item_form.cleaned_data.get('product')
-                warehouse = item_form.cleaned_data.get('warehouse')
-                quantity = item_form.cleaned_data.get('quantity')
-
-                if product and warehouse and quantity:
-                    valid_items.append(item_form)
+            valid_items = _get_filled_item_forms(item_formset)
 
             if not valid_items:
+                form.add_error(None, 'Добавьте хотя бы одну позицию сделки.')
                 return render(
                     request,
                     'trading/trading_add.html',
@@ -78,18 +129,31 @@ def trading_create(request):
                     }
                 )
 
+            trade_type = form.cleaned_data.get('trade_type')
+
+            if trade_type == Trading.TradeType.SELL:
+                is_stock_valid = _validate_sell_stock(valid_items)
+                if not is_stock_valid:
+                    return render(
+                        request,
+                        'trading/trading_add.html',
+                        {
+                            'form': form,
+                            'item_formset': item_formset,
+                        }
+                    )
+
             with transaction.atomic():
                 trading = form.save(commit=False)
                 trading.user = request.user
 
-                # Для совместимости со старой моделью:
-                # записываем первую позицию сделки в legacy-поля Trading
+                # Первая позиция для legacy-полей Trading
                 first_item_data = valid_items[0].cleaned_data
                 first_product = first_item_data['product']
                 first_warehouse = first_item_data['warehouse']
                 first_quantity = first_item_data['quantity']
 
-                first_inventory, created = Inventory.objects.get_or_create(
+                first_inventory, _ = Inventory.objects.get_or_create(
                     product=first_product,
                     warehouse=first_warehouse,
                     defaults={'quantity': 0},
@@ -97,22 +161,9 @@ def trading_create(request):
 
                 first_quantity_before = first_inventory.quantity
 
-                if trading.trade_type == Trading.TradeType.PURCHASE:
+                if trade_type == Trading.TradeType.PURCHASE:
                     first_quantity_after = first_quantity_before + first_quantity
                 else:
-                    if first_inventory.quantity < first_quantity:
-                        form.add_error(
-                            None,
-                            f'Недостаточно товара "{first_product}" на складе "{first_warehouse}". Сейчас в наличии: {first_inventory.quantity}'
-                        )
-                        return render(
-                            request,
-                            'trading/trading_add.html',
-                            {
-                                'form': form,
-                                'item_formset': item_formset,
-                            }
-                        )
                     first_quantity_after = first_quantity_before - first_quantity
 
                 trading.product = first_product
@@ -127,7 +178,7 @@ def trading_create(request):
                     warehouse = item_form.cleaned_data['warehouse']
                     quantity = item_form.cleaned_data['quantity']
 
-                    inventory, created = Inventory.objects.get_or_create(
+                    inventory, _ = Inventory.objects.get_or_create(
                         product=product,
                         warehouse=warehouse,
                         defaults={'quantity': 0},
@@ -135,17 +186,9 @@ def trading_create(request):
 
                     quantity_before = inventory.quantity
 
-                    if trading.trade_type == Trading.TradeType.PURCHASE:
+                    if trade_type == Trading.TradeType.PURCHASE:
                         inventory.quantity += quantity
-
-                    elif trading.trade_type == Trading.TradeType.SELL:
-                        if inventory.quantity < quantity:
-                            form.add_error(
-                                None,
-                                f'Недостаточно товара "{product}" на складе "{warehouse}". Сейчас в наличии: {inventory.quantity}'
-                            )
-                            raise transaction.TransactionManagementError("Недостаточно товара на складе")
-
+                    elif trade_type == Trading.TradeType.SELL:
                         inventory.quantity -= quantity
 
                     quantity_after = inventory.quantity
@@ -196,7 +239,6 @@ def trading_update(request, pk):
         item_formset = TradingItemEditFormSet(request.POST, prefix='items')
 
         if form.is_valid() and item_formset.is_valid():
-            # Пока безопасно оставляем обновление только шапки сделки.
             form.save()
             return redirect('trading_detail', pk=trading.pk)
     else:
