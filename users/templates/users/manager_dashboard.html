@@ -43,6 +43,19 @@
     </div>
 
     <div class="module">
+        <h2>Сатистика</h2>
+        <div class="module-content">
+            <div style="margin-bottom:15px; color:#666; font-size:14px;">
+                Динамика по датам
+            </div>
+
+            <div style="position:relative; height:360px;">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="module">
         <h2>Быстрые действия</h2>
         <div class="module-content" style="display:flex; gap:15px; flex-wrap:wrap;">
             <a href="{% url 'products:product_list' %}" class="btn-add">Открыть товары</a>
@@ -81,8 +94,66 @@
                     <td>Запрещено</td>
                 </tr>
             </table>
-
-
         </div>
     </div>
+
+    <script>
+        const salesLabels = {{ sales_labels|default:"[]"|safe }};
+        const salesValues = {{ sales_values|default:"[]"|safe }};
+        const purchaseValues = {{ purchase_values|default:"[]"|safe }};
+
+        const ctx = document.getElementById('salesChart').getContext('2d');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesLabels,
+                datasets: [
+                    {
+                        label: 'Продажи',
+                        data: salesValues,
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        backgroundColor: 'rgba(220, 53, 69, 0.15)',
+                        fill: false,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Покупки',
+                        data: purchaseValues,
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        backgroundColor: 'rgba(40, 167, 69, 0.15)',
+                        fill: false,
+                        tension: 0.35,
+                        borderWidth: 3,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: {
+                    mode: 'index',
+                    intersect: false
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 {% endblock %}

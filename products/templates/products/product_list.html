@@ -120,6 +120,7 @@
             color: #777;
         }
 
+        /* 🔥 общий бар */
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -128,6 +129,7 @@
             margin-bottom: 30px;
         }
 
+        /* форма */
         .toolbar-form {
             display: flex;
             align-items: center;
@@ -135,6 +137,7 @@
             flex-wrap: wrap;
         }
 
+        /* 🔍 поиск */
         .search-box {
             display: flex;
             align-items: center;
@@ -163,6 +166,7 @@
             width: 100%;
         }
 
+        /* кнопка */
         .search-btn {
             background: #417690;
             color: white;
@@ -177,6 +181,7 @@
             background: #2b5063;
         }
 
+        /* чекбокс */
         .filter-check {
             display: flex;
             align-items: center;
@@ -194,6 +199,7 @@
             border-color: #417690;
         }
 
+        /* dropdown */
         .sort-select {
             padding: 10px 14px;
             border-radius: 12px;
@@ -244,15 +250,6 @@
                         <span>В наличии</span>
                     </label>
 
-                    <select name="warehouse" onchange="this.form.submit()" class="sort-select">
-                        <option value="">Все склады</option>
-                        {% for w in warehouses %}
-                            <option value="{{ w.id }}"
-                                {% if selected_warehouse == w.id|stringformat:"s" %}selected{% endif %}>
-                                {{ w.city }}
-                            </option>
-                        {% endfor %}
-                    </select>
 
                     <select name="sort" onchange="this.form.submit()" class="sort-select">
                         <option value="">Сортировка</option>
@@ -279,8 +276,11 @@
                 <tr>
                     <th>Товар</th>
                     <th>Описание</th>
-                    <th>Цена</th>
+                    {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
+                        <th>Цена</th>
+                    {% endif %}
                     <th>Кол-во</th>
+
                 </tr>
                 </thead>
                 <tbody>
@@ -305,21 +305,21 @@
                         <td class="product-desc">
                             {{ product.description|default:"Без описания"|truncatechars:120 }}
                         </td>
-
+                       {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
                         <td class="price">
                             {{ product.price }} $
                         </td>
-
+                     {% endif %}
                         <td>
-                            <span style="
-                                    padding: 6px 12px;
-                                    border-radius: 20px;
-                                    font-weight: 600;
-                                    background: {% if product.total_quantity == 0 %}#ffecec{% else %}#e6f7ec{% endif %};
-                                    color: {% if product.total_quantity == 0 %}#c0392b{% else %}#2e7d32{% endif %};
-                                    ">
-                                {{ product.total_quantity }}
-                            </span>
+    <span style="
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            background: {% if product.total_quantity == 0 %}#ffecec{% else %}#e6f7ec{% endif %};
+            color: {% if product.total_quantity == 0 %}#c0392b{% else %}#2e7d32{% endif %};
+            ">
+        {{ product.total_quantity }}
+    </span>
                         </td>
 
                     </tr>

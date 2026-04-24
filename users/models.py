@@ -6,6 +6,7 @@ class CustomUser(AbstractUser):
     class Roles(models.TextChoices):
         ADMIN = "admin", "Админ"
         MANAGER = "manager", "Менеджер"
+        SENIOR_MANAGER = "senior_manager", "Старший менеджер"
         READER = "reader", "Читатель"
 
     role = models.CharField(
