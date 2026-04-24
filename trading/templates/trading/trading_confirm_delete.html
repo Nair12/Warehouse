@@ -1,0 +1,41 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Удаление сделки #{{ trading.id }}{% endblock %}
+
+{% block manager_content %}
+<h1>Удаление сделки #{{ trading.id }}</h1>
+
+<div class="module">
+    <h2>Подтверждение удаления</h2>
+    <div class="module-content">
+        <p>
+            Вы уверены, что хотите удалить сделку
+            <strong>#{{ trading.id }}</strong>?
+        </p>
+
+        <p style="color: #b94a48; font-weight: 600;">
+            Это действие нельзя отменить.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <button type="submit" style="
+                background: #b94a48;
+                color: white;
+                padding: 9px 14px;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-weight: 600;
+            ">
+                Да, удалить
+            </button>
+
+            <a href="{% url 'trading_detail' trading.id %}" class="action-link" style="margin-left: 10px;">
+                Отмена
+            </a>
+        </form>
+    </div>
+</div>
+{% endblock %}

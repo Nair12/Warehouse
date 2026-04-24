@@ -209,7 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!errorBox) {
             errorBox = document.createElement('div');
             errorBox.className = 'instant-quantity-error';
-            errorBox.style.color = '#ba2121';
+            errorBox.style.color = '#856404';
             errorBox.style.fontSize = '12px';
             errorBox.style.marginTop = '4px';
             input.parentElement.appendChild(errorBox);
@@ -231,11 +231,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function updateSaveButtonState() {
-        const hasErrors = itemsContainer.querySelectorAll('.instant-quantity-error').length > 0;
-        saveBtn.disabled = hasErrors;
-        saveBtn.style.opacity = hasErrors ? '0.6' : '1';
-        saveBtn.style.cursor = hasErrors ? 'not-allowed' : 'pointer';
-    }
+    saveBtn.disabled = false;
+    saveBtn.style.opacity = '1';
+    saveBtn.style.cursor = 'pointer';
+}
 
     function initTomSelectForSelect(selectElement) {
         if (!selectElement) return;
@@ -317,7 +316,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (quantity > stock) {
-                showStockError(`Недостаточно товара на складе. Доступно: ${stock} шт.`);
+                showStockError(`Будет отгружено частично. Доступно: ${stock} шт.`);
             } else {
                 clearStockError();
             }
@@ -347,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     stockInfo.innerText = `На складе: ${quantity} шт`;
 
                     if (isSaleOperation() && quantity <= 0) {
-                        showStockError('Этого товара нет на складе.');
+                        showStockError('Товара нет. Сделка будет создана с ожиданием.');
                     } else {
                         validateQuantity();
                     }

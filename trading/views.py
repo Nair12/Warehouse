@@ -1,16 +1,13 @@
-from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
 from django.db import transaction
 from django.http import JsonResponse
 from django.forms import formset_factory
 
 from .models import Trading, TradingItem
 from .forms import TradingForm, TradingItemForm, AttachmentFormSet
-from .models import Trading, TradingAttachment
-from .forms import TradingForm
 from products.models import Inventory
 from users.decorators import role_required
-
 
 
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
@@ -18,13 +15,61 @@ TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
 @role_required(['admin', 'manager'])
 def trading_list(request):
+    current_type = request.GET.get('type')
+
     tradings = Trading.objects.select_related(
         'product',
         'warehouse',
         'user',
-    ).prefetch_related('items').all()
+    ).prefetch_related(
+        'items',
+        'items__product',
+        'items__warehouse',
+    )
 
-    return render(request, 'trading/trading_list.html', {'tradings': tradings})
+    if current_type in ['purchase', 'sell']:
+        tradings = tradings.filter(trade_type=current_type)
+
+    tradings = list(tradings)
+
+    for trading in tradings:
+        grouped_items = {}
+
+        for item in trading.items.all():
+            key = (item.product_id, item.warehouse_id)
+
+            if key not in grouped_items:
+                grouped_items[key] = {
+                    'product': item.product,
+                    'warehouse': item.warehouse,
+                    'quantity': 0,
+                }
+
+            grouped_items[key]['quantity'] += item.quantity
+
+        trading.grouped_items = list(grouped_items.values())
+
+        trading.is_in_progress = False
+
+        if trading.trade_type == Trading.TradeType.SELL:
+            total_requested = 0
+            total_fulfilled = 0
+
+            for item in trading.items.all():
+                total_requested += item.requested_quantity
+                total_fulfilled += item.fulfilled_quantity
+
+            if 0 < total_fulfilled < total_requested:
+                trading.is_in_progress = True
+
+    return render(
+        request,
+        'trading/trading_list.html',
+        {
+            'tradings': tradings,
+            'current_type': current_type,
+        }
+    )
 
 
 @role_required(['admin'])
@@ -33,7 +78,11 @@ def admin_trading_history(request):
         'product',
         'warehouse',
         'user',
-    ).prefetch_related('items').all()
+    ).prefetch_related(
+        'items',
+        'items__product',
+        'items__warehouse',
+    ).all()
 
     return render(
         request,
@@ -45,11 +94,74 @@ def admin_trading_history(request):
 @role_required(['admin', 'manager'])
 def trading_detail(request, pk):
     trading = get_object_or_404(
-        Trading.objects.select_related('product', 'warehouse', 'user').prefetch_related('items'),
+        Trading.objects.select_related(
+            'product',
+            'warehouse',
+            'user',
+        ).prefetch_related(
+            'items',
+            'items__product',
+            'items__warehouse',
+            'attachments',
+        ),
         pk=pk
     )
-    return render(request, 'trading/trading_detail.html', {'trading': trading})
 
+    items = trading.items.select_related(
+        'product',
+        'warehouse',
+    ).order_by(
+        'product__name',
+        'warehouse__city',
+        'created_at',
+        'id',
+    )
+
+    grouped_items_dict = {}
+
+    for item in items:
+        key = (item.product_id, item.warehouse_id)
+
+        if key not in grouped_items_dict:
+            grouped_items_dict[key] = {
+                'product': item.product,
+                'warehouse': item.warehouse,
+                'requested_quantity': 0,
+                'fulfilled_quantity': 0,
+            }
+
+        grouped_items_dict[key]['requested_quantity'] += item.requested_quantity
+        grouped_items_dict[key]['fulfilled_quantity'] += item.fulfilled_quantity
+
+    for grouped_item in grouped_items_dict.values():
+        grouped_item['remaining_quantity'] = max(
+            grouped_item['requested_quantity'] - grouped_item['fulfilled_quantity'],
+            0
+        )
+
+        if grouped_item['fulfilled_quantity'] == 0:
+            grouped_item['fulfillment_status_display'] = 'Не выполнено'
+        elif grouped_item['remaining_quantity'] == 0:
+            grouped_item['fulfillment_status_display'] = 'Выполнено'
+        else:
+            grouped_item['fulfillment_status_display'] = 'В процессе'
+
+    grouped_items = list(grouped_items_dict.values())
+
+    has_remaining = any(
+        item['remaining_quantity'] > 0
+        for item in grouped_items
+    )
+
+    return render(
+        request,
+        'trading/trading_detail.html',
+        {
+            'trading': trading,
+            'grouped_items': grouped_items,
+            'has_remaining': has_remaining,
+        }
+    )
 
 
 @role_required(['admin', 'manager'])
@@ -60,19 +172,22 @@ def trading_create(request):
         formset = AttachmentFormSet(request.POST, request.FILES)
 
         if form.is_valid() and item_formset.is_valid() and formset.is_valid():
-            filled_forms = [
-                item_form for item_form in item_formset
-                if item_form.cleaned_data and not item_form.cleaned_data.get('DELETE', False)
-            ]
-
             valid_items = []
-            for item_form in filled_forms:
+
+            for item_form in item_formset:
+                if not item_form.cleaned_data:
+                    continue
+
                 product = item_form.cleaned_data.get('product')
                 warehouse = item_form.cleaned_data.get('warehouse')
                 quantity = item_form.cleaned_data.get('quantity')
 
                 if product and warehouse and quantity:
-                    valid_items.append(item_form)
+                    valid_items.append({
+                        'product': product,
+                        'warehouse': warehouse,
+                        'quantity': quantity,
+                    })
 
             if not valid_items:
                 form.add_error(None, 'Добавьте хотя бы одну позицию сделки.')
@@ -90,51 +205,37 @@ def trading_create(request):
                 trading = form.save(commit=False)
                 trading.user = request.user
 
-                first_item_data = valid_items[0].cleaned_data
-                first_product = first_item_data['product']
-                first_warehouse = first_item_data['warehouse']
-                first_quantity = first_item_data['quantity']
+                first_item = valid_items[0]
 
                 first_inventory, _ = Inventory.objects.get_or_create(
-                    product=first_product,
-                    warehouse=first_warehouse,
+                    product=first_item['product'],
+                    warehouse=first_item['warehouse'],
                     defaults={'quantity': 0},
                 )
 
                 first_quantity_before = first_inventory.quantity
 
                 if trading.trade_type == Trading.TradeType.PURCHASE:
-                    first_quantity_after = first_quantity_before + first_quantity
+                    first_fulfilled_quantity = first_item['quantity']
+                    first_quantity_after = first_quantity_before + first_fulfilled_quantity
                 else:
-                    if first_inventory.quantity < first_quantity:
-                        form.add_error(
-                            None,
-                            f'Недостаточно товара "{first_product}" на складе "{first_warehouse}". '
-                            f'Сейчас в наличии: {first_inventory.quantity}'
-                        )
-                        return render(
-                            request,
-                            'trading/trading_add.html',
-                            {
-                                'form': form,
-                                'item_formset': item_formset,
-                                'formset': formset,
-                            }
-                        )
-                    first_quantity_after = first_quantity_before - first_quantity
+                    first_fulfilled_quantity = min(
+                        first_inventory.quantity,
+                        first_item['quantity']
+                    )
+                    first_quantity_after = first_quantity_before - first_fulfilled_quantity
 
-                # legacy-поля в Trading
-                trading.product = first_product
-                trading.warehouse = first_warehouse
-                trading.quantity = first_quantity
+                trading.product = first_item['product']
+                trading.warehouse = first_item['warehouse']
+                trading.quantity = first_item['quantity']
                 trading.quantity_before = first_quantity_before
                 trading.quantity_after = first_quantity_after
                 trading.save()
 
-                for item_form in valid_items:
-                    product = item_form.cleaned_data['product']
-                    warehouse = item_form.cleaned_data['warehouse']
-                    quantity = item_form.cleaned_data['quantity']
+                for item in valid_items:
+                    product = item['product']
+                    warehouse = item['warehouse']
+                    quantity = item['quantity']
 
                     inventory, _ = Inventory.objects.get_or_create(
                         product=product,
@@ -143,28 +244,36 @@ def trading_create(request):
                     )
 
                     quantity_before = inventory.quantity
+                    requested_quantity = quantity
 
                     if trading.trade_type == Trading.TradeType.PURCHASE:
-                        inventory.quantity += quantity
-                    elif trading.trade_type == Trading.TradeType.SELL:
-                        if inventory.quantity < quantity:
-                            form.add_error(
-                                None,
-                                f'Недостаточно товара "{product}" на складе "{warehouse}". '
-                                f'В наличии: {inventory.quantity}'
-                            )
-                            return render(
-                                request,
-                                'trading/trading_add.html',
-                                {
-                                    'form': form,
-                                    'item_formset': item_formset,
-                                    'formset': formset,
-                                }
-                            )
-                        inventory.quantity -= quantity
+                        fulfilled_quantity = requested_quantity
+                        inventory.quantity += fulfilled_quantity
 
+                    elif trading.trade_type == Trading.TradeType.SELL:
+                        available_quantity = inventory.quantity
+                        fulfilled_quantity = min(
+                            requested_quantity,
+                            available_quantity
+                        )
+                        inventory.quantity -= fulfilled_quantity
+
+                    else:
+                        fulfilled_quantity = 0
+
+                    quantity_after = inventory.quantity
                     inventory.save()
+
+                    TradingItem.objects.create(
+                        trading=trading,
+                        product=product,
+                        warehouse=warehouse,
+                        quantity=fulfilled_quantity,
+                        requested_quantity=requested_quantity,
+                        fulfilled_quantity=fulfilled_quantity,
+                        quantity_before=quantity_before,
+                        quantity_after=quantity_after,
+                    )
 
                 attachments = formset.save(commit=False)
                 for attachment in attachments:
@@ -188,10 +297,18 @@ def trading_create(request):
         }
     )
 
+
 @role_required(['admin', 'manager'])
 def trading_update(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
-    items = trading.items.all()
+
+    if (
+        not trading.can_be_modified
+        and getattr(request.user, 'role', None) != 'admin'
+    ):
+        return redirect('trading_detail', pk=trading.pk)
+
+    items = trading.items.select_related('product', 'warehouse').all()
 
     TradingItemEditFormSet = formset_factory(TradingItemForm, extra=0)
 
@@ -209,12 +326,15 @@ def trading_update(request, pk):
         item_formset = TradingItemEditFormSet(request.POST, prefix='items')
 
         if form.is_valid() and item_formset.is_valid():
-            # Пока безопасно оставляем обновление только шапки сделки.
             form.save()
             return redirect('trading_detail', pk=trading.pk)
+
     else:
         form = TradingForm(instance=trading)
-        item_formset = TradingItemEditFormSet(initial=initial_items, prefix='items')
+        item_formset = TradingItemEditFormSet(
+            initial=initial_items,
+            prefix='items'
+        )
 
     return render(
         request,
@@ -225,6 +345,28 @@ def trading_update(request, pk):
             'trading': trading,
         }
     )
+
+
+@role_required(['admin', 'manager'])
+def trading_delete(request, pk):
+    trading = get_object_or_404(Trading, pk=pk)
+
+    if (
+        not trading.can_be_modified
+        and getattr(request.user, 'role', None) != 'admin'
+    ):
+        return redirect('trading_detail', pk=trading.pk)
+
+    if request.method == 'POST':
+        trading.delete()
+        return redirect('trading_list')
+
+    return render(
+        request,
+        'trading/trading_confirm_delete.html',
+        {'trading': trading}
+    )
+
 
 def get_stock(request):
     product_id = request.GET.get("product")
@@ -241,3 +383,70 @@ def get_stock(request):
     return JsonResponse({
         "quantity": inventory.quantity if inventory else 0
     })
+
+
+@role_required(['admin', 'manager'])
+def trading_fulfill(request, pk):
+    trading = get_object_or_404(
+        Trading.objects.prefetch_related(
+            'items',
+            'items__product',
+            'items__warehouse',
+        ),
+        pk=pk
+    )
+
+    if trading.trade_type != Trading.TradeType.SELL:
+        messages.error(request, 'Довыдача доступна только для продаж.')
+        return redirect('trading_detail', pk=trading.pk)
+
+    if request.method != 'POST':
+        return redirect('trading_detail', pk=trading.pk)
+
+    was_fulfilled = False
+
+    with transaction.atomic():
+        items = trading.items.select_related(
+            'product',
+            'warehouse',
+        ).select_for_update()
+
+        for item in items:
+            remaining_quantity = item.requested_quantity - item.fulfilled_quantity
+
+            if remaining_quantity <= 0:
+                continue
+
+            inventory, _ = Inventory.objects.select_for_update().get_or_create(
+                product=item.product,
+                warehouse=item.warehouse,
+                defaults={'quantity': 0},
+            )
+
+            if inventory.quantity <= 0:
+                continue
+
+            quantity_to_fulfill = min(
+                remaining_quantity,
+                inventory.quantity
+            )
+
+            quantity_before = inventory.quantity
+            inventory.quantity -= quantity_to_fulfill
+            quantity_after = inventory.quantity
+            inventory.save()
+
+            item.fulfilled_quantity += quantity_to_fulfill
+            item.quantity += quantity_to_fulfill
+            item.quantity_before = quantity_before
+            item.quantity_after = quantity_after
+            item.save()
+
+            was_fulfilled = True
+
+    if was_fulfilled:
+        messages.success(request, 'Товар успешно довыдан по сделке.')
+    else:
+        messages.warning(request, 'На складе нет доступного товара для довыдачи.')
+
+    return redirect('trading_detail', pk=trading.pk)

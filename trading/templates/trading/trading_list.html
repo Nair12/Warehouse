@@ -1,77 +1,229 @@
 {% extends "base_manager.html" %}
 
+{% block title %}История сделок{% endblock %}
+
 {% block manager_content %}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1 style="margin:0;">История сделок</h1>
+<h1>История сделок</h1>
 
-        {% if request.user.role == "admin" or request.user.role == "manager" %}
-            <a href="{% url 'trading_create' %}" class="btn-save" style="text-decoration:none;">
-                + Создать сделку
-            </a>
-        {% endif %}
-    </div>
-
-    <div class="module">
-        <h2>Журнал операций по складу</h2>
-        <div class="module-content">
-            {% if tradings %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Когда</th>
-                            <th>Название сделки</th>
-                            <th>Тип операции</th>
-                            <th>Позиции</th>
-                            <th>Комментарий</th>
-                            <th>Детали</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for trading in tradings %}
-                            <tr>
-                                <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
-                                <td>{{ trading.name|default:"Без названия" }}</td>
-                                <td>
-                                    {% if trading.trade_type == "purchase" %}
-                                        <span style="color:green; font-weight:bold;">Покупка</span>
-                                    {% elif trading.trade_type == "sell" %}
-                                        <span style="color:#b94a48; font-weight:bold;">Продажа</span>
-                                    {% else %}
-                                        {{ trading.get_trade_type_display }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if trading.items.all %}
-                                        <ul style="margin:0; padding-left:18px;">
-                                            {% for item in trading.items.all %}
-                                                <li>
-                                                    {{ item.product }} —
-                                                    {{ item.warehouse|default:"—" }} —
-                                                    {{ item.quantity }} шт
-                                                </li>
-                                            {% endfor %}
-                                        </ul>
-                                    {% else %}
-                                        {{ trading.product }} —
-                                        {{ trading.warehouse|default:"—" }} —
-                                        {{ trading.quantity }} шт
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ trading.comment|default:"—" }}
-                                </td>
-                                <td>
-                                    <a href="{% url 'trading_detail' trading.pk %}" class="action-link">
-                                        Открыть
-                                    </a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+">
+    <div style="display: flex; gap: 8px;">
+        <a href="{% url 'trading_list' %}" style="
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            {% if not current_type %}
+                background: #5bc0de;
+                color: white;
             {% else %}
-                <p>Сделок пока нет.</p>
+                background: #f5f7fa;
+                color: #333;
+                border: 1px solid #ddd;
             {% endif %}
-        </div>
+        ">
+            Все
+        </a>
+
+        <a href="?type=purchase" style="
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            {% if current_type == 'purchase' %}
+                background: #5cb85c;
+                color: white;
+            {% else %}
+                background: #f5f7fa;
+                color: #333;
+                border: 1px solid #ddd;
+            {% endif %}
+        ">
+            Покупки
+        </a>
+
+        <a href="?type=sell" style="
+            padding: 8px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            {% if current_type == 'sell' %}
+                background: #d9534f;
+                color: white;
+            {% else %}
+                background: #f5f7fa;
+                color: #333;
+                border: 1px solid #ddd;
+            {% endif %}
+        ">
+            Продажи
+        </a>
     </div>
+
+    <a href="{% url 'trading_create' %}" style="
+        background: #5bc0de;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+    ">
+        + Создать сделку
+    </a>
+</div>
+
+<div class="module">
+    <h2>Журнал операций</h2>
+
+    <div class="module-content">
+        <table style="
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            font-size: 14px;
+        ">
+            <thead>
+                <tr style="background: #f5f7fa;">
+                    <th style="padding: 12px; text-align: left;">Дата</th>
+                    <th style="padding: 12px; text-align: left;">Название сделки</th>
+                    <th style="padding: 12px; text-align: left;">Тип</th>
+                    <th style="padding: 12px; text-align: left;">Позиции</th>
+                    <th style="padding: 12px; text-align: right;">Действия</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for trading in tradings %}
+                    <tr style="
+                        background: white;
+                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+                    ">
+                        <td style="
+                            padding: 14px 12px;
+                            border-top: 1px solid #e5e7eb;
+                            border-bottom: 1px solid #e5e7eb;
+                            border-left: 1px solid #e5e7eb;
+                            border-radius: 8px 0 0 8px;
+                            white-space: nowrap;
+                        ">
+                            {{ trading.created_at|date:"d.m.Y H:i" }}
+                        </td>
+
+                        <td style="
+                            padding: 14px 12px;
+                            border-top: 1px solid #e5e7eb;
+                            border-bottom: 1px solid #e5e7eb;
+                            font-weight: 600;
+                        ">
+                            {{ trading.name|default:"—" }}
+                        </td>
+
+                        <td style="
+                            padding: 14px 12px;
+                            border-top: 1px solid #e5e7eb;
+                            border-bottom: 1px solid #e5e7eb;
+                        ">
+                            {% if trading.trade_type == "purchase" %}
+                                <span style="
+                                    background: #dff0d8;
+                                    color: #3c763d;
+                                    padding: 5px 9px;
+                                    border-radius: 6px;
+                                    font-weight: 700;
+                                    white-space: nowrap;
+                                ">
+                                    Покупка
+                                </span>
+                            {% elif trading.trade_type == "sell" and trading.is_in_progress %}
+                                <span style="
+                                    background: #fff3cd;
+                                    color: #856404;
+                                    padding: 5px 9px;
+                                    border-radius: 6px;
+                                    font-weight: 700;
+                                    white-space: nowrap;
+                                ">
+                                    Продажа (В процессе)
+                                </span>
+                            {% elif trading.trade_type == "sell" %}
+                                <span style="
+                                    background: #f2dede;
+                                    color: #a94442;
+                                    padding: 5px 9px;
+                                    border-radius: 6px;
+                                    font-weight: 700;
+                                    white-space: nowrap;
+                                ">
+                                    Продажа
+                                </span>
+                            {% else %}
+                                {{ trading.get_trade_type_display }}
+                            {% endif %}
+                        </td>
+
+                        <td style="
+                            padding: 14px 12px;
+                            border-top: 1px solid #e5e7eb;
+                            border-bottom: 1px solid #e5e7eb;
+                        ">
+                            {% if trading.items.all %}
+                                <ul style="margin: 0; padding-left: 18px;">
+                                    {% for item in trading.grouped_items %}
+                                        <li style="margin-bottom: 3px;">
+                                            {{ item.product.name }} —
+                                            {{ item.warehouse.city }} —
+                                            <strong>{{ item.quantity }} шт</strong>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                {{ trading.product }} —
+                                <strong>{{ trading.quantity }} шт</strong>
+                            {% endif %}
+                        </td>
+
+                        <td style="
+                            padding: 14px 12px;
+                            text-align: right;
+                            border-top: 1px solid #e5e7eb;
+                            border-bottom: 1px solid #e5e7eb;
+                            border-right: 1px solid #e5e7eb;
+                            border-radius: 0 8px 8px 0;
+                            white-space: nowrap;
+                        ">
+                            <a href="{% url 'trading_detail' trading.id %}" style="
+                                background: #5bc0de;
+                                color: white;
+                                padding: 7px 11px;
+                                border-radius: 6px;
+                                text-decoration: none;
+                                font-weight: 600;
+                            ">
+                                Открыть
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5" style="
+                            padding: 24px;
+                            text-align: center;
+                            color: #777;
+                            background: #fff;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                        ">
+                            Нет сделок
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 {% endblock %}

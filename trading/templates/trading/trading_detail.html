@@ -23,6 +23,8 @@
                     <td>
                         {% if trading.trade_type == "purchase" %}
                             <span style="color: green; font-weight: bold;">Покупка</span>
+                        {% elif trading.trade_type == "sell" and has_remaining %}
+                            <span style="color: #f0ad4e; font-weight: bold;">Продажа (В процессе)</span>
                         {% elif trading.trade_type == "sell" %}
                             <span style="color: #b94a48; font-weight: bold;">Продажа</span>
                         {% else %}
@@ -54,31 +56,45 @@
 </div>
 
 <div class="module">
-    <h2>Позиции сделки</h2>
+    <h2>Позиции сделки (сгруппировано)</h2>
     <div class="module-content">
-        {% if trading.items.all %}
+
+        {% if grouped_items %}
             <table>
                 <thead>
                     <tr>
                         <th>Товар</th>
                         <th>Склад</th>
-                        <th>Количество</th>
-                        <th>Было</th>
-                        <th>Стало</th>
+                        <th>Нужно</th>
+                        <th>Отдали</th>
+                        <th>Осталось</th>
+                        <th>Статус</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in trading.items.all %}
+                    {% for item in grouped_items %}
                         <tr>
                             <td>{{ item.product }}</td>
                             <td>{{ item.warehouse|default:"—" }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.quantity_before }}</td>
-                            <td>{{ item.quantity_after }}</td>
+
+                            <td><strong>{{ item.requested_quantity }}</strong></td>
+                            <td>{{ item.fulfilled_quantity }}</td>
+                            <td>{{ item.remaining_quantity }}</td>
+
+                        <td>
+                            {% if item.fulfillment_status_display == "Не выполнено" %}
+                                <span style="color: #dc3545; font-weight: 600;">{{ item.fulfillment_status_display }}</span>
+                            {% elif item.fulfillment_status_display == "В процессе" %}
+                                <span style="color: #f0ad4e; font-weight: 600;">{{ item.fulfillment_status_display }}</span>
+                            {% else %}
+                                <span style="color: green; font-weight: 600;">{{ item.fulfillment_status_display }}</span>
+                            {% endif %}
+                        </td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
+
         {% else %}
             <table>
                 <thead>
@@ -94,13 +110,14 @@
                     <tr>
                         <td>{{ trading.product }}</td>
                         <td>{{ trading.warehouse|default:"—" }}</td>
-                        <td>{{ trading.quantity }}</td>
+                        <td><strong>{{ trading.quantity }}</strong></td>
                         <td>{{ trading.quantity_before }}</td>
                         <td>{{ trading.quantity_after }}</td>
                     </tr>
                 </tbody>
             </table>
         {% endif %}
+
     </div>
 </div>
 
@@ -110,11 +127,11 @@
         {% if trading.attachments.all %}
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
                 {% for attachment in trading.attachments.all %}
-                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; text-align: center; transition: 0.2s;">
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; text-align: center;">
                         <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
 
                         <div style="font-size: 14px; word-break: break-word; margin-bottom: 10px;">
-                            {{ attachment.file.name|cut:"trading_attachments/" }}
+                            {{ attachment.file.name }}
                         </div>
 
                         <a href="{{ attachment.file.url }}" target="_blank" class="action-link">
@@ -130,7 +147,51 @@
 </div>
 
 <div style="margin-top: 15px;">
-    <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a> |
-    <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+    {% if trading.can_be_modified or request.user.role == 'admin' %}
+
+        {% if trading.trade_type == "sell" and has_remaining %}
+            <form method="post" action="{% url 'trading_fulfill' trading.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="action-link" style="border:none; background:none; color:#28a745; cursor:pointer;">
+                    Довыдать товар
+                </button>
+            </form>
+            |
+        {% endif %}
+
+        <a href="{% url 'trading_update' trading.id %}" class="action-link">
+            Редактировать
+        </a>
+        |
+
+        <a href="{% url 'trading_delete' trading.id %}" class="action-link" style="color: red;">
+            Удалить
+        </a>
+        |
+
+        <a href="{% url 'trading_list' %}" class="action-link">
+            Назад к списку
+        </a>
+
+    {% else %}
+        <div style="
+            display: inline-block;
+            padding: 10px 14px;
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 6px;
+            color: #856404;
+            font-weight: 600;
+            margin-right: 10px;
+        ">
+            <strong>⛔ Срок редактирования истёк.</strong><br>
+            Обратитесь к администратору.
+        </div>
+
+        <a href="{% url 'trading_list' %}" class="action-link">
+            Назад к списку
+        </a>
+    {% endif %}
 </div>
+
 {% endblock %}
