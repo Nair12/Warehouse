@@ -1,3 +1,5 @@
+from datetime import timedelta
+from django.utils import timezone
 from django.forms import inlineformset_factory
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db import transaction
@@ -15,7 +17,7 @@ from users.decorators import role_required
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager','senior_manager'])
 def trading_list(request):
     tradings = Trading.objects.select_related(
         'product',
@@ -41,13 +43,25 @@ def admin_trading_history(request):
     )
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'senior_manager', 'manager'])
 def trading_detail(request, pk):
     trading = get_object_or_404(
-        Trading.objects.select_related('product', 'warehouse', 'user').prefetch_related('items'),
+        Trading.objects
+        .select_related('product', 'warehouse', 'user')
+        .prefetch_related('items'),
         pk=pk
     )
-    return render(request, 'trading/trading_detail.html', {'trading': trading})
+
+    is_privileged = request.user.role in ['admin', 'senior_manager']
+    is_manager = request.user.role == 'manager'
+    is_within_24h = trading.created_at >= timezone.now() - timedelta(hours=24)
+
+    can_edit_trade = is_privileged or (is_manager and is_within_24h)
+
+    return render(request, 'trading/trading_detail.html', {
+        'trading': trading,
+        'can_edit_trade': can_edit_trade,
+    })
 
 
 

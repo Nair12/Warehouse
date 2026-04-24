@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 
 from products.forms import ProductForm
 from products.models import Product, Inventory
-from trading.models import Trading, TradingItem
+from trading.models import Trading
 from warehouses.forms import WarehouseForm
 from warehouses.models import Warehouse
 from .decorators import role_required
@@ -22,35 +22,22 @@ def home_view(request):
 
 
 def role_redirect_view(request):
-    print(
-        f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}"
-    )
     if not request.user.is_authenticated:
-        return redirect('/login/')
+        return redirect("/login/")
 
     if request.user.role == "admin":
-        return redirect('/admin/')
+        return redirect("/admin/")
 
-    if request.user.role == "manager":
-        return redirect('/users/manager-dashboard/')
+    if request.user.role in ["manager", "senior_manager"]:
+        return redirect("/users/manager-dashboard/")
 
     if request.user.role == "reader":
-        return redirect('/users/reader-dashboard/')
+        return redirect("/users/reader-dashboard/")
 
-    return redirect('/login/')
-
-
-import json
-
-from django.db.models import Sum
-from django.db.models.functions import TruncDate
-
-import json
-from django.db.models import Sum
-from django.db.models.functions import TruncDate
+    return redirect("/login/")
 
 
-@role_required(["manager"])
+@role_required(["manager", "senior_manager"])
 def manager_dashboard(request):
     products_count = Product.objects.count()
     warehouses_count = Warehouse.objects.count()
@@ -71,12 +58,15 @@ def manager_dashboard(request):
     )
 
     grouped = {}
+
     for row in trades_by_day:
         day = row["day"]
+
         if not day:
             continue
 
         day_str = day.strftime("%d.%m.%Y")
+
         if day_str not in grouped:
             grouped[day_str] = {
                 "purchase": 0,
@@ -100,39 +90,45 @@ def manager_dashboard(request):
         "purchase_values": json.dumps(purchase_values),
         "sales_values": json.dumps(sales_values),
     }
+
     return render(request, "users/manager_dashboard.html", context)
 
 
-@role_required(["manager"])
+@role_required(["admin", "manager", "senior_manager"])
 def add_product_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
+
         if form.is_valid():
             form.save()
-            return redirect('products:product_list')
+            return redirect("products:product_list")
     else:
         form = ProductForm()
 
-    return render(request, 'product_add.html', {'form': form})
+    return render(request, "product_add.html", {"form": form})
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager", "senior_manager"])
 def warehouse_create_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = WarehouseForm(request.POST)
+
         if form.is_valid():
             form.save()
-            return redirect('warehouse_list')
+            return redirect("warehouse_list")
     else:
         form = WarehouseForm()
 
-    return render(request, 'warehouse_add.html', {'form': form})
+    return render(request, "warehouse_add.html", {"form": form})
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "senior_manager", "reader"])
 def warehouse_list_view(request):
-    warehouses = Warehouse.objects.all().order_by('-created_at')
-    return render(request, 'warehouse_list.html', {'warehouses': warehouses})
+    warehouses = Warehouse.objects.all().order_by("-created_at")
+
+    return render(request, "warehouse_list.html", {
+        "warehouses": warehouses,
+    })
 
 
 @role_required(["admin"])
@@ -146,10 +142,11 @@ def reader_dashboard(request):
         "username": request.user.username,
         "role": request.user.role,
     }
+
     return render(request, "users/reader_dashboard.html", context)
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "senior_manager", "reader"])
 def global_search(request):
     query = request.GET.get("q", "").strip()
 
@@ -170,7 +167,10 @@ def global_search(request):
             Q(name__icontains=query) |
             Q(product__name__icontains=query) |
             Q(warehouse__city__icontains=query)
-        ).select_related("product", "warehouse").order_by("-created_at")
+        ).select_related(
+            "product",
+            "warehouse",
+        ).order_by("-created_at")
 
     context = {
         "query": query,

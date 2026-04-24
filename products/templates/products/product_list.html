@@ -276,7 +276,9 @@
                 <tr>
                     <th>Товар</th>
                     <th>Описание</th>
-                    <th>Цена</th>
+                    {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
+                        <th>Цена</th>
+                    {% endif %}
                     <th>Кол-во</th>
 
                 </tr>
@@ -303,10 +305,11 @@
                         <td class="product-desc">
                             {{ product.description|default:"Без описания"|truncatechars:120 }}
                         </td>
-
+                       {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
                         <td class="price">
                             {{ product.price }} $
                         </td>
+                     {% endif %}
                         <td>
     <span style="
             padding: 6px 12px;
