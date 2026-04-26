@@ -4,7 +4,7 @@
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
         <h1 style="margin:0;">Список складов</h1>
 
-        {% if request.user.role == "admin" or request.user.role == "manager" %}
+        {% if request.user.role == "admin" or request.user.role == "manager" or request.user.role == "senior_manager" %}
             <a href="{% url 'add_warehouse_view' %}" class="btn-save" style="text-decoration:none;">
                 + Создать склад
             </a>
