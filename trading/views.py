@@ -13,7 +13,7 @@ from users.decorators import role_required
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager',"senior_manager"])
 def trading_list(request):
     current_type = request.GET.get('type')
 
@@ -91,7 +91,7 @@ def admin_trading_history(request):
     )
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager',"senior_manager"])
 def trading_detail(request, pk):
     trading = get_object_or_404(
         Trading.objects.select_related(
@@ -164,7 +164,7 @@ def trading_detail(request, pk):
     )
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager',"senior_manager"])
 def trading_create(request):
     if request.method == 'POST':
         form = TradingForm(request.POST)
@@ -298,7 +298,7 @@ def trading_create(request):
     )
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager',"senior_manager"])
 def trading_update(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
 
@@ -347,7 +347,7 @@ def trading_update(request, pk):
     )
 
 
-@role_required(['admin', 'manager'])
+@role_required(['admin', 'manager',"senior_manager"])
 def trading_delete(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
 

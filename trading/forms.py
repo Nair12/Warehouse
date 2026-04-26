@@ -85,6 +85,6 @@ AttachmentFormSet = inlineformset_factory(
     Trading,
     TradingAttachment,
     form=TradingAttachmentForm,
-    extra=1,
+    extra=3,
     can_delete=True
 )

@@ -8,7 +8,7 @@ from .forms import ProductForm, InventoryQuantityForm
 from users.decorators import role_required
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "reader","senior_manager"])
 def product_list_view(request):
     query = request.GET.get("q", "").strip()
     in_stock = request.GET.get("in_stock")
@@ -68,7 +68,7 @@ def product_list_view(request):
     })
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager","senior_manager"])
 def product_create_view(request):
     if request.method == "POST":
         form = ProductForm(request.POST, request.FILES)
@@ -83,7 +83,7 @@ def product_create_view(request):
     return render(request, "products/product_form.html", {"form": form})
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "reader","senior_manager"])
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, id=pk)
 
@@ -106,7 +106,7 @@ def product_detail_view(request, pk):
     })
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager","senior_manager"])
 def inventory_create_view(request, product_id, warehouse_id):
     product = get_object_or_404(Product, id=product_id)
     warehouse = get_object_or_404(Warehouse, id=warehouse_id)
@@ -127,7 +127,7 @@ def inventory_create_view(request, product_id, warehouse_id):
     })
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager","senior_manager"])
 def inventory_update_view(request, pk):
     inventory = get_object_or_404(Inventory, id=pk)
 
@@ -145,7 +145,7 @@ def inventory_update_view(request, pk):
     })
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager","senior_manager"])
 def inventory_adjust_view(request, pk, action):
     inventory = get_object_or_404(Inventory, id=pk)
 

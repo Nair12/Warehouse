@@ -22,13 +22,14 @@ def role_redirect_view(request):
     print(
         f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}"
     )
+
     if not request.user.is_authenticated:
         return redirect('/login/')
 
     if request.user.role == "admin":
         return redirect('/admin/')
 
-    if request.user.role == "manager":
+    if request.user.role in ["manager", "senior_manager"]:
         return redirect('/users/manager-dashboard/')
 
     if request.user.role == "reader":
@@ -37,7 +38,7 @@ def role_redirect_view(request):
     return redirect('/login/')
 
 
-@role_required(["manager"])
+@role_required(["manager","senior_manager"])
 def manager_dashboard(request):
     products_count = Product.objects.count()
     warehouses_count = Warehouse.objects.count()
@@ -60,7 +61,7 @@ def manager_dashboard(request):
     return render(request, "users/manager_dashboard.html", context)
 
 
-@role_required(["manager"])
+@role_required(["manager","senior_manager"])
 def add_product_view(request):
     if request.method == 'POST':
         form = ProductForm(request.POST, request.FILES)
@@ -73,7 +74,7 @@ def add_product_view(request):
     return render(request, 'product_add.html', {'form': form})
 
 
-@role_required(["admin", "manager"])
+@role_required(["admin", "manager","senior_manager"])
 def warehouse_create_view(request):
     if request.method == 'POST':
         form = WarehouseForm(request.POST)
@@ -86,7 +87,7 @@ def warehouse_create_view(request):
     return render(request, 'warehouse_add.html', {'form': form})
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "reader","senior_manager"])
 def warehouse_list_view(request):
     warehouses = Warehouse.objects.all().order_by('-created_at')
     return render(request, 'warehouse_list.html', {'warehouses': warehouses})
@@ -106,7 +107,7 @@ def reader_dashboard(request):
     return render(request, "users/reader_dashboard.html", context)
 
 
-@role_required(["admin", "manager", "reader"])
+@role_required(["admin", "manager", "reader","senior_manager"])
 def global_search(request):
     query = request.GET.get("q", "").strip()
 
@@ -126,7 +127,7 @@ def global_search(request):
         products = [
             product for product in all_products
             if query_lower in (product.name or "").casefold()
-            or query_lower in (product.description or "").casefold()
+               or query_lower in (product.description or "").casefold()
         ]
         products = sorted(products, key=lambda x: (x.name or "").casefold())
 
@@ -139,8 +140,8 @@ def global_search(request):
         tradings = [
             trading for trading in all_tradings
             if query_lower in str(getattr(trading, "name", "") or "").casefold()
-            or query_lower in str(getattr(getattr(trading, "product", None), "name", "") or "").casefold()
-            or query_lower in str(getattr(getattr(trading, "warehouse", None), "city", "") or "").casefold()
+               or query_lower in str(getattr(getattr(trading, "product", None), "name", "") or "").casefold()
+               or query_lower in str(getattr(getattr(trading, "warehouse", None), "city", "") or "").casefold()
         ]
 
     context = {
