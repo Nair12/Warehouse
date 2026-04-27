@@ -243,6 +243,7 @@
     <div>
         <a href="{% url 'manager_dashboard' %}">Дашборд</a>
         <a href="{% url 'trading_list' %}">Сделки</a>
+        <a href="{% url 'orders_list' %}">Заказы</a>
         {% if request.user.role == "admin" %}
             <a href="{% url 'admin_trading_history' %}">История</a>
         {% endif %}

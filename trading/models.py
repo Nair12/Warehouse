@@ -9,6 +9,10 @@ class Trading(models.Model):
         SELL = "sell", "Продажа"
         PURCHASE = "purchase", "Покупка"
 
+    class Status(models.TextChoices):
+        PENDING = "pending", "В процессе"
+        COMPLETED = "completed", "Завершена"
+
     name = models.CharField(
         max_length=255,
         verbose_name="Название сделки"
@@ -24,6 +28,13 @@ class Trading(models.Model):
         max_length=20,
         choices=TradeType.choices,
         verbose_name="Тип операции"
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING,
+        verbose_name="Статус"
     )
 
     # Старое поле.

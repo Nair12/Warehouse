@@ -1,9 +1,9 @@
 {% extends "base_manager.html" %}
 
-{% block title %}История сделок{% endblock %}
+{% block title %}{{ page_title }}{% endblock %}
 
 {% block manager_content %}
-<h1>История сделок</h1>
+<h1>{{ page_title }}</h1>
 
 <div style="
     display: flex;
@@ -12,7 +12,7 @@
     margin-bottom: 16px;
 ">
     <div style="display: flex; gap: 8px;">
-        <a href="{% url 'trading_list' %}" style="
+        <a href="{% if is_orders_page %}{% url 'orders_list' %}{% else %}{% url 'trading_list' %}{% endif %}" style="
             padding: 8px 12px;
             border-radius: 6px;
             text-decoration: none;
@@ -77,7 +77,7 @@
 </div>
 
 <div class="module">
-    <h2>Журнал операций</h2>
+    <h2>{{ page_title }}</h2>
 
     <div class="module-content">
         <table style="
@@ -89,7 +89,7 @@
             <thead>
                 <tr style="background: #f5f7fa;">
                     <th style="padding: 12px; text-align: left;">Дата</th>
-                    <th style="padding: 12px; text-align: left;">Название сделки</th>
+                    <th style="padding: 12px; text-align: left;">Название</th>
                     <th style="padding: 12px; text-align: left;">Тип</th>
                     <th style="padding: 12px; text-align: left;">Позиции</th>
                     <th style="padding: 12px; text-align: right;">Действия</th>
@@ -127,37 +127,20 @@
                             border-top: 1px solid #e5e7eb;
                             border-bottom: 1px solid #e5e7eb;
                         ">
-                            {% if trading.trade_type == "purchase" %}
-                                <span style="
-                                    background: #dff0d8;
-                                    color: #3c763d;
-                                    padding: 5px 9px;
-                                    border-radius: 6px;
-                                    font-weight: 700;
-                                    white-space: nowrap;
-                                ">
+                            {% if trading.trade_type == "purchase" and trading.is_in_progress %}
+                                <span style="background:#fff3cd; color:#856404; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
+                                    Покупка (В процессе)
+                                </span>
+                            {% elif trading.trade_type == "purchase" %}
+                                <span style="background:#dff0d8; color:#3c763d; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
                                     Покупка
                                 </span>
                             {% elif trading.trade_type == "sell" and trading.is_in_progress %}
-                                <span style="
-                                    background: #fff3cd;
-                                    color: #856404;
-                                    padding: 5px 9px;
-                                    border-radius: 6px;
-                                    font-weight: 700;
-                                    white-space: nowrap;
-                                ">
+                                <span style="background:#fff3cd; color:#856404; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
                                     Продажа (В процессе)
                                 </span>
                             {% elif trading.trade_type == "sell" %}
-                                <span style="
-                                    background: #f2dede;
-                                    color: #a94442;
-                                    padding: 5px 9px;
-                                    border-radius: 6px;
-                                    font-weight: 700;
-                                    white-space: nowrap;
-                                ">
+                                <span style="background:#f2dede; color:#a94442; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
                                     Продажа
                                 </span>
                             {% else %}
@@ -170,13 +153,29 @@
                             border-top: 1px solid #e5e7eb;
                             border-bottom: 1px solid #e5e7eb;
                         ">
-                            {% if trading.items.all %}
+                            {% if trading.grouped_items %}
                                 <ul style="margin: 0; padding-left: 18px;">
                                     {% for item in trading.grouped_items %}
-                                        <li style="margin-bottom: 3px;">
+                                        <li style="margin-bottom: 5px;">
                                             {{ item.product.name }} —
                                             {{ item.warehouse.city }} —
-                                            <strong>{{ item.quantity }} шт</strong>
+                                            <strong>
+                                                заказано {{ item.requested_quantity }} / выполнено {{ item.fulfilled_quantity }} шт
+                                            </strong>
+
+                                            {% if item.fulfilled_quantity == 0 %}
+                                                <span style="background:#f2dede; color:#a94442; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
+                                                    Не выполнено
+                                                </span>
+                                            {% elif item.fulfilled_quantity < item.requested_quantity %}
+                                                <span style="background:#fff3cd; color:#856404; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
+                                                    В процессе
+                                                </span>
+                                            {% else %}
+                                                <span style="background:#dff0d8; color:#3c763d; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
+                                                    Выполнено
+                                                </span>
+                                            {% endif %}
                                         </li>
                                     {% endfor %}
                                 </ul>
@@ -217,7 +216,7 @@
                             border: 1px solid #e5e7eb;
                             border-radius: 8px;
                         ">
-                            Нет сделок
+                            Нет записей
                         </td>
                     </tr>
                 {% endfor %}

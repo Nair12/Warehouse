@@ -56,50 +56,47 @@
     <div class="module">
         <h2>Позиции сделки</h2>
         <div class="module-content">
-            {% if trading.items.all %}
+            {% if grouped_items %}
                 <table>
                     <thead>
                     <tr>
                         <th>Товар</th>
                         <th>Склад</th>
-                        <th>Количество</th>
-                        <th>Было</th>
-                        <th>Стало</th>
+                        <th>Заказано</th>
+                        <th>Выполнено</th>
+                        <th>Осталось</th>
+                        <th>Статус</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {% for item in trading.items.all %}
+                    {% for item in grouped_items %}
                         <tr>
                             <td>{{ item.product }}</td>
                             <td>{{ item.warehouse|default:"—" }}</td>
-                            <td>{{ item.quantity }}</td>
-                            <td>{{ item.quantity_before }}</td>
-                            <td>{{ item.quantity_after }}</td>
+                            <td>{{ item.requested_quantity }}</td>
+                            <td>{{ item.fulfilled_quantity }}</td>
+                            <td>{{ item.remaining_quantity }}</td>
+                            <td>
+                                {% if item.fulfillment_status_display == "Не выполнено" %}
+                                    <span style="color:white; background:#d9534f; padding:4px 8px; border-radius:6px; font-weight:600;">
+                                        Не выполнено
+                                    </span>
+                                {% elif item.fulfillment_status_display == "В процессе" %}
+                                    <span style="color:black; background:#f0ad4e; padding:4px 8px; border-radius:6px; font-weight:600;">
+                                        В процессе
+                                    </span>
+                                {% else %}
+                                    <span style="color:white; background:#5cb85c; padding:4px 8px; border-radius:6px; font-weight:600;">
+                                        Выполнено
+                                    </span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             {% else %}
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Товар</th>
-                        <th>Склад</th>
-                        <th>Количество</th>
-                        <th>Было</th>
-                        <th>Стало</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>{{ trading.product }}</td>
-                        <td>{{ trading.warehouse|default:"—" }}</td>
-                        <td>{{ trading.quantity }}</td>
-                        <td>{{ trading.quantity_before }}</td>
-                        <td>{{ trading.quantity_after }}</td>
-                    </tr>
-                    </tbody>
-                </table>
+                <p>Нет позиций сделки.</p>
             {% endif %}
         </div>
     </div>
@@ -110,7 +107,7 @@
             {% if trading.attachments.all %}
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px;">
                     {% for attachment in trading.attachments.all %}
-                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; text-align: center; transition: 0.2s;">
+                        <div style="border: 1px solid #ddd; border-radius: 8px; padding: 12px; background: #fff; text-align: center;">
                             <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
 
                             <div style="font-size: 14px; word-break: break-word; margin-bottom: 10px;">
@@ -135,8 +132,7 @@
         {% else %}
             <span style="color:#999; margin-right:10px;">Редактирование недоступно</span>
         {% endif %}
-
-        <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a> |
+        
         <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
     </div>
 {% endblock %}

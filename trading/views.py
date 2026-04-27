@@ -13,7 +13,7 @@ from users.decorators import role_required
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
 
-@role_required(['admin', 'manager',"senior_manager"])
+@role_required(['admin', 'manager', "senior_manager"])
 def trading_list(request):
     current_type = request.GET.get('type')
 
@@ -25,6 +25,8 @@ def trading_list(request):
         'items',
         'items__product',
         'items__warehouse',
+    ).filter(
+        status=Trading.Status.COMPLETED
     )
 
     if current_type in ['purchase', 'sell']:
@@ -42,25 +44,16 @@ def trading_list(request):
                 grouped_items[key] = {
                     'product': item.product,
                     'warehouse': item.warehouse,
-                    'quantity': 0,
+                    'requested_quantity': 0,
+                    'fulfilled_quantity': 0
                 }
 
-            grouped_items[key]['quantity'] += item.quantity
+            grouped_items[key]['requested_quantity'] += item.requested_quantity
+            grouped_items[key]['fulfilled_quantity'] += item.fulfilled_quantity
 
         trading.grouped_items = list(grouped_items.values())
 
         trading.is_in_progress = False
-
-        if trading.trade_type == Trading.TradeType.SELL:
-            total_requested = 0
-            total_fulfilled = 0
-
-            for item in trading.items.all():
-                total_requested += item.requested_quantity
-                total_fulfilled += item.fulfilled_quantity
-
-            if 0 < total_fulfilled < total_requested:
-                trading.is_in_progress = True
 
     return render(
         request,
@@ -68,6 +61,62 @@ def trading_list(request):
         {
             'tradings': tradings,
             'current_type': current_type,
+            'page_title': 'История сделок',
+            'is_orders_page': False,
+        }
+    )
+
+
+@role_required(['admin', 'manager', "senior_manager"])
+def orders_list(request):
+    current_type = request.GET.get('type')
+
+    tradings = Trading.objects.select_related(
+        'product',
+        'warehouse',
+        'user',
+    ).prefetch_related(
+        'items',
+        'items__product',
+        'items__warehouse',
+    ).filter(
+        status=Trading.Status.PENDING
+    )
+
+    if current_type in ['purchase', 'sell']:
+        tradings = tradings.filter(trade_type=current_type)
+
+    tradings = list(tradings)
+
+    for trading in tradings:
+        grouped_items = {}
+
+        for item in trading.items.all():
+            key = (item.product_id, item.warehouse_id)
+
+            if key not in grouped_items:
+                grouped_items[key] = {
+                    'product': item.product,
+                    'warehouse': item.warehouse,
+                    'requested_quantity': 0,
+                    'fulfilled_quantity': 0,
+                }
+
+            grouped_items[key]['requested_quantity'] += item.requested_quantity
+            grouped_items[key]['fulfilled_quantity'] += item.fulfilled_quantity
+
+        trading.grouped_items = list(grouped_items.values())
+
+        trading.is_in_progress = True
+
+    return render(
+        request,
+        'trading/trading_list.html',
+        {
+            'tradings': tradings,
+            'current_type': current_type,
+            'page_title': 'Заказы',
+            'is_orders_page': True,
         }
     )
 
@@ -91,7 +140,7 @@ def admin_trading_history(request):
     )
 
 
-@role_required(['admin', 'manager',"senior_manager"])
+@role_required(['admin', 'manager', "senior_manager"])
 def trading_detail(request, pk):
     trading = get_object_or_404(
         Trading.objects.select_related(
@@ -164,7 +213,7 @@ def trading_detail(request, pk):
     )
 
 
-@role_required(['admin', 'manager',"senior_manager"])
+@role_required(['admin', 'manager', "senior_manager"])
 def trading_create(request):
     if request.method == 'POST':
         form = TradingForm(request.POST)
@@ -180,13 +229,15 @@ def trading_create(request):
 
                 product = item_form.cleaned_data.get('product')
                 warehouse = item_form.cleaned_data.get('warehouse')
-                quantity = item_form.cleaned_data.get('quantity')
+                requested_quantity = item_form.cleaned_data.get('requested_quantity')
+                fulfilled_quantity = item_form.cleaned_data.get('fulfilled_quantity') or 0
 
-                if product and warehouse and quantity:
+                if product and warehouse and requested_quantity:
                     valid_items.append({
                         'product': product,
                         'warehouse': warehouse,
-                        'quantity': quantity,
+                        'requested_quantity': requested_quantity,
+                        'fulfilled_quantity': fulfilled_quantity,
                     })
 
             if not valid_items:
@@ -216,27 +267,31 @@ def trading_create(request):
                 first_quantity_before = first_inventory.quantity
 
                 if trading.trade_type == Trading.TradeType.PURCHASE:
-                    first_fulfilled_quantity = first_item['quantity']
+                    first_fulfilled_quantity = first_item['fulfilled_quantity']
                     first_quantity_after = first_quantity_before + first_fulfilled_quantity
                 else:
                     first_fulfilled_quantity = min(
                         first_inventory.quantity,
-                        first_item['quantity']
+                        first_item['requested_quantity']
                     )
                     first_quantity_after = first_quantity_before - first_fulfilled_quantity
 
                 trading.product = first_item['product']
                 trading.warehouse = first_item['warehouse']
-                trading.quantity = first_item['quantity']
+                trading.quantity = first_item['requested_quantity']
                 trading.quantity_before = first_quantity_before
                 trading.quantity_after = first_quantity_after
+                trading.status = Trading.Status.PENDING
                 trading.save()
+
+                total_requested = 0
+                total_fulfilled = 0
 
                 for item in valid_items:
                     product = item['product']
                     warehouse = item['warehouse']
-                    quantity = item['quantity']
-
+                    requested_quantity = item['requested_quantity']
+                    fulfilled_quantity = item['fulfilled_quantity']
                     inventory, _ = Inventory.objects.get_or_create(
                         product=product,
                         warehouse=warehouse,
@@ -244,25 +299,26 @@ def trading_create(request):
                     )
 
                     quantity_before = inventory.quantity
-                    requested_quantity = quantity
 
                     if trading.trade_type == Trading.TradeType.PURCHASE:
-                        fulfilled_quantity = requested_quantity
                         inventory.quantity += fulfilled_quantity
 
                     elif trading.trade_type == Trading.TradeType.SELL:
                         available_quantity = inventory.quantity
                         fulfilled_quantity = min(
+                            fulfilled_quantity,
                             requested_quantity,
                             available_quantity
                         )
                         inventory.quantity -= fulfilled_quantity
-
                     else:
                         fulfilled_quantity = 0
 
                     quantity_after = inventory.quantity
                     inventory.save()
+
+                    total_requested += requested_quantity
+                    total_fulfilled += fulfilled_quantity
 
                     TradingItem.objects.create(
                         trading=trading,
@@ -274,6 +330,13 @@ def trading_create(request):
                         quantity_before=quantity_before,
                         quantity_after=quantity_after,
                     )
+
+                if total_fulfilled >= total_requested:
+                    trading.status = Trading.Status.COMPLETED
+                else:
+                    trading.status = Trading.Status.PENDING
+
+                trading.save()
 
                 attachments = formset.save(commit=False)
                 for attachment in attachments:
@@ -298,7 +361,7 @@ def trading_create(request):
     )
 
 
-@role_required(['admin', 'manager',"senior_manager"])
+@role_required(['admin', 'manager', "senior_manager"])
 def trading_update(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
 
@@ -316,7 +379,8 @@ def trading_update(request, pk):
         {
             'product': item.product,
             'warehouse': item.warehouse,
-            'quantity': item.quantity,
+            'requested_quantity': item.requested_quantity,
+            'fulfilled_quantity': item.fulfilled_quantity,
         }
         for item in items
     ]
@@ -347,7 +411,7 @@ def trading_update(request, pk):
     )
 
 
-@role_required(['admin', 'manager',"senior_manager"])
+@role_required(['admin', 'manager', "senior_manager"])
 def trading_delete(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
 
@@ -448,5 +512,14 @@ def trading_fulfill(request, pk):
         messages.success(request, 'Товар успешно довыдан по сделке.')
     else:
         messages.warning(request, 'На складе нет доступного товара для довыдачи.')
+
+    all_items_done = all(
+        (item.requested_quantity - item.fulfilled_quantity) <= 0
+        for item in trading.items.all()
+    )
+
+    if was_fulfilled and all_items_done:
+        trading.status = Trading.Status.COMPLETED
+        trading.save()
 
     return redirect('trading_detail', pk=trading.pk)

@@ -35,7 +35,7 @@ class TradingForm(forms.ModelForm):
 class TradingItemForm(forms.ModelForm):
     class Meta:
         model = TradingItem
-        fields = ['product', 'warehouse', 'quantity']
+        fields = ['product', 'warehouse', 'requested_quantity', 'fulfilled_quantity']
 
         widgets = {
             'product': forms.Select(attrs={
@@ -44,16 +44,24 @@ class TradingItemForm(forms.ModelForm):
             'warehouse': forms.Select(attrs={
                 'class': 'form-control'
             }),
-            'quantity': forms.NumberInput(attrs={
+            'requested_quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
-                'min': 1
+                'min': 1,
+                'placeholder': 'Сколько заказано'
+            }),
+            'fulfilled_quantity': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 0,
+                'placeholder': 'Сколько выполнено сейчас',
+                'value': 0
             }),
         }
 
         labels = {
             'product': 'Товар',
             'warehouse': 'Склад',
-            'quantity': 'Количество',
+            'requested_quantity': 'Заказано',
+            'fulfilled_quantity': 'Выполнено',
         }
 
 TradingItemFormSet = inlineformset_factory(
