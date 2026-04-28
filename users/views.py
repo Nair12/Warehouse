@@ -8,6 +8,10 @@ from trading.models import Trading
 from warehouses.forms import WarehouseForm
 from warehouses.models import Warehouse
 from .decorators import role_required
+import json
+from datetime import timedelta
+from django.db.models.functions import TruncDate
+from django.utils import timezone
 
 
 def test_view(request):
@@ -44,6 +48,8 @@ from django.db.models.functions import TruncDate
 
 @role_required(["manager", "senior_manager"])
 def manager_dashboard(request):
+    period = request.GET.get("period", "30d")
+
     products_count = Product.objects.count()
     warehouses_count = Warehouse.objects.count()
     total_inventory = Inventory.objects.aggregate(total=Sum("quantity"))["total"] or 0
@@ -54,8 +60,22 @@ def manager_dashboard(request):
         "user",
     ).order_by("-created_at")[:5]
 
+    now = timezone.now()
+
+    period_map = {
+        "7d": now - timedelta(days=7),
+        "30d": now - timedelta(days=30),
+        "90d": now - timedelta(days=90),
+        "year": now - timedelta(days=365),
+    }
+
+    trades = Trading.objects.all()
+
+    if period in period_map:
+        trades = trades.filter(created_at__gte=period_map[period])
+
     trades_by_day = (
-        Trading.objects
+        trades
         .annotate(day=TruncDate("created_at"))
         .values("day", "trade_type")
         .annotate(total=Sum("quantity"))
@@ -82,6 +102,13 @@ def manager_dashboard(request):
     chart_labels = list(grouped.keys())
     sales_values = [grouped[day]["sell"] for day in chart_labels]
     purchase_values = [grouped[day]["purchase"] for day in chart_labels]
+    popular_products = (
+        Trading.objects
+        .filter(trade_type=Trading.TradeType.SELL)
+        .values("product__id", "product__name")
+        .annotate(total_sold=Sum("quantity"))
+        .order_by("-total_sold")[:5]
+    )
 
     context = {
         "username": request.user.username,
@@ -90,10 +117,11 @@ def manager_dashboard(request):
         "warehouses_count": warehouses_count,
         "total_inventory": total_inventory,
         "last_trades": last_trades,
-
         "sales_labels": json.dumps(chart_labels),
         "sales_values": json.dumps(sales_values),
         "purchase_values": json.dumps(purchase_values),
+        "period": period,
+        "popular_products": popular_products,
     }
 
     return render(request, "users/manager_dashboard.html", context)

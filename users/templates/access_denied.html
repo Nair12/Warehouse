@@ -1,0 +1,101 @@
+{% extends "products/base.html" %}
+
+{% block title %}Доступ запрещён{% endblock %}
+
+{% block content %}
+<style>
+    .access-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    .access-card {
+        max-width: 520px;
+        width: 100%;
+        background: white;
+        border-radius: 22px;
+        padding: 36px;
+        text-align: center;
+        box-shadow: 0 12px 35px rgba(0,0,0,0.08);
+    }
+
+    .access-icon {
+        font-size: 58px;
+        margin-bottom: 16px;
+    }
+
+    .access-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: #1f2937;
+    }
+
+    .access-text {
+        color: #6b7280;
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 26px;
+    }
+
+    .access-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .access-btn {
+        display: inline-block;
+        padding: 12px 18px;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.2s;
+    }
+
+    .access-btn.primary {
+        background: #417690;
+        color: white;
+    }
+
+    .access-btn.primary:hover {
+        background: #2b5063;
+    }
+
+    .access-btn.secondary {
+        background: #eef4ff;
+        color: #2f6fed;
+    }
+
+    .access-btn.secondary:hover {
+        background: #dfeaff;
+    }
+</style>
+
+<div class="access-page">
+    <div class="access-card">
+        <div class="access-icon">🚫</div>
+
+        <div class="access-title">Доступ запрещён</div>
+
+        <div class="access-text">
+            У ваc нет прав для просмотра этой страницы.
+            Обратитесь к администратору, если считаете, что это ошибка.
+        </div>
+
+        <div class="access-actions">
+            <a href="/redirect-by-role/" class="access-btn primary">
+                Вернуться в кабинет
+            </a>
+
+            <a href="{% url 'products:product_list' %}" class="access-btn secondary">
+                К товарам
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

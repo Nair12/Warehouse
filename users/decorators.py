@@ -1,6 +1,6 @@
 from functools import wraps
 from django.http import HttpResponse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 
 def role_required(allowed_roles):
@@ -14,7 +14,11 @@ def role_required(allowed_roles):
 
             # если роль не подходит
             if request.user.role not in allowed_roles:
-                return HttpResponse("У тебя нет доступа")
+                return render(
+                    request,
+                    "access_denied.html",
+                    status=403
+                )
 
             return view_func(request, *args, **kwargs)
         return wrapper
