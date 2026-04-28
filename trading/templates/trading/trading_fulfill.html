@@ -1,0 +1,84 @@
+{% extends "base_manager.html" %}
+
+{% block title %}Дополнить заказ{% endblock %}
+
+{% block manager_content %}
+<h1>Дополнить заказ #{{ trading.id }}</h1>
+
+<div class="module">
+    <h2>Информация</h2>
+    <div class="module-content">
+        <p><strong>Название:</strong> {{ trading.name }}</p>
+        <p><strong>Тип:</strong> {{ trading.get_trade_type_display }}</p>
+    </div>
+</div>
+
+<div class="module">
+    <h2>Позиции</h2>
+    <div class="module-content">
+        <table>
+            <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Склад</th>
+                <th>Заказано</th>
+                <th>Выполнено</th>
+                <th>Осталось</th>
+                <th>Дополнить</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in fulfill_items %}
+                <tr>
+                    <td>{{ item.product }}</td>
+                    <td>{{ item.warehouse }}</td>
+                    <td>{{ item.requested_quantity }}</td>
+                    <td>{{ item.fulfilled_quantity }}</td>
+                    <td>{{ item.remaining_quantity }}</td>
+                    <td>
+                        {% if item.remaining_quantity > 0 %}
+                            <form method="post" style="display:flex; gap:8px; align-items:center;">
+                                {% csrf_token %}
+                                <input type="hidden" name="item_id" value="{{ item.id }}">
+
+                                <input
+                                    type="number"
+                                    name="quantity"
+                                    min="1"
+                                    max="{{ item.remaining_quantity }}"
+                                    required
+                                    placeholder="Кол-во"
+                                    style="padding: 6px; width: 90px;"
+                                >
+
+                                <button type="submit" style="
+                                    background: #f0ad4e;
+                                    color: black;
+                                    padding: 6px 10px;
+                                    border: none;
+                                    border-radius: 6px;
+                                    font-weight: 600;
+                                    cursor: pointer;
+                                ">
+                                    Дополнить
+                                </button>
+                            </form>
+                        {% else %}
+                            <span style="color:white; background:#5cb85c; padding:4px 8px; border-radius:6px; font-weight:600;">
+                                Выполнено
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <br>
+        <a href="{% url 'trading_detail' trading.id %}" class="action-link">
+            Назад
+        </a>
+    </div>
+</div>
+{% endblock %}

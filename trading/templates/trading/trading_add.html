@@ -13,6 +13,7 @@
     <h2>
         {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
     </h2>
+
     <div class="module-content">
         <form method="post" enctype="multipart/form-data" id="trading-form">
             {% csrf_token %}
@@ -28,32 +29,32 @@
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {{ field }}
                     {% if field.errors %}
-                        <div class="errors">
-                            {{ field.errors }}
-                        </div>
+                        <div class="errors">{{ field.errors }}</div>
                     {% endif %}
                 </div>
             {% endfor %}
 
-            <div class="module">
-                <h2>Прикрепить файлы</h2>
+            {% if formset %}
+                <div class="module">
+                    <h2>Прикрепить файлы</h2>
 
-                {{ formset.management_form }}
+                    {{ formset.management_form }}
 
-                <div id="attachment-list">
-                    {% for attachment_form in formset %}
-                        <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
-                            {{ attachment_form.id }}
-                            <label>Файл {{ forloop.counter }}:</label>
-                            {{ attachment_form.file }}
+                    <div id="attachment-list">
+                        {% for attachment_form in formset %}
+                            <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
+                                {{ attachment_form.id }}
+                                <label>Файл {{ forloop.counter }}:</label>
+                                {{ attachment_form.file }}
 
-                            {% if attachment_form.file.errors %}
-                                <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                                {% if attachment_form.file.errors %}
+                                    <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
-            </div>
+            {% endif %}
 
             <hr style="margin: 25px 0;">
 
@@ -76,16 +77,23 @@
                         {% endif %}
 
                         {% for field in item_form %}
-                            <div class="form-row">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }}
-                                {% if field.errors %}
-                                    <div class="errors">
-                                        {{ field.errors }}
-                                    </div>
-                                {% endif %}
-                            </div>
+                            {% if field.name != "DELETE" %}
+                                <div class="form-row">
+                                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                    {{ field }}
+                                    {% if field.errors %}
+                                        <div class="errors">{{ field.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
                         {% endfor %}
+
+                        {% if item_form.DELETE %}
+                            <div class="form-row delete-row" style="margin-top:10px;">
+                                <label>Удалить</label>
+                                {{ item_form.DELETE }}
+                            </div>
+                        {% endif %}
 
                         <div class="form-row">
                             <label>Остаток на складе</label>
@@ -113,10 +121,12 @@
                     </div>
 
                     {% for field in item_formset.empty_form %}
-                        <div class="form-row">
-                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                            {{ field }}
-                        </div>
+                        {% if field.name != "DELETE" %}
+                            <div class="form-row">
+                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                {{ field }}
+                            </div>
+                        {% endif %}
                     {% endfor %}
 
                     <div class="form-row">
@@ -152,89 +162,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateTitles() {
         const blocks = itemsContainer.querySelectorAll(".item-block");
-        blocks.forEach(function (block, index) {
+        let visibleIndex = 1;
+
+        blocks.forEach(function (block) {
+            if (block.style.display === "none") return;
+
             const title = block.querySelector(".item-title");
             if (title) {
-                title.innerText = `Позиция ${index + 1}`;
+                title.innerText = `Позиция ${visibleIndex}`;
             }
+
+            visibleIndex++;
         });
     }
 
-    function getTradingTypeValue() {
-        const possibleSelectors = [
-            '#id_trading_type',
-            '#id_type',
-            '#id_operation_type',
-            '#id_trade_type',
-            'select[name="trading_type"]',
-            'select[name="type"]',
-            'select[name="operation_type"]',
-            'select[name="trade_type"]'
-        ];
-
-        for (const selector of possibleSelectors) {
-            const el = document.querySelector(selector);
-            if (el && el.value) {
-                return String(el.value).toLowerCase();
-            }
-        }
-
-        return '';
-    }
-
-    function isSaleOperation() {
-        const value = getTradingTypeValue();
-
-        const saleValues = [
-            'sale',
-            'sell',
-            'selling',
-            'out',
-            'expense',
-            'расход',
-            'продажа',
-            'продать'
-        ];
-
-        return saleValues.includes(value);
-    }
-
-    function setFieldError(input, message) {
-        if (!input) return;
-
-        input.style.border = '2px solid #ba2121';
-        input.style.backgroundColor = '#fff5f5';
-
-        let errorBox = input.parentElement.querySelector('.instant-quantity-error');
-        if (!errorBox) {
-            errorBox = document.createElement('div');
-            errorBox.className = 'instant-quantity-error';
-            errorBox.style.color = '#856404';
-            errorBox.style.fontSize = '12px';
-            errorBox.style.marginTop = '4px';
-            input.parentElement.appendChild(errorBox);
-        }
-
-        errorBox.innerText = message;
-    }
-
-    function clearFieldError(input) {
-        if (!input) return;
-
-        input.style.border = '';
-        input.style.backgroundColor = '';
-
-        const errorBox = input.parentElement.querySelector('.instant-quantity-error');
-        if (errorBox) {
-            errorBox.remove();
-        }
-    }
-
     function updateSaveButtonState() {
-    saveBtn.disabled = false;
-    saveBtn.style.opacity = '1';
-    saveBtn.style.cursor = 'pointer';
-}
+        saveBtn.disabled = false;
+        saveBtn.style.opacity = '1';
+        saveBtn.style.cursor = 'pointer';
+    }
 
     function initTomSelectForSelect(selectElement) {
         if (!selectElement) return;
@@ -258,143 +204,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
         initTomSelectForSelect(productSelect);
         initTomSelectForSelect(warehouseSelect);
-    }
 
-    function bindStockLogic(block) {
-        const productSelect = block.querySelector('select[name$="-product"]');
-        const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
-        const quantityInput = block.querySelector('input[name$="-quantity"]');
-        const stockInfo = block.querySelector(".stock-info");
-        const stockErrorRow = block.querySelector(".stock-error-row");
-        const stockError = block.querySelector(".stock-error");
+        function bindStockChange(selectElement) {
+            if (!selectElement) return;
 
-        block.dataset.stockQuantity = '';
+            selectElement.addEventListener("change", function () {
+                updateStock(block);
+            });
 
-        function clearStockError() {
-            if (stockErrorRow) stockErrorRow.style.display = 'none';
-            if (stockError) stockError.innerText = '';
-            clearFieldError(quantityInput);
-            updateSaveButtonState();
-        }
-
-        function showStockError(message) {
-            if (stockErrorRow) stockErrorRow.style.display = 'block';
-            if (stockError) stockError.innerText = message;
-            setFieldError(quantityInput, message);
-            updateSaveButtonState();
-        }
-
-        function validateQuantity() {
-            clearFieldError(quantityInput);
-
-            const quantity = parseFloat(quantityInput ? quantityInput.value : '');
-            const stock = parseFloat(block.dataset.stockQuantity || '');
-
-            if (!isSaleOperation()) {
-                clearStockError();
-                return;
-            }
-
-            if (!productSelect || !warehouseSelect || !productSelect.value || !warehouseSelect.value) {
-                clearStockError();
-                return;
-            }
-
-            if (isNaN(stock)) {
-                clearStockError();
-                return;
-            }
-
-            if (!quantityInput || quantityInput.value === '') {
-                clearStockError();
-                return;
-            }
-
-            if (isNaN(quantity) || quantity <= 0) {
-                clearStockError();
-                return;
-            }
-
-            if (quantity > stock) {
-                showStockError(`Будет отгружено частично. Доступно: ${stock} шт.`);
-            } else {
-                clearStockError();
-            }
-        }
-
-        function updateStock() {
-            const productId = productSelect ? productSelect.value : "";
-            const warehouseId = warehouseSelect ? warehouseSelect.value : "";
-
-            clearStockError();
-
-            if (!productId || !warehouseId) {
-                stockInfo.innerText = "Выберите товар и склад";
-                block.dataset.stockQuantity = '';
-                updateSaveButtonState();
-                return;
-            }
-
-            stockInfo.innerText = "Загрузка...";
-            block.dataset.stockQuantity = '';
-
-            fetch(`/trading/get-stock/?product=${productId}&warehouse=${warehouseId}`)
-                .then(response => response.json())
-                .then(data => {
-                    const quantity = Number(data.quantity || 0);
-                    block.dataset.stockQuantity = String(quantity);
-                    stockInfo.innerText = `На складе: ${quantity} шт`;
-
-                    if (isSaleOperation() && quantity <= 0) {
-                        showStockError('Товара нет. Сделка будет создана с ожиданием.');
-                    } else {
-                        validateQuantity();
-                    }
-                })
-                .catch(() => {
-                    stockInfo.innerText = "Ошибка загрузки";
-                    block.dataset.stockQuantity = '';
-                    updateSaveButtonState();
-                });
-        }
-
-        if (productSelect) {
-            productSelect.addEventListener("change", updateStock);
-        }
-
-        if (warehouseSelect) {
-            warehouseSelect.addEventListener("change", updateStock);
-        }
-
-        if (quantityInput) {
-            quantityInput.addEventListener("input", validateQuantity);
-            quantityInput.addEventListener("change", validateQuantity);
-        }
-
-        const tradingTypeSelectors = [
-            '#id_trading_type',
-            '#id_type',
-            '#id_operation_type',
-            '#id_trade_type',
-            'select[name="trading_type"]',
-            'select[name="type"]',
-            'select[name="operation_type"]',
-            'select[name="trade_type"]'
-        ];
-
-        tradingTypeSelectors.forEach(function (selector) {
-            const el = document.querySelector(selector);
-            if (el) {
-                el.addEventListener('change', function () {
-                    validateQuantity();
-                    updateStock();
+            if (selectElement.tomselect) {
+                selectElement.tomselect.on("change", function () {
+                    updateStock(block);
                 });
             }
-        });
-
-        if ((productSelect && productSelect.value) || (warehouseSelect && warehouseSelect.value)) {
-            updateStock();
         }
+
+        bindStockChange(productSelect);
+        bindStockChange(warehouseSelect);
+        updateStock(block);
     }
 
     function bindRemoveButton(block) {
@@ -402,8 +229,22 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!removeBtn) return;
 
         removeBtn.addEventListener("click", function () {
-            const blocks = itemsContainer.querySelectorAll(".item-block");
-            if (blocks.length === 1) {
+            const visibleBlocks = Array.from(itemsContainer.querySelectorAll(".item-block"))
+                .filter(function (itemBlock) {
+                    return itemBlock.style.display !== "none";
+                });
+
+            if (visibleBlocks.length === 1) {
+                return;
+            }
+
+            const deleteInput = block.querySelector('input[name$="-DELETE"]');
+
+            if (deleteInput) {
+                deleteInput.checked = true;
+                block.style.display = "none";
+                updateTitles();
+                updateSaveButtonState();
                 return;
             }
 
@@ -466,7 +307,6 @@ document.addEventListener("DOMContentLoaded", function () {
         totalFormsInput.value = formIndex + 1;
 
         initSearch(newBlock);
-        bindStockLogic(newBlock);
         bindRemoveButton(newBlock);
         updateTitles();
         updateSaveButtonState();
@@ -475,7 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const existingBlocks = itemsContainer.querySelectorAll(".item-block");
     existingBlocks.forEach(function (block) {
         initSearch(block);
-        bindStockLogic(block);
         bindRemoveButton(block);
     });
 
@@ -486,10 +325,52 @@ document.addEventListener("DOMContentLoaded", function () {
 
     form.addEventListener("submit", function (e) {
         updateSaveButtonState();
+
         if (saveBtn.disabled) {
             e.preventDefault();
         }
     });
+    function getStockUrl(productId, warehouseId) {
+        const query = `product=${encodeURIComponent(productId)}&warehouse=${encodeURIComponent(warehouseId)}`;
+        return `/trading/get-stock/?${query}`;
+    }
+
+    function updateStock(block) {
+        const productSelect = block.querySelector('select[name$="-product"]');
+        const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
+        const stockInfo = block.querySelector(".stock-info");
+
+        if (!productSelect || !warehouseSelect || !stockInfo) return;
+
+        const productId = productSelect.value;
+        const warehouseId = warehouseSelect.value;
+
+        if (!productId || !warehouseId) {
+            stockInfo.innerText = "Выберите товар и склад";
+            return;
+        }
+
+        stockInfo.innerText = "Загрузка...";
+
+        fetch(getStockUrl(productId, warehouseId), {
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+            .then(function (response) {
+                if (!response.ok) {
+                    throw new Error("stock request failed");
+                }
+                return response.json();
+            })
+            .then(function (data) {
+                stockInfo.innerText = `Остаток: ${data.quantity}`;
+            })
+            .catch(function () {
+                stockInfo.innerText = "Ошибка загрузки";
+            });
+    }
+
 });
 </script>
 

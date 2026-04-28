@@ -1,7 +1,13 @@
 from django.contrib import admin
 from django.template.response import TemplateResponse
 from django.urls import path
-from .models import Trading, TradingItem
+from django.contrib.auth.models import Group, User
+
+from .models import Trading, TradingItem, TradingAuditLog
+
+
+# 🔥 Скрываем группы
+admin.site.unregister(Group)
 
 
 class TradingItemInline(admin.TabularInline):
@@ -102,3 +108,40 @@ class TradingItemAdmin(admin.ModelAdmin):
     )
 
     ordering = ('-created_at',)
+
+
+# ✅ AUDIT LOG
+@admin.register(TradingAuditLog)
+class TradingAuditLogAdmin(admin.ModelAdmin):
+    list_display = (
+        'created_at',
+        'trading_id_snapshot',
+        'action',
+        'user',
+        'description',
+    )
+
+    list_filter = (
+        'action',
+        'created_at',
+        'user',
+    )
+
+    search_fields = (
+        'description',
+        'trading_id_snapshot',
+        'user__username',
+    )
+
+    ordering = ('-created_at',)
+
+    readonly_fields = (
+        'created_at',
+        'trading',
+        'trading_id_snapshot',
+        'user',
+        'action',
+        'description',
+        'before_data',
+        'after_data',
+    )

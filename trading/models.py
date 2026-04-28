@@ -139,6 +139,10 @@ class Trading(models.Model):
         return timezone.now() <= limit_time
 
     @property
+    def can_be_edited(self):
+        return self.status == self.Status.PENDING
+
+    @property
     def edit_deadline(self):
         if not self.created_at:
             return None
@@ -265,3 +269,71 @@ class TradingAttachment(models.Model):
 
     def __str__(self):
         return f"Файл для сделки #{self.trade.id}"
+
+class TradingAuditLog(models.Model):
+    class Action(models.TextChoices):
+        CREATED = "created", "Создание"
+        UPDATED = "updated", "Редактирование"
+        FULFILLED = "fulfilled", "Дополнение"
+        DELETED = "deleted", "Удаление"
+        ROLLBACK = "rollback", "Откат склада"
+
+    trading = models.ForeignKey(
+        Trading,
+        on_delete=models.SET_NULL,
+        related_name="audit_logs",
+        verbose_name="Сделка",
+        null=True,
+        blank=True
+    )
+
+    trading_id_snapshot = models.PositiveIntegerField(
+        verbose_name="ID сделки",
+        null=True,
+        blank=True
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="trading_audit_logs",
+        verbose_name="Пользователь",
+        null=True,
+        blank=True
+    )
+
+    action = models.CharField(
+        max_length=20,
+        choices=Action.choices,
+        verbose_name="Действие"
+    )
+
+    description = models.TextField(
+        verbose_name="Описание"
+    )
+
+    before_data = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Было"
+    )
+
+    after_data = models.JSONField(
+        default=dict,
+        blank=True,
+        verbose_name="Стало"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Аудит сделки"
+        verbose_name_plural = "Аудит сделок"
+
+    def __str__(self):
+        return f"{self.get_action_display()} — сделка #{self.trading_id_snapshot or self.trading_id}"
+

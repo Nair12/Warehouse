@@ -16,5 +16,5 @@ urlpatterns = [
     path('<int:pk>/delete/', views.trading_delete, name='trading_delete'),
 
     path('get-stock/', views.get_stock, name='get_stock'),
-    path('trading/get-stock/', views.get_stock, name='get_stock'),
+    path('get-stock/', views.get_stock, name='get_stock'),
 ]
