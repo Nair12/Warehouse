@@ -245,7 +245,7 @@
         <a href="{% url 'trading_list' %}">Сделки</a>
         <a href="{% url 'orders_list' %}">Заказы</a>
         {% if request.user.role == "admin" %}
-            <a href="{% url 'admin_trading_history' %}">История</a>
+        <a href="{% url 'admin_trading_history' %}">История</a>
         {% endif %}
         <a href="{% url 'warehouse_list' %}">Склады</a>
         <a href="{% url 'products:product_list' %}">Продукты</a>
@@ -276,6 +276,20 @@
 <div class="container">
     {% block manager_content %}{% endblock %}
 </div>
+<script>
+    (function() {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        fetch("/users/set-timezone/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ timezone: tz })
+        });
+    })();
+</script>
 
 </body>
 </html>

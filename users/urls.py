@@ -7,7 +7,7 @@ from .views import (
     reader_dashboard,
     warehouse_create_view,
     warehouse_list_view,
-    global_search,
+    global_search, set_timezone,
 )
 
 urlpatterns = [
@@ -26,4 +26,6 @@ urlpatterns = [
     path('manager/warehouses/', warehouse_list_view, name='warehouse_list'),
 
     path('search/', global_search, name='global_search'),
+
+    path("set-timezone/", set_timezone, name="set_timezone"),
 ]

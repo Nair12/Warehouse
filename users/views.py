@@ -190,3 +190,12 @@ def global_search(request):
     }
 
     return render(request, "users/search_results.html", context)
+
+
+import json
+from django.http import JsonResponse
+def set_timezone(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        request.session["django_timezone"] = data.get("timezone")
+        return JsonResponse({"status": "ok"})
