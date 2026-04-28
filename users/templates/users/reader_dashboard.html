@@ -1,16 +1,141 @@
-{% extends "base_manager.html" %}
+{% extends "products/base.html" %}
+
+{% block title %}Профиль{% endblock %}
 
 {% block content %}
-<h1>Кабинет reader</h1>
+<style>
+    .reader-page {
+        min-height: calc(100vh - 120px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px 20px;
+    }
 
-<p>Добро пожаловать, {{ username }}!</p>
-<p>Ваша роль: {{ role }}</p>
+    .profile-card {
+        width: 100%;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 22px;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
 
-<div style="margin-top: 20px;">
-    <a href="{% url 'product_list' %}">Открыть список товаров</a>
+    .profile-header {
+        background: linear-gradient(135deg, #417690, #79aec8);
+        color: white;
+        padding: 34px 28px;
+        text-align: center;
+    }
+
+    .avatar {
+        width: 82px;
+        height: 82px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.18);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 38px;
+        border: 2px solid rgba(255,255,255,0.35);
+    }
+
+    .profile-header h1 {
+        margin: 0;
+        font-size: 28px;
+    }
+
+    .profile-header p {
+        margin: 8px 0 0;
+        opacity: 0.9;
+    }
+
+    .profile-body {
+        padding: 28px;
+    }
+
+    .info-row {
+        background: #f8fafc;
+        border: 1px solid #edf1f5;
+        border-radius: 14px;
+        padding: 16px;
+        margin-bottom: 14px;
+    }
+
+    .label {
+        display: block;
+        font-size: 13px;
+        color: #7b8794;
+        margin-bottom: 6px;
+    }
+
+    .value {
+        font-size: 17px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .note-box {
+        margin: 20px 0;
+        padding: 14px 16px;
+        background: #eef6ff;
+        color: #2f6fed;
+        border-radius: 14px;
+        font-size: 15px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .profile-btn {
+        display: inline-block;
+        text-decoration: none;
+        background: #417690;
+        color: white;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: 0.2s;
+    }
+
+    .profile-btn:hover {
+        background: #2b5063;
+        transform: translateY(-2px);
+    }
+</style>
+
+<div class="reader-page">
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="avatar">👤</div>
+            <h1>Добро пожаловать, {{ username }}!</h1>
+        </div>
+
+        <div class="profile-body">
+            <div class="info-row">
+                <span class="label">Пользователь</span>
+                <span class="value">{{ username }}</span>
+            </div>
+
+            <div class="info-row">
+                <span class="label">Роль</span>
+                <span class="value">{{ role }}</span>
+            </div>
+
+            <div class="note-box">
+                Вы можете только просматривать товары.
+            </div>
+
+            <div class="actions">
+                <a href="{% url 'products:product_list' %}" class="profile-btn">
+                    Открыть список товаров
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
-
-<p style="margin-top: 20px;">
-    Вы можете только просматривать товары.
-</p>
 {% endblock %}

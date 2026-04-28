@@ -261,7 +261,7 @@
 
                 </form>
 
-                {% if request.user.role == "manager" or request.user.role == "admin" or request.user.role == "senior_manager"%}
+                {% if request.user.role == "admin" or request.user.role == "senior_manager"%}
                     <a href="{% url 'products:product_create' %}" class="btn-add">
                         + Добавить продукт
                     </a>
