@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Product, Inventory
 from warehouses.models import Warehouse
-from .forms import ProductForm, InventoryQuantityForm
+from .forms import ProductForm, InventoryQuantityForm, ProductPriceUpdateForm
 from users.decorators import role_required
 
 
@@ -90,6 +90,15 @@ def product_create_view(request):
 def product_detail_view(request, pk):
     product = get_object_or_404(Product, id=pk)
 
+    # 🔥 обновление цены
+    if request.method == "POST":
+        price_form = ProductPriceUpdateForm(request.POST, instance=product)
+        if price_form.is_valid():
+            price_form.save()
+            return redirect("products:product_detail", pk=product.id)
+    else:
+        price_form = ProductPriceUpdateForm(instance=product)
+
     inventories = Inventory.objects.filter(product=product).select_related("warehouse")
     inventory_map = {item.warehouse_id: item for item in inventories}
 
@@ -103,9 +112,13 @@ def product_detail_view(request, pk):
             "quantity": inventory_item.quantity if inventory_item else 0,
         })
 
+    price_history = product.price_history.all()
+
     return render(request, "products/product_detail.html", {
         "product": product,
         "warehouse_rows": warehouse_rows,
+        "price_history": price_history,
+        "price_form": price_form,  # 👈 форма
     })
 
 

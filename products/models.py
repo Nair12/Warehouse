@@ -33,8 +33,48 @@ class Product(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def save(self, *args, **kwargs):
+        old_price = None
+
+        if self.pk:
+            old_product = Product.objects.filter(pk=self.pk).first()
+            if old_product:
+                old_price = old_product.price
+
+        super().save(*args, **kwargs)
+
+        if old_price is None:
+            ProductPriceHistory.objects.get_or_create(
+                product=self,
+                price=self.price,
+            )
+        elif old_price != self.price:
+            ProductPriceHistory.objects.create(
+                product=self,
+                price=self.price,
+            )
+
     def __str__(self):
         return self.name
+
+
+class ProductPriceHistory(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    product = models.ForeignKey(
+        "products.Product",
+        on_delete=models.CASCADE,
+        related_name="price_history",
+    )
+    price = models.DecimalField(max_digits=12, decimal_places=2)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.product.name} - {self.price}"
 
 
 class Inventory(models.Model):

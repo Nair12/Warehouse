@@ -23,3 +23,17 @@ class ProductForm(forms.ModelForm):
             'picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'unit': forms.Select(attrs={'class': 'form-control'}),
         }
+
+
+class ProductPriceUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Product
+        fields = ['price']
+        widgets = {
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'step': '0.01',
+                'min': '0',
+                'placeholder': 'Новая цена',
+            }),
+        }
