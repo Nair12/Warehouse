@@ -2,6 +2,33 @@
 
 {% block content %}
 <style>
+    .price-main-box {
+    background: linear-gradient(135deg, #eef4ff, #f8fafc);
+    border: 1px solid #dbe7ff;
+    border-radius: 18px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    max-width: 360px;
+}
+
+.price-label {
+    display: block;
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 8px;
+}
+
+.price-main-value {
+    font-size: 32px;
+    font-weight: 800;
+    color: #1f2937;
+}
+
+.price-main-value span {
+    font-size: 16px;
+    font-weight: 600;
+    color: #64748b;
+}
     .product-page {
         max-width: 1200px;
         margin: 40px auto;
@@ -89,7 +116,7 @@
 
     .product-meta {
         display: grid;
-        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        grid-template-columns: repeat(2, minmax(180px, 1fr));
         gap: 16px;
         margin-bottom: 10px;
     }
@@ -109,26 +136,85 @@
     }
 
 
+    .price-update-box {
+        grid-column: 1 / -1;
+        background: #f8fafc;
+        border: 1px solid #edf1f5;
+        border-radius: 14px;
+        padding: 16px 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .price-update-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .price-update-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .price-update-subtitle {
+        font-size: 13px;
+        color: #7b8794;
+    }
+
     .price-form {
         display: flex;
         gap: 10px;
-        margin-top: 14px;
         align-items: center;
+        flex-wrap: wrap;
     }
+
     .price-form input {
-        max-width: 140px;
+        width: 150px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #cfd8e3;
+        font-size: 14px;
+        outline: none;
     }
+
+    .price-form input:focus {
+        border-color: #2f6fed;
+        box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
+    }
+
     .price-form button {
-        padding: 8px 14px;
+        padding: 10px 16px;
         border-radius: 10px;
         border: none;
         background: #2f6fed;
         color: #fff;
-        font-weight: 600;
+        font-weight: 700;
         cursor: pointer;
+        transition: 0.2s ease;
     }
+
     .price-form button:hover {
         background: #1e4fd6;
+    }
+
+    .history-type-badge {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 999px;
+        background: #ecfdf3;
+        color: #027a48;
+        font-weight: 700;
+        font-size: 13px;
+    }
+
+    .history-type-badge.update {
+        background: #fff7ed;
+        color: #c2410c;
     }
 
     .meta-value {
@@ -335,23 +421,29 @@
             </p>
 
             <div class="product-meta">
-                <div class="meta-box">
-                    <span class="meta-label">ID товара</span>
-                    <span class="meta-value">{{ product.id }}</span>
+
+                <div class="price-main-box">
+                    <span class="price-label">Текущая цена</span>
+                    <div class="price-main-value">
+                        ${{ product.price }}
+                        <span>/ {{ product.get_unit_display }}</span>
+                    </div>
                 </div>
 
-                <div class="meta-box">
-                    <span class="meta-label">Цена</span>
-                    <span class="meta-value">
-                        {{ product.price }}$ / {{ product.get_unit_display }}
-                    </span>
-                </div>
+                {% if request.user.role == "admin" or request.user.role == "manager" or request.user.role == "senior_manager" %}
+                    <div class="price-update-box">
+                        <div class="price-update-info">
+                            <span class="price-update-title">Обновить цену товара</span>
+                            <span class="price-update-subtitle">После сохранения новая цена автоматически появится в истории.</span>
+                        </div>
 
-                <form method="post" class="price-form">
-                    {% csrf_token %}
-                    {{ price_form.price }}
-                    <button type="submit">Обновить цену</button>
-                </form>
+                        <form method="post" class="price-form">
+                            {% csrf_token %}
+                            {{ price_form.price }}
+                            <button type="submit">Обновить цену</button>
+                        </form>
+                    </div>
+                {% endif %}
 
 
                 <div class="meta-box">
@@ -377,6 +469,7 @@
                     <tr>
                         <th>Дата изменения</th>
                         <th>Цена</th>
+                        <th>Тип</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -388,10 +481,17 @@
                                     {{ item.price }}$
                                 </span>
                             </td>
+                            <td>
+                                {% if item.change_type == "initial" %}
+                                    <span class="history-type-badge">Создание</span>
+                                {% else %}
+                                    <span class="history-type-badge update">Обновление</span>
+                                {% endif %}
+                            </td>
                         </tr>
                     {% empty %}
                         <tr>
-                            <td colspan="2" class="empty-row">
+                            <td colspan="3" class="empty-row">
                                 История цен пока отсутствует.
                             </td>
                         </tr>

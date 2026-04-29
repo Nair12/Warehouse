@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.utils import timezone
 
 
 class Product(models.Model):
@@ -35,6 +36,7 @@ class Product(models.Model):
 
     def save(self, *args, **kwargs):
         old_price = None
+        is_new = self.pk is None
 
         if self.pk:
             old_product = Product.objects.filter(pk=self.pk).first()
@@ -43,15 +45,20 @@ class Product(models.Model):
 
         super().save(*args, **kwargs)
 
-        if old_price is None:
+        if is_new:
             ProductPriceHistory.objects.get_or_create(
                 product=self,
                 price=self.price,
+                change_type=ProductPriceHistory.CHANGE_TYPE_INITIAL,
+                defaults={
+                    "created_at": self.created_at,
+                },
             )
         elif old_price != self.price:
             ProductPriceHistory.objects.create(
                 product=self,
                 price=self.price,
+                change_type=ProductPriceHistory.CHANGE_TYPE_UPDATE,
             )
 
     def __str__(self):
@@ -59,6 +66,14 @@ class Product(models.Model):
 
 
 class ProductPriceHistory(models.Model):
+    CHANGE_TYPE_INITIAL = "initial"
+    CHANGE_TYPE_UPDATE = "update"
+
+    CHANGE_TYPE_CHOICES = (
+        (CHANGE_TYPE_INITIAL, "Цена при создании"),
+        (CHANGE_TYPE_UPDATE, "Обновление цены"),
+    )
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     product = models.ForeignKey(
@@ -67,8 +82,14 @@ class ProductPriceHistory(models.Model):
         related_name="price_history",
     )
     price = models.DecimalField(max_digits=12, decimal_places=2)
+    change_type = models.CharField(
+        max_length=20,
+        choices=CHANGE_TYPE_CHOICES,
+        default=CHANGE_TYPE_UPDATE,
+        verbose_name="Тип изменения",
+    )
 
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     class Meta:
         ordering = ["-created_at"]
