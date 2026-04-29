@@ -159,7 +159,7 @@
                             </a>
                         </div>
                         <div class="qty {% if item.quantity == 0 %}zero{% endif %}">
-                            {{ item.quantity }} шт.
+                            {{ item.quantity }} {{ item.product.get_unit_display }}
                         </div>
                     </div>
                 </div>

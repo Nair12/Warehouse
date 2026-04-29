@@ -29,7 +29,10 @@ def product_list_view(request):
         )
     else:
         products = products.annotate(
-            total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
+            total_quantity=Coalesce(
+                Sum("inventory_items__quantity"),
+                0
+            )
         )
 
     products = list(products)

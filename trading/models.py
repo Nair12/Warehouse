@@ -4,6 +4,7 @@ from django.db import models
 from django.conf import settings
 from django.utils import timezone
 
+
 class Trading(models.Model):
     class TradeType(models.TextChoices):
         SELL = "sell", "Продажа"
@@ -179,7 +180,8 @@ class TradingItem(models.Model):
     # Для продажи — сколько уже отдали.
     # Для покупки — сколько уже получили.
     quantity = models.PositiveIntegerField(
-        verbose_name="Количество"
+        verbose_name="Количество",
+        default=0
     )
 
     # Сколько нужно было по сделке.
@@ -270,6 +272,7 @@ class TradingAttachment(models.Model):
     def __str__(self):
         return f"Файл для сделки #{self.trade.id}"
 
+
 class TradingAuditLog(models.Model):
     class Action(models.TextChoices):
         CREATED = "created", "Создание"
@@ -336,4 +339,3 @@ class TradingAuditLog(models.Model):
 
     def __str__(self):
         return f"{self.get_action_display()} — сделка #{self.trading_id_snapshot or self.trading_id}"
-

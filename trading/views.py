@@ -674,7 +674,8 @@ def get_stock(request):
     ).first()
 
     return JsonResponse({
-        "quantity": inventory.quantity if inventory else 0
+        "quantity": inventory.quantity if inventory else 0,
+        "unit": inventory.product.get_unit_display() if inventory else ""
     })
 
 

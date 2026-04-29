@@ -160,7 +160,7 @@
                                             {{ item.product.name }} —
                                             {{ item.warehouse.city }} —
                                             <strong>
-                                                заказано {{ item.requested_quantity }} / выполнено {{ item.fulfilled_quantity }} шт
+                                                заказано {{ item.requested_quantity }} / выполнено {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}
                                             </strong>
 
                                             {% if item.fulfilled_quantity == 0 %}
@@ -181,7 +181,7 @@
                                 </ul>
                             {% else %}
                                 {{ trading.product }} —
-                                <strong>{{ trading.quantity }} шт</strong>
+                                <strong>{{ trading.quantity }} {{ trading.product.get_unit_display }}</strong>
                             {% endif %}
                         </td>
 

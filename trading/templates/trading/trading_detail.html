@@ -145,9 +145,9 @@ body {
             <tr>
                 <td>{{ item.product }}</td>
                 <td>{{ item.warehouse|default:"—" }}</td>
-                <td>{{ item.requested_quantity }}</td>
-                <td>{{ item.fulfilled_quantity }}</td>
-                <td>{{ item.remaining_quantity }}</td>
+                <td>{{ item.requested_quantity }} {{ item.product.get_unit_display }}</td>
+                <td>{{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</td>
+                <td>{{ item.remaining_quantity }} {{ item.product.get_unit_display }}</td>
                 <td>
                     {% if item.remaining_quantity == item.requested_quantity %}
                         <span class="status-badge status-fail">Не выполнено</span>

@@ -11,13 +11,15 @@ class InventoryQuantityForm(forms.ModelForm):
             'quantity': forms.NumberInput(attrs={'class': 'form-control'}),
         }
 
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'picture']
+        fields = ['name', 'description', 'price', 'picture', 'unit']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
             'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'unit': forms.Select(attrs={'class': 'form-control'}),
         }

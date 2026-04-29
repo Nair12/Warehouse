@@ -47,11 +47,13 @@ class TradingItemForm(forms.ModelForm):
             'requested_quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': 1,
+                'step': '0.01',
                 'placeholder': 'Сколько заказано'
             }),
             'fulfilled_quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': 0,
+                'step': '0.01',
                 'placeholder': 'Сколько выполнено сейчас',
                 'value': 0
             }),
@@ -63,6 +65,32 @@ class TradingItemForm(forms.ModelForm):
             'requested_quantity': 'Заказано',
             'fulfilled_quantity': 'Выполнено',
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        product = cleaned_data.get('product')
+        requested_quantity = cleaned_data.get('requested_quantity')
+        fulfilled_quantity = cleaned_data.get('fulfilled_quantity')
+
+        if not product:
+            return cleaned_data
+
+        if product.unit == product.UNIT_PIECE:
+            if requested_quantity is not None and requested_quantity != int(requested_quantity):
+                self.add_error(
+                    'requested_quantity',
+                    'Для товара в штуках нельзя вводить дробное количество.'
+                )
+
+            if fulfilled_quantity is not None and fulfilled_quantity != int(fulfilled_quantity):
+                self.add_error(
+                    'fulfilled_quantity',
+                    'Для товара в штуках нельзя вводить дробное количество.'
+                )
+
+        return cleaned_data
+
 
 TradingItemFormSet = inlineformset_factory(
     Trading,

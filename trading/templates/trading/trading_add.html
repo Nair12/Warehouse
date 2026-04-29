@@ -27,7 +27,7 @@
             {% for field in form %}
                 <div class="form-row">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
+                    {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
                     {% if field.errors %}
                         <div class="errors">{{ field.errors }}</div>
                     {% endif %}
@@ -80,7 +80,7 @@
                             {% if field.name != "DELETE" %}
                                 <div class="form-row">
                                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }}
+                                    {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
                                     {% if field.errors %}
                                         <div class="errors">{{ field.errors }}</div>
                                     {% endif %}
@@ -124,7 +124,7 @@
                         {% if field.name != "DELETE" %}
                             <div class="form-row">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }}
+                                {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -210,18 +210,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
             selectElement.addEventListener("change", function () {
                 updateStock(block);
+        updateUnit(block);
             });
 
             if (selectElement.tomselect) {
                 selectElement.tomselect.on("change", function () {
                     updateStock(block);
+        updateUnit(block);
                 });
             }
         }
 
         bindStockChange(productSelect);
+        productSelect.addEventListener("change", function () { updateUnit(block); });
         bindStockChange(warehouseSelect);
         updateStock(block);
+        updateUnit(block);
     }
 
     function bindRemoveButton(block) {
@@ -335,6 +339,43 @@ document.addEventListener("DOMContentLoaded", function () {
         return `/trading/get-stock/?${query}`;
     }
 
+
+    function updateUnit(block) {
+        const productSelect = block.querySelector('select[name$="-product"]');
+        const unitSpans = block.querySelectorAll('.unit-label');
+
+        if (!productSelect) return;
+
+        const selectedOption = productSelect.options[productSelect.selectedIndex];
+        if (!selectedOption) return;
+
+        const text = selectedOption.text || '';
+        let unit = '';
+
+        if (text.toLowerCase().includes('кг')) unit = 'кг';
+        if (text.toLowerCase().includes('шт')) unit = 'шт';
+
+        unitSpans.forEach(span => {
+            span.innerText = unit ? `(${unit})` : '';
+        });
+
+        const quantityInput = block.querySelector('input[name$="-requested_quantity"]');
+        if (!quantityInput) return;
+
+        if (unit === 'кг') {
+            quantityInput.step = "1";
+            quantityInput.min = "1";
+            quantityInput.placeholder = "кг";
+        } else if (unit === 'шт') {
+            quantityInput.step = "1";
+            quantityInput.min = "1";
+            quantityInput.placeholder = "шт";
+        } else {
+            quantityInput.placeholder = "кол-во";
+        }
+    }
+
+
     function updateStock(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
@@ -364,7 +405,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(function (data) {
-                stockInfo.innerText = `Остаток: ${data.quantity}`;
+                stockInfo.innerText = `Остаток: ${data.quantity} ${data.unit}`;
             })
             .catch(function () {
                 stockInfo.innerText = "Ошибка загрузки";

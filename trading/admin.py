@@ -182,33 +182,23 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
 
         matched_deal_ids = set()
 
-        all_logs = TradingAuditLog.objects.select_related('user')
-
-        for log in all_logs:
+        for log in TradingAuditLog.objects.select_related('user'):
             deal_id = log.trading_id_snapshot or log.trading_id
 
-            before_data = log.before_data or {}
-            after_data = log.after_data or {}
-
-            before_name = str(before_data.get('name') or '').lower()
-            after_name = str(after_data.get('name') or '').lower()
-            description = str(log.description or '').lower()
-            username = str(log.user.username if log.user else '').lower()
-            deal_id_text = str(deal_id or '').lower()
+            before = log.before_data or {}
+            after = log.after_data or {}
 
             if (
-                search_term in before_name
-                or search_term in after_name
-                or search_term in description
-                or search_term in username
-                or search_term in deal_id_text
+                search_term in str(before.get('name', '')).lower()
+                or search_term in str(after.get('name', '')).lower()
+                or search_term in str(log.description or '').lower()
             ):
                 matched_deal_ids.add(deal_id)
 
         if matched_deal_ids:
             queryset = self.get_queryset(request).filter(
-                Q(trading_id_snapshot__in=matched_deal_ids)
-                | Q(trading_id__in=matched_deal_ids)
+                Q(trading_id_snapshot__in=matched_deal_ids) |
+                Q(trading_id__in=matched_deal_ids)
             )
         else:
             queryset = self.get_queryset(request).none()
@@ -256,37 +246,48 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
             Q(trading_id_snapshot=deal_id) | Q(trading_id=deal_id)
         ).count()
 
-        html = f'''
-        <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;padding:18px;margin-bottom:18px;">
-            <div style="font-size:13px;color:#aaa;margin-bottom:6px;">
-                История сделки
-            </div>
+        return mark_safe(f'''
+        <style>
+            .form-row.field-deal_header > div > label,
+            .form-row.field-deal_history > div > label,
+            .form-row.field-deal_header label,
+            .form-row.field-deal_history label {{
+                display: none !important;
+            }}
 
-            <div style="font-size:26px;font-weight:800;color:white;">
-                {deal_name}
-            </div>
+            .form-row.field-deal_header,
+            .form-row.field-deal_history {{
+                padding-left: 0 !important;
+            }}
 
+            .form-row.field-deal_header > div,
+            .form-row.field-deal_history > div {{
+                margin-left: 0 !important;
+                width: 100% !important;
+            }}
+        </style>
+
+        <div style="background:#1e1e1e;border:1px solid #333;border-radius:14px;padding:18px;margin-bottom:18px;margin-left:0;max-width:900px;width:100%;box-sizing:border-box;">
+            <div style="font-size:13px;color:#aaa;margin-bottom:6px;">История сделки</div>
+            <div style="font-size:26px;font-weight:800;color:white;">{deal_name}</div>
             <div style="margin-top:10px;">
-                <span style="background:{trade_color};color:white;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700;display:inline-block;">
+                <span style="background:{trade_color};color:white;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:700;">
                     {trade_icon} {trade_label}
                 </span>
             </div>
-
             <div style="margin-top:14px;color:#aaa;">
-                ID: <b style="color:white;">#{deal_id}</b>
-                <span style="margin:0 8px;">|</span>
+                ID: <b style="color:white;">#{deal_id}</b> |
                 Действий: <b style="color:white;">{logs_count}</b>
             </div>
         </div>
-        '''
-        return mark_safe(html)
+        ''')
 
     deal_header.short_description = 'Сделка'
 
     def deal_history(self, obj):
         logs = self.get_all_logs_for_deal(obj)
 
-        html = '<div style="display:flex;flex-direction:column;gap:12px;">'
+        html = '<div style="display:flex;flex-direction:column;gap:12px;margin-left:0;max-width:950px;width:100%;">'
 
         for log in logs:
             html += self.render_log_card(log)
@@ -309,7 +310,6 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
         }
 
         color = colors.get(log.action) or colors.get(log.get_action_display(), '#4f7c8a')
-        changes_html = self.render_changes(log)
 
         return f'''
         <div style="background:#1e1e1e;border-left:6px solid {color};border-radius:12px;padding:14px;">
@@ -322,14 +322,13 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
                     <div style="color:#aaa;font-size:12px;">
                         {log.created_at.strftime('%d.%m.%Y %H:%M:%S')}
                     </div>
-                    <div style="color:#ffffff;font-weight:700;font-size:14px;margin-top:2px;">
+                    <div style="color:#fff;font-weight:700;">
                         👤 {log.user or '—'}
                     </div>
                 </div>
             </div>
-
             <div style="margin-top:10px;">
-                {changes_html}
+                {self.render_changes(log)}
             </div>
         </div>
         '''
@@ -341,27 +340,24 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
         before_items = before.get('items', [])
         after_items = after.get('items', [])
 
-        max_len = max(len(before_items), len(after_items))
-
         item_fields = {
             'requested_quantity': 'Заказано',
-            'fulfilled_quantity': 'Передано',
+            'fulfilled_quantity': 'Выполнено',
             'quantity_after': 'Остаток на складе',
         }
 
         grouped = {}
 
-        for i in range(max_len):
+        for i in range(max(len(before_items), len(after_items))):
             old_item = before_items[i] if i < len(before_items) else None
             new_item = after_items[i] if i < len(after_items) else None
 
             if not old_item or not new_item:
                 continue
 
-            product = new_item.get('product') or old_item.get('product') or 'Товар'
+            product = new_item.get('product') or 'Товар'
 
-            if product not in grouped:
-                grouped[product] = []
+            grouped.setdefault(product, [])
 
             for key, label in item_fields.items():
                 old = old_item.get(key)
@@ -383,33 +379,29 @@ class TradingAuditLogAdmin(admin.ModelAdmin):
 
         for product, changes in grouped.items():
             html += f'''
-            <div style="background:#151515;border:1px solid #2a2a2a;border-radius:10px;padding:10px;">
+            <div style="background:#151515;border:1px solid #2a2a2a;border-radius:10px;padding:14px;width:100%;box-sizing:border-box;">
                 <div style="font-weight:800;margin-bottom:8px;color:#fff;">
                     📦 {product}
                 </div>
-
-                <table style="width:100%;border-collapse:collapse;">
+                <table style="width:100%;border-collapse:collapse;table-layout:fixed;">
             '''
 
             for label, old, new in changes:
                 html += f'''
                 <tr>
-                    <td style="padding:6px;color:#ddd;width:34%;">{label}</td>
-                    <td style="padding:6px;width:33%;">
+                    <td style="padding:8px 10px;color:#ddd;width:40%;font-size:14px;">{label}</td>
+                    <td style="padding:8px 10px;width:30%;font-size:14px;">
                         <span style="color:#aaa;">было:</span>
                         <span style="color:#e74c3c;font-weight:600;"> {old}</span>
                     </td>
-                    <td style="padding:6px;width:33%;">
+                    <td style="padding:8px 10px;width:30%;font-size:14px;">
                         <span style="color:#aaa;">стало:</span>
                         <span style="color:#2ecc71;font-weight:700;"> {new}</span>
                     </td>
                 </tr>
                 '''
 
-            html += '''
-                </table>
-            </div>
-            '''
+            html += '</table></div>'
 
         html += '</div>'
         return html

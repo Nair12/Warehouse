@@ -331,7 +331,7 @@
                             <td>{{ row.warehouse }}</td>
                             <td>
                                 <span class="qty-badge {% if row.quantity == 0 %}zero{% endif %}">
-                                    {{ row.quantity }}
+                                    {{ row.quantity }} {{ product.get_unit_display }}
                                 </span>
                             </td>
 

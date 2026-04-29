@@ -23,10 +23,6 @@ def home_view(request):
 
 
 def role_redirect_view(request):
-    print(
-        f"User: {request.user}, Auth: {request.user.is_authenticated}, Role: {getattr(request.user, 'role', 'no role')}"
-    )
-
     if not request.user.is_authenticated:
         return redirect('/login/')
 
@@ -41,10 +37,6 @@ def role_redirect_view(request):
 
     return redirect('/login/')
 
-
-import json
-from django.db.models import Sum
-from django.db.models.functions import TruncDate
 
 @role_required(["manager", "senior_manager"])
 def manager_dashboard(request):
@@ -97,11 +89,12 @@ def manager_dashboard(request):
                 "purchase": 0,
             }
 
-        grouped[day_str][row["trade_type"]] = row["total"] or 0
+        grouped[day_str][row["trade_type"]] = float(row["total"] or 0)
 
     chart_labels = list(grouped.keys())
-    sales_values = [grouped[day]["sell"] for day in chart_labels]
-    purchase_values = [grouped[day]["purchase"] for day in chart_labels]
+    sales_values = [float(grouped[day]["sell"]) for day in chart_labels]
+    purchase_values = [float(grouped[day]["purchase"]) for day in chart_labels]
+
     popular_products = (
         Trading.objects
         .filter(trade_type=Trading.TradeType.SELL)
@@ -115,7 +108,7 @@ def manager_dashboard(request):
         "role": request.user.role,
         "products_count": products_count,
         "warehouses_count": warehouses_count,
-        "total_inventory": total_inventory,
+        "total_inventory": float(total_inventory),
         "last_trades": last_trades,
         "sales_labels": json.dumps(chart_labels),
         "sales_values": json.dumps(sales_values),
@@ -220,7 +213,6 @@ def global_search(request):
     return render(request, "users/search_results.html", context)
 
 
-import json
 from django.http import JsonResponse
 def set_timezone(request):
     if request.method == "POST":

@@ -33,9 +33,11 @@
                 <tr>
                     <td>{{ item.product }}</td>
                     <td>{{ item.warehouse }}</td>
-                    <td>{{ item.requested_quantity }}</td>
-                    <td>{{ item.fulfilled_quantity }}</td>
-                    <td>{{ item.remaining_quantity }}</td>
+
+                    <td>{{ item.requested_quantity }} {{ item.product.get_unit_display }}</td>
+                    <td>{{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</td>
+                    <td>{{ item.remaining_quantity }} {{ item.product.get_unit_display }}</td>
+
                     <td>
                         {% if item.remaining_quantity > 0 %}
                             <form method="post" style="display:flex; gap:8px; align-items:center;">
@@ -46,9 +48,10 @@
                                     type="number"
                                     name="quantity"
                                     min="1"
+                                    step="1"
                                     max="{{ item.remaining_quantity }}"
                                     required
-                                    placeholder="Кол-во"
+                                    placeholder="{{ item.product.get_unit_display }}"
                                     style="padding: 6px; width: 90px;"
                                 >
 
