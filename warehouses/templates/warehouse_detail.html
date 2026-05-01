@@ -1,6 +1,7 @@
 {% extends "products/base.html" %}
 
 {% block content %}
+
 <style>
     .container {
         max-width: 1100px;
@@ -11,7 +12,44 @@
     .title {
         font-size: 34px;
         font-weight: 700;
-        margin-bottom: 24px;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        gap: 10px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn {
+        padding: 10px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+        color: white;
+    }
+
+    .transfer-btn {
+        background: #2e7d32;
+    }
+
+    .transfer-btn:hover {
+        background: #1b5e20;
+    }
+
+    .history-btn {
+        background: #417690;
+    }
+
+    .history-btn:hover {
+        background: #2b5063;
     }
 
     .search-form {
@@ -26,18 +64,6 @@
         border: 1px solid #ddd;
         padding: 6px 10px;
         max-width: 420px;
-        transition: 0.2s;
-    }
-
-    .search-box:focus-within {
-        border-color: #417690;
-        box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.15);
-    }
-
-    .search-icon {
-        margin-right: 8px;
-        color: #888;
-        font-size: 15px;
     }
 
     .search-input {
@@ -55,13 +81,8 @@
         padding: 10px 16px;
         border-radius: 10px;
         cursor: pointer;
-        transition: 0.2s;
         font-size: 14px;
         font-weight: 600;
-    }
-
-    .search-btn:hover {
-        background: #2b5063;
     }
 
     .products-list {
@@ -75,20 +96,13 @@
         border-radius: 18px;
         padding: 20px 24px;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
-        transition: 0.2s;
         border: 1px solid #f0f0f0;
-    }
-
-    .card:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 34px rgba(0, 0, 0, 0.10);
     }
 
     .row {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        gap: 20px;
     }
 
     .product-link {
@@ -96,27 +110,14 @@
         font-weight: 600;
         color: #2f2f2f;
         text-decoration: none;
-        transition: 0.2s;
-    }
-
-    .product-link:hover {
-        color: #417690;
     }
 
     .qty {
         font-weight: 700;
-        font-size: 16px;
         padding: 8px 14px;
         border-radius: 20px;
         background: #e6f7ec;
         color: #2e7d32;
-        min-width: 80px;
-        text-align: center;
-    }
-
-    .qty.zero {
-        background: #ffecec;
-        color: #c0392b;
     }
 
     .empty {
@@ -124,49 +125,50 @@
         font-size: 18px;
         color: #777;
         text-align: center;
-        background: white;
-        padding: 30px;
-        border-radius: 18px;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
     }
 </style>
 
 <div class="container">
-    <div class="title">Склад: {{ warehouse.name }}</div>
+    <div class="top-bar">
+        <div class="title">Склад: {{ warehouse.city }}</div>
 
-    <form method="get" class="search-form">
-        <div class="search-box">
-            <span class="search-icon">🔍</span>
-            <input
-                type="text"
-                name="q"
-                value="{{ request.GET.q }}"
-                placeholder="Поиск по товарам..."
-                class="search-input"
-            >
-            <button type="submit" class="search-btn">Найти</button>
-        </div>
-    </form>
 
-    {% if inventory %}
-        <div class="products-list">
-            {% for item in inventory %}
-                <div class="card">
-                    <div class="row">
-                        <div>
-                            <a href="{% url 'products:product_detail' item.product.pk %}" class="product-link">
-                                {{ item.product.name }}
-                            </a>
-                        </div>
-                        <div class="qty {% if item.quantity == 0 %}zero{% endif %}">
-                            {{ item.quantity }} {{ item.product.get_unit_display }}
-                        </div>
+    <div class="actions">
+        <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="btn transfer-btn">
+            Переместить товар
+        </a>
+
+        <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="btn history-btn">
+            История перемещений
+        </a>
+    </div>
+</div>
+
+<form method="get" class="search-form">
+    <div class="search-box">
+        <input type="text" name="q" value="{{ request.GET.q }}" placeholder="Поиск..." class="search-input">
+        <button type="submit" class="search-btn">Найти</button>
+    </div>
+</form>
+
+{% if inventory %}
+    <div class="products-list">
+        {% for item in inventory %}
+            <div class="card">
+                <div class="row">
+                    <a href="{% url 'products:product_detail' item.product.pk %}" class="product-link">
+                        {{ item.product.name }}
+                    </a>
+                    <div class="qty">
+                        {{ item.quantity }} {{ item.product.get_unit_display }}
                     </div>
                 </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="empty">На складе нет товаров</div>
-    {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="empty">На складе нет товаров</div>
+{% endif %}
+
 </div>
 {% endblock %}

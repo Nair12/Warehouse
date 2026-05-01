@@ -175,7 +175,6 @@
         }
 
 
-        /* header */
         .header {
             background: #417690;
             padding: 15px 30px;
@@ -184,19 +183,16 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
-        /* бренд */
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        /* логотип */
         .logo-img {
             width: 34px;
             height: 34px;
             border-radius: 8px;
-
             padding: 4px;
             object-fit: cover;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
@@ -207,7 +203,6 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        /* текст */
         .logo-text {
             font-size: 20px;
             font-weight: 700;
@@ -250,7 +245,10 @@
         <a href="{% url 'warehouse_list' %}">Склады</a>
         <a href="{% url 'products:product_list' %}">Продукты</a>
 
-        <!-- 🔍 ПОИСК -->
+        <!-- НОВОЕ -->
+
+        <a href="{% url 'warehouses:warehouse_transfer_history' %}">Перемещения</a>
+
         <form method="get" action="{% url 'global_search' %}" class="search-form">
             <input type="text" name="q" placeholder="Поиск..." class="search-input">
             <button type="submit" class="search-btn">🔍</button>
@@ -276,6 +274,7 @@
 <div class="container">
     {% block manager_content %}{% endblock %}
 </div>
+
 <script>
     (function() {
         const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;

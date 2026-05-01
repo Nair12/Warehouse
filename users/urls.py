@@ -7,7 +7,8 @@ from .views import (
     reader_dashboard,
     warehouse_create_view,
     warehouse_list_view,
-    global_search, set_timezone,
+    global_search,
+    set_timezone,
 )
 
 urlpatterns = [
@@ -27,5 +28,6 @@ urlpatterns = [
 
     path('search/', global_search, name='global_search'),
 
+    # 🔥 авто-обновление timezone пользователя
     path("set-timezone/", set_timezone, name="set_timezone"),
 ]

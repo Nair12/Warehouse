@@ -1,5 +1,7 @@
 from django.db.models import Sum
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
 
 from products.forms import ProductForm
@@ -214,8 +216,23 @@ def global_search(request):
 
 
 from django.http import JsonResponse
+
+
+@login_required
+@require_POST
 def set_timezone(request):
-    if request.method == "POST":
+    try:
         data = json.loads(request.body)
-        request.session["django_timezone"] = data.get("timezone")
-        return JsonResponse({"status": "ok"})
+    except json.JSONDecodeError:
+        return JsonResponse({"status": "error", "message": "Некорректный JSON"}, status=400)
+
+    timezone_name = data.get("timezone")
+
+    if not timezone_name:
+        return JsonResponse({"status": "error", "message": "Часовой пояс не передан"}, status=400)
+
+    if request.user.timezone != timezone_name:
+        request.user.timezone = timezone_name
+        request.user.save(update_fields=["timezone"])
+
+    return JsonResponse({"status": "ok", "timezone": timezone_name})

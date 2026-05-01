@@ -117,7 +117,6 @@
             transition: 0.3s;
         }
 
-
         .logo-text:hover {
             letter-spacing: 2px;
         }
@@ -133,8 +132,6 @@
 
     <nav class="nav-menu">
         <a href="{% url 'products:product_list' %}">Товары</a>
-
-
     </nav>
 
     <div class="user-block">
@@ -159,20 +156,31 @@
 <main class="main-container">
     {% block content %}{% endblock %}
 </main>
-<script>
-    (function() {
-        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-        fetch("/users/set-timezone/", {
+{% if user.is_authenticated %}
+<script>
+    (function () {
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        if (!timezone) {
+            return;
+        }
+
+        fetch("{% url 'set_timezone' %}", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRFToken": "{{ csrf_token }}"
             },
-            body: JSON.stringify({ timezone: tz })
+            body: JSON.stringify({
+                timezone: timezone
+            })
+        }).catch(function () {
+            // Если timezone не отправился, страница всё равно должна работать.
         });
     })();
 </script>
+{% endif %}
 
 </body>
 </html>

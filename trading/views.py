@@ -1,14 +1,13 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.db import transaction, models
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseForbidden
 from django.forms import formset_factory
 
-from .models import Trading, TradingItem, TradingAuditLog
-from .forms import TradingForm, TradingItemForm, AttachmentFormSet
+from .models import Trading, TradingItem, TradingAuditLog, TradingComment
+from .forms import TradingForm, TradingItemForm, AttachmentFormSet, TradingCommentForm
 from products.models import Inventory
 from users.decorators import role_required
-
 
 TradingItemFormSet = formset_factory(TradingItemForm, extra=1)
 
@@ -46,6 +45,13 @@ def create_trading_audit_log(trading, user, action, description, before_data=Non
         description=description,
         before_data=before_data or {},
         after_data=after_data or {},
+    )
+
+
+def manager_24h_limit_expired(user, trading):
+    return (
+        getattr(user, 'role', None) == 'manager'
+        and not trading.can_be_modified
     )
 
 
@@ -208,11 +214,52 @@ def trading_detail(request, pk):
         for item in grouped_items
     )
 
+    # 🔥 КОММЕНТАРИИ
+    comments = trading.comments.select_related("user").all()
+
+    if request.method == "POST":
+        comment_form = TradingCommentForm(request.POST)
+
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.trading = trading
+            comment.user = request.user
+            comment.save()
+
+            messages.success(request, "Комментарий добавлен.")
+            return redirect("trading_detail", pk=trading.pk)
+    else:
+        comment_form = TradingCommentForm()
+
     return render(request, 'trading/trading_detail.html', {
         'trading': trading,
         'grouped_items': grouped_items,
         'has_remaining': has_remaining,
+        'comments': comments,
+        'comment_form': comment_form,
     })
+
+
+@role_required(['admin', 'manager', "senior_manager"])
+def trading_comment_delete(request, pk, comment_id):
+    trading = get_object_or_404(Trading, pk=pk)
+
+    comment = get_object_or_404(
+        TradingComment,
+        pk=comment_id,
+        trading=trading
+    )
+
+    if comment.user != request.user:
+        messages.error(request, "Можно удалить только свой комментарий.")
+        return redirect("trading_detail", pk=trading.pk)
+
+    if request.method != "POST":
+        return HttpResponseForbidden("Удаление комментария доступно только через POST-запрос.")
+
+    comment.delete()
+    messages.success(request, "Комментарий удален.")
+    return redirect("trading_detail", pk=trading.pk)
 
 
 @role_required(['admin', 'manager', "senior_manager"])
@@ -373,6 +420,10 @@ def trading_update(request, pk):
 
     if not trading.can_be_edited:
         messages.error(request, "Можно редактировать только незавершенные сделки.")
+        return redirect('trading_detail', pk=trading.pk)
+
+    if manager_24h_limit_expired(request.user, trading):
+        messages.error(request, "Менеджер может редактировать сделку только в течение 24 часов после создания.")
         return redirect('trading_detail', pk=trading.pk)
 
     TradingItemEditFormSet = formset_factory(
@@ -596,10 +647,8 @@ def trading_delete(request, pk):
         pk=pk
     )
 
-    if (
-        not trading.can_be_modified
-        and getattr(request.user, 'role', None) not in ['admin', 'senior_manager']
-    ):
+    if manager_24h_limit_expired(request.user, trading):
+        messages.error(request, "Менеджер может удалить сделку только в течение 24 часов после создания.")
         return redirect('trading_detail', pk=trading.pk)
 
     if request.method == 'POST':

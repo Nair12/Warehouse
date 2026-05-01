@@ -16,6 +16,12 @@ class CustomUser(AbstractUser):
         verbose_name="Роль"
     )
 
+    timezone = models.CharField(
+        max_length=50,
+        default="Asia/Baku",
+        verbose_name="Часовой пояс"
+    )
+
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Создан")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Обновлен")
 

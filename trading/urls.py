@@ -12,9 +12,11 @@ urlpatterns = [
     path('<int:pk>/fulfill/', views.trading_fulfill, name='trading_fulfill'),
     path('<int:pk>/edit/', views.trading_update, name='trading_update'),
 
-    # 🔥 НОВОЕ — удаление сделки
+    # 🔥 удаление сделки
     path('<int:pk>/delete/', views.trading_delete, name='trading_delete'),
 
-    path('get-stock/', views.get_stock, name='get_stock'),
+    # 🔥 удаление комментария
+    path('<int:pk>/comments/<int:comment_id>/delete/', views.trading_comment_delete, name='trading_comment_delete'),
+
     path('get-stock/', views.get_stock, name='get_stock'),
 ]

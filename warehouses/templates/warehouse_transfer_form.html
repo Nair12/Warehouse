@@ -1,0 +1,217 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .card {
+        background: white;
+        border-radius: 18px;
+        padding: 28px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid #f0f0f0;
+    }
+
+    .title {
+        font-size: 30px;
+        font-weight: 700;
+        margin-bottom: 24px;
+        color: #2f2f2f;
+    }
+
+    .form-group {
+        margin-bottom: 18px;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: #333;
+    }
+
+    .form-group select,
+    .form-group input {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid #ddd;
+        border-radius: 12px;
+        font-size: 15px;
+        outline: none;
+        box-sizing: border-box;
+        transition: 0.2s;
+        background: white;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        border-color: #417690;
+        box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.15);
+    }
+
+    .stock-info {
+        margin-top: 8px;
+        padding: 10px 12px;
+        border-radius: 10px;
+        background: #eef7fb;
+        color: #2b5063;
+        font-weight: 600;
+        font-size: 14px;
+        display: none;
+    }
+
+    .stock-info.warning {
+        background: #ffecec;
+        color: #c0392b;
+    }
+
+    .error-box {
+        background: #ffecec;
+        color: #c0392b;
+        padding: 14px 16px;
+        border-radius: 12px;
+        margin-bottom: 18px;
+        font-weight: 600;
+    }
+
+    .field-error {
+        color: #c0392b;
+        font-size: 14px;
+        margin-top: 6px;
+    }
+
+    .actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 24px;
+        align-items: center;
+    }
+
+    .submit-btn {
+        background: #2e7d32;
+        color: white;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 12px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+        font-size: 15px;
+    }
+
+    .submit-btn:hover {
+        background: #1b5e20;
+    }
+
+    .back-link {
+        color: #417690;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="container">
+    <div class="card">
+        <div class="title">Перемещение товара между складами</div>
+
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="error-box">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label for="{{ form.product.id_for_label }}">Товар</label>
+                {{ form.product }}
+                {% for error in form.product.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.from_warehouse.id_for_label }}">Со склада</label>
+                {{ form.from_warehouse }}
+                <div id="stock-info" class="stock-info"></div>
+                {% for error in form.from_warehouse.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.to_warehouse.id_for_label }}">На склад</label>
+                {{ form.to_warehouse }}
+                {% for error in form.to_warehouse.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.quantity.id_for_label }}">Количество</label>
+                {{ form.quantity }}
+                {% for error in form.quantity.errors %}
+                    <div class="field-error">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="submit-btn">Переместить товар</button>
+                <a href="javascript:history.back()" class="back-link">Назад</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const productSelect = document.getElementById("id_product");
+    const fromWarehouseSelect = document.getElementById("id_from_warehouse");
+    const stockInfo = document.getElementById("stock-info");
+
+    function updateStockInfo() {
+        const productId = productSelect.value;
+        const warehouseId = fromWarehouseSelect.value;
+
+        if (!productId || !warehouseId) {
+            stockInfo.style.display = "none";
+            stockInfo.textContent = "";
+            stockInfo.classList.remove("warning");
+            return;
+        }
+
+        fetch(`/warehouses/api/inventory-quantity/?product_id=${productId}&warehouse_id=${warehouseId}`)
+            .then(response => response.json())
+            .then(data => {
+                stockInfo.style.display = "block";
+                stockInfo.textContent = data.message;
+
+                if (data.quantity <= 0) {
+                    stockInfo.classList.add("warning");
+                } else {
+                    stockInfo.classList.remove("warning");
+                }
+            })
+            .catch(() => {
+                stockInfo.style.display = "block";
+                stockInfo.textContent = "Не удалось загрузить остаток товара";
+                stockInfo.classList.add("warning");
+            });
+    }
+
+    productSelect.addEventListener("change", updateStockInfo);
+    fromWarehouseSelect.addEventListener("change", updateStockInfo);
+
+    updateStockInfo();
+</script>
+{% endblock %}

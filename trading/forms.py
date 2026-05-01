@@ -1,13 +1,14 @@
+# trading/forms.py
+
 from django import forms
 from django.forms import inlineformset_factory
 
-from .models import Trading, TradingItem, TradingAttachment
+from .models import Trading, TradingItem, TradingAttachment, TradingComment
 
 
 class TradingForm(forms.ModelForm):
     class Meta:
         model = Trading
-        # ❗ УБРАЛИ product, warehouse, quantity
         fields = ['name', 'trade_type', 'comment']
 
         widgets = {
@@ -124,3 +125,21 @@ AttachmentFormSet = inlineformset_factory(
     extra=3,
     can_delete=True
 )
+
+
+class TradingCommentForm(forms.ModelForm):
+    class Meta:
+        model = TradingComment
+        fields = ['text']
+
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Напишите комментарий...'
+            })
+        }
+
+        labels = {
+            'text': 'Комментарий',
+        }

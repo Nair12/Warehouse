@@ -1,0 +1,131 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+
+<style>
+    .container {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+
+    .title {
+        font-size: 32px;
+        font-weight: 700;
+    }
+
+    .create-btn {
+        background: #2e7d32;
+        color: white;
+        padding: 10px 16px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: 0.2s;
+    }
+
+    .create-btn:hover {
+        background: #1b5e20;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .table th, .table td {
+        padding: 14px 16px;
+        text-align: left;
+    }
+
+    .table th {
+        background: #417690;
+        color: white;
+        font-weight: 600;
+    }
+
+    .table tr:nth-child(even) {
+        background: #f9f9f9;
+    }
+
+    .badge {
+        padding: 6px 10px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 600;
+        background: #e6f7ec;
+        color: #2e7d32;
+    }
+
+    .empty {
+        margin-top: 30px;
+        font-size: 18px;
+        color: #777;
+        text-align: center;
+    }
+</style>
+
+<div class="container">
+
+
+<div class="top-bar">
+    <div class="title">Перемещения</div>
+
+    <a href="{% url 'warehouses:warehouse_transfer_create' %}" class="create-btn">
+        + Создать перемещение
+    </a>
+</div>
+
+{% if transfers %}
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Откуда</th>
+                <th>Куда</th>
+                <th>Количество</th>
+                <th>Кто</th>
+                <th>Дата</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for t in transfers %}
+                <tr>
+                    <td>{{ t.product.name }}</td>
+                    <td>{{ t.from_warehouse.city }}</td>
+                    <td>{{ t.to_warehouse.city }}</td>
+                    <td>
+                        <span class="badge">
+                            {{ t.quantity }} {{ t.product.get_unit_display }}
+                        </span>
+                    </td>
+                    <td>
+                        {% if t.created_by %}
+                            {{ t.created_by }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </td>
+                    <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <div class="empty">Пока нет перемещений</div>
+{% endif %}
+
+
+</div>
+{% endblock %}

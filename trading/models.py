@@ -339,3 +339,45 @@ class TradingAuditLog(models.Model):
 
     def __str__(self):
         return f"{self.get_action_display()} — сделка #{self.trading_id_snapshot or self.trading_id}"
+
+
+class TradingComment(models.Model):
+    trading = models.ForeignKey(
+        Trading,
+        on_delete=models.CASCADE,
+        related_name="comments",
+        verbose_name="Сделка"
+    )
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="trading_comments",
+        verbose_name="Пользователь"
+    )
+
+    text = models.TextField(
+        verbose_name="Комментарий"
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name="Дата"
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True,
+        verbose_name="Обновлено"
+    )
+
+    class Meta:
+        ordering = ["-created_at"]
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
+
+    @property
+    def can_be_deleted_by_owner(self):
+        return True
+
+    def __str__(self):
+        return f"Комментарий к сделке #{self.trading.id}"

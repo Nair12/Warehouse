@@ -34,9 +34,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+
+    # Включает часовой пояс текущего пользователя.
+    'users.middleware.TimezoneMiddleware',
+
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'users.middleware.TimezoneMiddleware',
 ]
 
 ROOT_URLCONF = 'Warehouse.urls'
@@ -94,6 +97,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ru-ru'
 
+# База хранит время в UTC.
+# Показывать пользователю его локальное время будет TimezoneMiddleware.
 TIME_ZONE = 'UTC'
 
 USE_I18N = True

@@ -5,207 +5,285 @@
 {% block manager_content %}
 
 <style>
-body {
-    background: #f4f7fb;
+.container { max-width: 1200px; margin: 40px auto; }
+.title { font-size: 32px; font-weight: 700; margin-bottom: 25px; }
+.card {
+    background: white; border-radius: 20px; padding: 28px 32px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px;
+}
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 60px; }
+.label { font-size: 14px; color: #888; margin-bottom: 4px; }
+.value { font-size: 17px; font-weight: 600; }
+
+.section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+
+.item-card {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:22px 24px; border-radius:16px; margin-bottom:14px;
+    background:#f9fbfc; border:1px solid #eee; transition:0.2s;
+}
+.item-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
 }
 
-.module {
-    background: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-    margin-bottom: 20px;
-    overflow: hidden;
-}
+.item-left { display:flex; flex-direction:column; gap:4px; }
+.item-title { font-weight:700; font-size:18px; }
+.item-meta { font-size:14px; color:#777; }
 
-.module h2 {
-    margin: 0;
-    padding: 14px 18px;
-    background: #4f7c8a;
-    color: white;
-    font-size: 16px;
-}
+.qty-block { display:flex; flex-direction:column; gap:4px; font-size:14px; }
 
-.module-content {
+.badge { padding:7px 12px; border-radius:12px; font-size:13px; font-weight:600; }
+.badge.pending { background:#fff3cd; color:#856404; }
+.badge.done { background:#e6f7ec; color:#2e7d32; }
+.badge.fail { background:#ffecec; color:#c0392b; }
+
+.comments-box {
+    background: #f8fafc;
+    border: 1px solid #d0d7de; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    border-radius: 18px;
     padding: 18px;
+    margin-bottom: 22px;
 }
 
-.styled-table {
+.comment-form textarea {
     width: 100%;
-    border-collapse: collapse;
-    font-size: 14px;
+    min-height: 110px;
+    border-radius: 16px;
+    border: 1px solid #dfe5eb;
+    background: #fff;
+    padding: 14px 16px;
+    font-size: 15px;
+    line-height: 1.5;
+    outline: none;
+    resize: vertical;
+    box-sizing: border-box;
 }
 
-.styled-table th {
-    text-align: left;
-    background: #f5f7fa;
-    padding: 10px;
-    border-bottom: 2px solid #ddd;
+.comment-form textarea:focus {
+    border-color: #417690;
+    box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.12);
 }
 
-.styled-table td {
-    padding: 10px;
-    border-bottom: 1px solid #eee;
+.comment-form-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
 }
 
-.styled-table tr:hover {
-    background-color: #f9fbfc;
+.comment-card {
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1px solid #d0d7de; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    background: #ffffff; border-left: 4px solid #417690;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
 }
 
-.status-badge {
-    padding: 5px 10px;
-    border-radius: 8px;
-    font-weight: 600;
+.comment-left {
+    flex: 1;
+}
+
+.comment-user { font-weight:700; margin-bottom:4px; color:#2c3e50; }
+
+.comment-text {
+    font-size: 15px;
+    line-height: 1.55;
+    margin-bottom: 8px;
+    white-space: pre-wrap;
+}
+
+.comment-meta {
     font-size: 13px;
+    color: #777;
 }
 
-.status-pending {
-    background: #f0ad4e;
-    color: black;
+.comment-delete-form {
+    margin: 0;
 }
 
-.status-done {
-    background: #5cb85c;
-    color: white;
+.comment-delete-btn {
+    border: none;
+    background: #fff1f1;
+    color: #c0392b;
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.status-fail {
-    background: #d9534f;
-    color: white;
+.comment-delete-btn:hover {
+    background: #ffe0e0;
 }
 
-.action-link {
-    background: #4f7c8a;
-    color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: 0.2s;
-}
+.actions { margin-top:25px; display:flex; gap:12px; }
 
-.action-link:hover {
-    background: #3c626e;
+.btn {
+    padding:12px 18px; border-radius:12px; text-decoration:none;
+    font-weight:600; color:white; font-size:14px; border:none; cursor:pointer;
 }
-
-.action-warning {
-    background: #f0ad4e;
-    color: black;
-}
-
-.action-warning:hover {
-    background: #e39c3d;
-}
+.btn-blue { background:#417690; }
+.btn-green { background:#2e7d32; }
+.btn-red { background:#d9534f; }
+.btn-orange { background:#f0ad4e; color:black; }
 </style>
 
-<h1 style="margin-bottom:20px;">Сделка #{{ trading.id }}</h1>
+<div class="container">
 
-<div class="module">
-    <h2>Информация о сделке</h2>
-    <div class="module-content">
-        <table class="styled-table">
-            <tbody>
-            <tr><th>ID</th><td>{{ trading.id }}</td></tr>
-            <tr><th>Название</th><td>{{ trading.name|default:"Без названия" }}</td></tr>
-            <tr>
-                <th>Тип</th>
-                <td>
-                    {% if trading.trade_type == "purchase" %}
-                        <span style="color:green;font-weight:600;">Покупка</span>
-                    {% else %}
-                        <span style="color:#b94a48;font-weight:600;">Продажа</span>
-                    {% endif %}
-                </td>
-            </tr>
-            <tr><th>Пользователь</th><td>{{ trading.user.username }}</td></tr>
-            <tr><th>Комментарий</th><td>{{ trading.comment|default:"—" }}</td></tr>
-            <tr><th>Создано</th><td>{{ trading.created_at|date:"d.m.Y H:i" }}</td></tr>
-            <tr><th>Обновлено</th><td>{{ trading.updated_at|date:"d.m.Y H:i" }}</td></tr>
-            </tbody>
-        </table>
+<div class="title">Сделка #{{ trading.id }}</div>
+
+<div class="card">
+    <div class="grid">
+        <div>
+            <div class="label">Название</div>
+            <div class="value">{{ trading.name|default:"Без названия" }}</div>
+        </div>
+
+        <div>
+            <div class="label">Тип</div>
+            <div class="value">
+                {% if trading.trade_type == "purchase" %}
+                    <span style="color:green;">Покупка</span>
+                {% else %}
+                    <span style="color:#b94a48;">Продажа</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div>
+            <div class="label">Пользователь</div>
+            <div class="value">{{ trading.user.username }}</div>
+        </div>
+
+        <div>
+            <div class="label">Комментарий</div>
+            <div class="value">{{ trading.comment|default:"—" }}</div>
+        </div>
+
+        <div>
+            <div class="label">Создано</div>
+            <div class="value">{{ trading.created_at|date:"d.m.Y H:i" }}</div>
+        </div>
+
+        <div>
+            <div class="label">Обновлено</div>
+            <div class="value">{{ trading.updated_at|date:"d.m.Y H:i" }}</div>
+        </div>
     </div>
 </div>
 
-<div class="module">
-    <h2>Позиции сделки</h2>
-    <div class="module-content">
-        {% if grouped_items %}
-        <table class="styled-table">
-            <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Склад</th>
-                <th>Заказано</th>
-                <th>Выполнено</th>
-                <th>Осталось</th>
-                <th>Статус</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for item in grouped_items %}
-            <tr>
-                <td>{{ item.product }}</td>
-                <td>{{ item.warehouse|default:"—" }}</td>
-                <td>{{ item.requested_quantity }} {{ item.product.get_unit_display }}</td>
-                <td>{{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</td>
-                <td>{{ item.remaining_quantity }} {{ item.product.get_unit_display }}</td>
-                <td>
-                    {% if item.remaining_quantity == item.requested_quantity %}
-                        <span class="status-badge status-fail">Не выполнено</span>
-                    {% elif item.remaining_quantity > 0 %}
-                        <span class="status-badge status-pending">В процессе</span>
-                    {% else %}
-                        <span class="status-badge status-done">Выполнено</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-            <p>Нет позиций сделки.</p>
-        {% endif %}
+<div class="card">
+    <div class="section-title">Позиции</div>
+
+    {% for item in grouped_items %}
+    <div class="item-card">
+        <div class="item-left">
+            <div class="item-title">{{ item.product }}</div>
+            <div class="item-meta">{{ item.warehouse|default:"—" }}</div>
+        </div>
+
+        <div class="qty-block">
+            <div>Заказ: {{ item.requested_quantity }} {{ item.product.get_unit_display }}</div>
+            <div>Вып: {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</div>
+            <div>Ост: {{ item.remaining_quantity }} {{ item.product.get_unit_display }}</div>
+        </div>
+
+        <div>
+            {% if item.remaining_quantity == item.requested_quantity %}
+                <span class="badge fail">Не выполнено</span>
+            {% elif item.remaining_quantity > 0 %}
+                <span class="badge pending">В процессе</span>
+            {% else %}
+                <span class="badge done">Выполнено</span>
+            {% endif %}
+        </div>
     </div>
+    {% empty %}
+        <p>Нет позиций сделки</p>
+    {% endfor %}
 </div>
 
-<div class="module">
-    <h2>📎 Документы</h2>
-    <div class="module-content">
-        {% if trading.attachments.all %}
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px;">
-            {% for attachment in trading.attachments.all %}
-            <div style="border:1px solid #eee;border-radius:10px;padding:15px;text-align:center;">
-                <div style="font-size:40px;">📄</div>
-                <div style="font-size:13px;margin:10px 0;">
-                    {{ attachment.file.name|cut:"trading_attachments/" }}
-                </div>
-                <a href="{{ attachment.file.url }}" target="_blank" class="action-link">
-                    Открыть
+<div class="card">
+    <div class="section-title">Документы</div>
+
+    {% if trading.attachments.all %}
+        {% for attachment in trading.attachments.all %}
+            <div style="margin-bottom:12px;">
+                <a href="{{ attachment.file.url }}" target="_blank" class="btn btn-blue">
+                    📄 {{ attachment.file.name }}
                 </a>
             </div>
-            {% endfor %}
-        </div>
-        {% else %}
-            <p>Нет документов</p>
-        {% endif %}
-    </div>
+        {% endfor %}
+    {% else %}
+        <p>Нет документов</p>
+    {% endif %}
 </div>
 
-<div style="margin-top:20px;">
-    {% if trading.status == "pending" %}
-        <a href="{% url 'trading_update' trading.id %}" class="action-link">Редактировать</a>
+<div class="card">
+    <div class="section-title">Комментарии</div>
+
+    <div class="comments-box">
+        <form method="post" class="comment-form">
+            {% csrf_token %}
+            {{ comment_form.text }}
+
+            <div class="comment-form-footer">
+                <button type="submit" class="btn btn-green">💬 Добавить комментарий</button>
+            </div>
+        </form>
+    </div>
+
+    {% for c in comments %}
+        <div class="comment-card">
+            <div class="comment-left">
+                <div class="comment-user">{{ c.user.username }}</div>
+                <div class="comment-text">{{ c.text }}</div>
+                <div class="comment-meta">{{ c.created_at|date:"d.m.Y H:i" }}</div>
+            </div>
+
+            {% if c.user == request.user %}
+                <form method="post"
+                      action="{% url 'trading_comment_delete' trading.id c.id %}"
+                      class="comment-delete-form"
+                      onsubmit="return confirm('Удалить комментарий?');">
+                    {% csrf_token %}
+                    <button type="submit" class="comment-delete-btn">Удалить</button>
+                </form>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>Комментариев пока нет</p>
+    {% endfor %}
+</div>
+
+<div class="actions">
+    {% if request.user.role == "manager" and not trading.can_be_modified %}
+        {# Менеджер после 24 часов не видит кнопки редактирования и удаления #}
     {% else %}
-        <span style="color:#999;">Редактирование недоступно</span>
+        {% if trading.status == "pending" %}
+            <a href="{% url 'trading_update' trading.id %}" class="btn btn-blue">Редактировать</a>
+        {% endif %}
+
+        <a href="{% url 'trading_delete' trading.id %}" class="btn btn-red">
+            Удалить
+        </a>
     {% endif %}
 
-    <a href="{% url 'trading_fulfill' trading.id %}" class="action-link action-warning">
-        Дополнить заказ
-    </a>
+    {% if has_remaining %}
+        <a href="{% url 'trading_fulfill' trading.id %}" class="btn btn-orange">
+            Дополнить заказ
+        </a>
+    {% endif %}
 
-    <a href="{% url 'trading_delete' trading.id %}" class="action-link" style="background:#d9534f;">
-        Удалить сделку
+    <a href="{% url 'trading_list' %}" class="btn btn-blue">
+        Назад
     </a>
+</div>
 
-    <a href="{% url 'trading_list' %}" class="action-link">Назад</a>
 </div>
 
 {% endblock %}
