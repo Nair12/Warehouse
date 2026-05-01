@@ -117,6 +117,7 @@
             transition: 0.3s;
         }
 
+
         .logo-text:hover {
             letter-spacing: 2px;
         }
@@ -125,14 +126,14 @@
 <body>
 
 <header class="main-header">
-    <div class="brand">
-        <img src="{% static 'images/favicon.ico' %}" class="logo-img">
-        <div class="logo-text">Polad Texno</div>
+    <div class="logo">
+        Warehouse
     </div>
 
-    <nav class="nav-menu">
-        <a href="{% url 'products:product_list' %}">Товары</a>
-    </nav>
+   <nav class="nav-menu">
+    <a href="{% url 'products:product_list' %}">Товары</a>
+    <a href="{% url 'products:warehouse_reader_list'%}">Склады</a>
+</nav>
 
     <div class="user-block">
         {% if user.is_authenticated %}

@@ -1,0 +1,187 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 1300px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .title {
+        font-size: 34px;
+        font-weight: 700;
+        margin-bottom: 30px;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .table thead {
+        background: #f7f9fb;
+    }
+
+    .table th {
+        text-align: left;
+        padding: 18px 24px;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: #888;
+    }
+
+    .table td {
+        padding: 20px 24px;
+        border-top: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .table tr:hover {
+        background: #f9fbfd;
+    }
+
+    .product-cell {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+    }
+
+    .product-img {
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
+        object-fit: cover;
+        background: #eee;
+    }
+
+    .placeholder {
+        width: 80px;
+        height: 80px;
+        border-radius: 14px;
+        background: #eee;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        color: #999;
+    }
+
+    .product-name {
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .qty {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .empty {
+        text-align: center;
+        margin-top: 60px;
+        font-size: 18px;
+        color: #777;
+    }
+</style>
+
+<div class="container">
+
+    <div class="title">
+        Склад: {{ warehouse.city }}
+    </div>
+    <form method="get" style="display:flex; gap:12px; align-items:center; margin-bottom:30px;">
+    <div style="
+        display:flex;
+        align-items:center;
+        background:white;
+        border-radius:14px;
+        border:1px solid #ddd;
+        padding:6px 10px;
+        min-width:320px;
+    ">
+        <span style="margin-right:8px; color:#888;">🔍</span>
+
+        <input type="text"
+               name="q"
+               value="{{ query }}"
+               placeholder="Поиск товаров на складе..."
+               style="border:none; outline:none; font-size:15px; width:100%;">
+    </div>
+
+    <button type="submit" style="
+        background:#417690;
+        color:white;
+        border:none;
+        padding:12px 18px;
+        border-radius:10px;
+        cursor:pointer;
+        font-weight:600;
+    ">
+        Найти
+    </button>
+
+    {% if query %}
+        <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}"
+           style="color:#417690; font-weight:600; text-decoration:none;">
+            Сбросить
+        </a>
+    {% endif %}
+</form>
+
+    {% if inventory_items %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Товар</th>
+                <th>Количество</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for item in inventory_items %}
+                <tr onclick="window.location.href='{% url 'products:product_detail' item.product.id %}'"
+                    style="cursor:pointer;">
+
+                    <td>
+                        <div class="product-cell">
+
+                            {% if item.product.picture %}
+                                <img src="{{ item.product.picture.url }}" class="product-img">
+                            {% else %}
+                                <div class="placeholder">Нет фото</div>
+                            {% endif %}
+
+                            <div class="product-name">
+                                {{ item.product.name }}
+                            </div>
+
+                        </div>
+                    </td>
+
+                    <td>
+                        <span class="qty"
+                              style="
+                              background: {% if item.quantity == 0 %}#ffecec{% else %}#e6f7ec{% endif %};
+                              color: {% if item.quantity == 0 %}#c0392b{% else %}#2e7d32{% endif %};
+                              ">
+                            {{ item.quantity }} {{ item.product.get_unit_display }}
+                        </span>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">На этом складе нет товаров</div>
+    {% endif %}
+
+</div>
+{% endblock %}

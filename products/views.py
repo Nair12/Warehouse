@@ -7,6 +7,10 @@ from warehouses.models import Warehouse
 from .forms import ProductForm, InventoryQuantityForm, ProductPriceUpdateForm
 from users.decorators import role_required
 
+from django.shortcuts import render, get_object_or_404
+from .models import Inventory
+from warehouses.models import Warehouse
+
 
 @role_required(["admin", "manager", "reader","senior_manager"])
 def product_list_view(request):
@@ -174,3 +178,35 @@ def inventory_adjust_view(request, pk, action):
         inventory.save()
 
     return redirect("products:product_detail", pk=inventory.product.id)
+
+
+
+
+def warehouse_reader_list_view(request):
+    warehouses = Warehouse.objects.all()
+
+    return render(request, "products/warehouses/list.html", {
+        "warehouses": warehouses,
+    })
+
+
+def warehouse_reader_detail_view(request, pk):
+    warehouse = get_object_or_404(Warehouse, pk=pk)
+
+    query = request.GET.get("q", "")
+
+    inventory_items = (
+        Inventory.objects
+        .filter(warehouse=warehouse)
+        .select_related("product")
+        .order_by("product__name")
+    )
+
+    if query:
+        inventory_items = inventory_items.filter(product__name__icontains=query)
+
+    return render(request, "products/warehouses/detail.html", {
+        "warehouse": warehouse,
+        "inventory_items": inventory_items,
+        "query": query,
+    })

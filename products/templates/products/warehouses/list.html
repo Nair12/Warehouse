@@ -1,0 +1,125 @@
+{% extends "products/base.html" %}
+
+{% block content %}
+<style>
+    .container {
+        max-width: 1300px;
+        margin: 40px auto;
+        padding: 0 20px;
+    }
+
+    .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+
+    .title {
+        font-size: 34px;
+        font-weight: 700;
+    }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .table thead {
+        background: #f7f9fb;
+    }
+
+    .table th {
+        text-align: left;
+        padding: 18px 24px;
+        font-size: 14px;
+        text-transform: uppercase;
+        color: #888;
+    }
+
+    .table td {
+        padding: 20px 24px;
+        border-top: 1px solid #eee;
+    }
+
+    .table tr {
+        transition: 0.2s;
+    }
+
+    .table tr:hover {
+        background: #f9fbfd;
+    }
+
+    .empty {
+        text-align: center;
+        margin-top: 60px;
+        font-size: 18px;
+        color: #777;
+    }
+
+    .btn-open {
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .btn-open:hover {
+        background: #2b5063;
+    }
+</style>
+
+<div class="container">
+
+    <div class="header">
+        <div class="title">Склады</div>
+    </div>
+
+    {% if warehouses %}
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Город</th>
+                <th>Дата создания</th>
+                <th></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            {% for warehouse in warehouses %}
+                <tr onclick="window.location.href='{% url 'products:warehouse_reader_detail' warehouse.id %}'"
+                    style="cursor:pointer;">
+
+                    <td>
+                        <strong>{{ warehouse.city }}</strong>
+                    </td>
+
+                    <td>
+                        {{ warehouse.created_at|date:"d.m.Y H:i" }}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}"
+                           class="btn-open"
+                           onclick="event.stopPropagation();">
+                            Открыть
+                        </a>
+                    </td>
+
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty">Нет складов</div>
+    {% endif %}
+
+</div>
+
+{% endblock %}
