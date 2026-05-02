@@ -261,13 +261,14 @@
 </div>
 
 <div class="actions">
-    {% if request.user.role == "manager" and not trading.can_be_modified %}
-        {# Менеджер после 24 часов не видит кнопки редактирования и удаления #}
-    {% else %}
-        {% if trading.status == "pending" %}
-            <a href="{% url 'trading_update' trading.id %}" class="btn btn-blue">Редактировать</a>
-        {% endif %}
 
+    {% if trading.status == "pending" %}
+        <a href="{% url 'trading_update' trading.id %}" class="btn btn-blue">Редактировать</a>
+    {% endif %}
+
+    {% if request.user.role == "manager" and not trading.can_be_modified %}
+        {# менеджер после 24 часов не видит удаление #}
+    {% else %}
         <a href="{% url 'trading_delete' trading.id %}" class="btn btn-red">
             Удалить
         </a>

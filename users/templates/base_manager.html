@@ -6,181 +6,25 @@
     <title>{% block title %}Дашборд менеджера{% endblock %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f8f8f8;
-            color: #333;
+            background: #f4f7f9;
+            color: #172033;
         }
-
-
-        .sub-header {
-            background: #79aec8;
-            color: white;
-            padding: 10px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 14px;
-        }
-
-        .sub-header a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-        }
-
-        .sub-header a:hover {
-            text-decoration: underline;
-        }
-
-        .search-form {
-            display: inline-block;
-            margin-left: 20px;
-        }
-
-        .search-input {
-            padding: 6px 10px;
-            border: none;
-            border-radius: 3px;
-            font-size: 14px;
-        }
-
-        .search-btn {
-            padding: 6px 10px;
-            border: none;
-            background: #2b5063;
-            color: white;
-            cursor: pointer;
-            margin-left: 5px;
-            border-radius: 3px;
-        }
-
-        .search-btn:hover {
-            background: #1f3b4a;
-        }
-
-        .container {
-            padding: 30px;
-        }
-
-        h1 {
-            margin-top: 0;
-            color: #666;
-            font-size: 28px;
-        }
-
-        .module {
-            background: white;
-            border: 1px solid #ddd;
-            margin-bottom: 25px;
-        }
-
-        .module h2 {
-            margin: 0;
-            padding: 12px 15px;
-            background: #79aec8;
-            color: white;
-            font-size: 18px;
-        }
-
-        .module-content {
-            padding: 15px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        table th {
-            text-align: left;
-            background: #f5f5f5;
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-            color: #666;
-        }
-
-        table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .action-link {
-            color: #447e9b;
-            text-decoration: none;
-            font-weight: bold;
-            margin-right: 10px;
-        }
-
-        .action-link:hover {
-            text-decoration: underline;
-        }
-
-        .note {
-            color: #777;
-            font-size: 14px;
-            margin-top: 10px;
-        }
-
-        .btn-save {
-            background: #417690;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-save:hover {
-            background: #2b5063;
-        }
-
-        .btn-add {
-            display: inline-block;
-            background: #417690;
-            color: white;
-            text-decoration: none;
-            padding: 10px 16px;
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .btn-add:hover {
-            background: #2b5063;
-        }
-
-        .form-row {
-            margin-bottom: 15px;
-        }
-
-        .form-row label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: bold;
-            color: #555;
-        }
-
-        .form-row input,
-        .form-row select,
-        .form-row textarea {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
 
         .header {
             background: #417690;
-            padding: 15px 30px;
+            padding: 18px 30px;
             display: flex;
             align-items: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(31, 59, 74, 0.12);
         }
 
         .brand {
@@ -195,37 +39,260 @@
             border-radius: 8px;
             padding: 4px;
             object-fit: cover;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            transition: 0.3s;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.1) rotate(5deg);
         }
 
         .logo-text {
-            font-size: 20px;
-            font-weight: 700;
+            font-size: 22px;
+            font-weight: 800;
             letter-spacing: 1px;
             text-transform: uppercase;
-            background: linear-gradient(45deg, #ffffff, #dceeff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: 0.3s;
+            color: #ffffff;
         }
 
-        .logo-text:hover {
-            letter-spacing: 2px;
+        .sub-header {
+            background: #79aec8;
+            color: white;
+            padding: 12px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 18px;
+            font-size: 14px;
+        }
+
+        .sub-header a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .sub-header a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+        .search-form {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 18px;
+        }
+
+        .search-input {
+            padding: 9px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 10px;
+            font-size: 14px;
+            outline: none;
+            min-width: 190px;
+        }
+
+        .search-input:focus {
+            border-color: #ffffff;
+        }
+
+        .search-btn {
+            padding: 9px 11px;
+            border: none;
+            background: #2b5063;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #1f3b4a;
+        }
+
+                .container {
+            width: 100%;
+            max-width: 1600px;
+            margin: 42px auto 70px;
+            padding: 0 32px;
+        }
+
+        h1 {
+            margin: 0 0 24px;
+            color: #172033;
+            font-size: 36px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        h2, h3 {
+            color: #172033;
+        }
+
+        .module {
+            background: #ffffff;
+            border: 1px solid #e8eef2;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+        }
+
+        .module h2 {
+            margin: 0;
+            padding: 16px 22px;
+            background: #f7f9fb;
+            color: #172033;
+            font-size: 17px;
+            font-weight: 800;
+            border-bottom: 1px solid #e8eef2;
+        }
+
+        .module-content {
+            padding: 22px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #ffffff;
+            border-radius: 24px;
+            overflow: hidden;
+            border: 1px solid #e8eef2;
+            box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+        }
+
+        table th {
+            text-align: left;
+            background: #f7f9fb;
+            padding: 16px 20px;
+            border-bottom: 1px solid #e8eef2;
+            color: #7c8797;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #eef2f5;
+            color: #172033;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table tbody tr:hover {
+            background: #f8fbfd;
+        }
+
+        .action-link {
+            color: #417690;
+            text-decoration: none;
+            font-weight: 800;
+            margin-right: 10px;
+        }
+
+        .action-link:hover {
+            color: #2b5063;
+            text-decoration: underline;
+        }
+
+        .note {
+            color: #6f7a89;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .btn-save,
+        .btn-add {
+            display: inline-block;
+            background: #417690;
+            color: white;
+            border: none;
+            text-decoration: none;
+            padding: 11px 18px;
+            cursor: pointer;
+            font-weight: 800;
+            border-radius: 14px;
+            transition: background 0.2s ease;
+        }
+
+        .btn-save:hover,
+        .btn-add:hover {
+            background: #2b5063;
+        }
+
+        .btn-add {
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 7px;
+            font-weight: 800;
+            color: #172033;
+        }
+
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            max-width: 520px;
+            padding: 11px 13px;
+            border: 1px solid #dce5eb;
+            border-radius: 12px;
+            background: #ffffff;
+            box-sizing: border-box;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-row input:focus,
+        .form-row select:focus,
+        .form-row textarea:focus {
+            border-color: #417690;
+            box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.10);
+        }
+
+        @media (max-width: 900px) {
+            .sub-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .sub-header div:last-child {
+                display: flex;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .sub-header a,
+            .search-form {
+                margin-left: 0;
+            }
+
+            .container {
+                margin-top: 28px;
+                padding: 0 16px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
         }
     </style>
 </head>
 <body>
 
-{% load static %}
-
 <div class="header">
     <div class="brand">
-
         <div class="logo-text">Warehouse Manager</div>
     </div>
 </div>
@@ -244,9 +311,6 @@
         {% endif %}
         <a href="{% url 'warehouse_list' %}">Склады</a>
         <a href="{% url 'products:product_list' %}">Продукты</a>
-
-        <!-- НОВОЕ -->
-
         <a href="{% url 'warehouses:warehouse_transfer_history' %}">Перемещения</a>
 
         <form method="get" action="{% url 'global_search' %}" class="search-form">
@@ -264,6 +328,7 @@
                     color:white;
                     cursor:pointer;
                     font:inherit;
+                    font-weight:700;
                 ">
                 Выйти
             </button>
@@ -286,6 +351,8 @@
                 "X-CSRFToken": "{{ csrf_token }}"
             },
             body: JSON.stringify({ timezone: tz })
+        }).catch(function () {
+            // Если timezone не отправился, страница всё равно должна работать.
         });
     })();
 </script>

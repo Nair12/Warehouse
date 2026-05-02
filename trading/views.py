@@ -422,10 +422,6 @@ def trading_update(request, pk):
         messages.error(request, "Можно редактировать только незавершенные сделки.")
         return redirect('trading_detail', pk=trading.pk)
 
-    if manager_24h_limit_expired(request.user, trading):
-        messages.error(request, "Менеджер может редактировать сделку только в течение 24 часов после создания.")
-        return redirect('trading_detail', pk=trading.pk)
-
     TradingItemEditFormSet = formset_factory(
         TradingItemForm,
         extra=0,

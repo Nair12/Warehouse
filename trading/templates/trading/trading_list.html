@@ -3,226 +3,571 @@
 {% block title %}{{ page_title }}{% endblock %}
 
 {% block manager_content %}
-<h1>{{ page_title }}</h1>
+<style>
+    .trading-hero {
+        border-radius: 26px;
+        padding: 30px;
+        margin-bottom: 24px;
+        background: #ffffff;
+        border: 1px solid #dbe5ec;
+        box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+    }
 
-<div style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 16px;
-">
-    <div style="display: flex; gap: 8px;">
-        <a href="{% if is_orders_page %}{% url 'orders_list' %}{% else %}{% url 'trading_list' %}{% endif %}" style="
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            {% if not current_type %}
-                background: #5bc0de;
-                color: white;
-            {% else %}
-                background: #f5f7fa;
-                color: #333;
-                border: 1px solid #ddd;
-            {% endif %}
-        ">
-            Все
-        </a>
+    .trading-hero-content {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 28px;
+    }
 
-        <a href="?type=purchase" style="
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            {% if current_type == 'purchase' %}
-                background: #5cb85c;
-                color: white;
-            {% else %}
-                background: #f5f7fa;
-                color: #333;
-                border: 1px solid #ddd;
-            {% endif %}
-        ">
-            Покупки
-        </a>
+    .trading-title-block {
+        max-width: 620px;
+    }
 
-        <a href="?type=sell" style="
-            padding: 8px 12px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            {% if current_type == 'sell' %}
-                background: #d9534f;
-                color: white;
-            {% else %}
-                background: #f5f7fa;
-                color: #333;
-                border: 1px solid #ddd;
-            {% endif %}
-        ">
-            Продажи
+    .trading-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #cfe3ed;
+    }
+
+    .trading-title {
+        margin: 0;
+        color: #172033;
+        font-size: 40px;
+        line-height: 1.1;
+        font-weight: 800;
+    }
+
+    .trading-subtitle {
+        margin: 12px 0 0;
+        color: #6f7a89;
+        font-size: 16px;
+        line-height: 1.5;
+    }
+
+    .trading-create-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        padding: 13px 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        font-size: 14px;
+        transition: background 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .trading-create-btn:hover {
+        background: #2b5063;
+    }
+
+    .trading-toolbar {
+        margin-bottom: 24px;
+        padding: 16px;
+        border-radius: 22px;
+        background: #ffffff;
+        border: 1px solid #dbe5ec;
+        box-shadow: 0 6px 18px rgba(31, 59, 74, 0.06);
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .filter-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        padding: 11px 15px;
+        border-radius: 15px;
+        font-weight: 800;
+        font-size: 14px;
+        background: #ffffff;
+        color: #172033;
+        border: 1px solid #ccd8e1;
+        transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .filter-pill:hover {
+        background: #f8fbfd;
+        border-color: #417690;
+    }
+
+    .filter-pill.active-all {
+        background: #e8f3f8;
+        color: #2b5063;
+        border-color: #b7d4e2;
+    }
+
+    .filter-pill.active-purchase {
+        background: #e6f7ec;
+        color: #1f7a3a;
+        border-color: #a9dbba;
+    }
+
+    .filter-pill.active-sell {
+        background: #ffecec;
+        color: #c0392b;
+        border-color: #efb5b2;
+    }
+
+    /* Убрали лишний "фон-коробку" за карточками */
+    .trading-table-shell {
+        overflow: visible;
+        border-radius: 26px;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+    }
+
+    .trading-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 12px;
+        background: transparent;
+    }
+
+    .trading-table thead {
+        display: none;
+    }
+
+    .trading-table th {
+        text-align: left;
+        padding: 18px 22px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #7c8797;
+        border-bottom: 1px solid #dbe5ec;
+    }
+
+    .trading-table th:last-child {
+        text-align: right;
+    }
+
+    .trading-table tbody {
+        background: transparent;
+    }
+
+    .trading-table tbody tr {
+        transition: transform 0.2s ease;
+    }
+
+    .trading-table tbody tr:hover {
+        transform: translateY(-2px);
+    }
+
+    .trading-table td {
+        padding: 22px 22px;
+        vertical-align: top;
+        color: #172033;
+        background: #ffffff;
+        border-top: 1px solid #d4e0e8;
+        border-bottom: 1px solid #d4e0e8;
+    }
+
+    .trading-table tbody tr td:first-child {
+        border-left: 1px solid #d4e0e8;
+        border-top-left-radius: 20px;
+        border-bottom-left-radius: 20px;
+        box-shadow: inset 5px 0 0 #dbeaf1;
+    }
+
+    .trading-table tbody tr td:last-child {
+        border-right: 1px solid #d4e0e8;
+        border-top-right-radius: 20px;
+        border-bottom-right-radius: 20px;
+    }
+
+    .trading-table tbody tr:hover td {
+        background: #fbfdfe;
+    }
+
+    .trading-table tbody tr:hover td:first-child {
+        box-shadow: inset 5px 0 0 #417690;
+    }
+
+    .date-cell {
+        white-space: nowrap;
+        color: #8a95a3;
+        font-weight: 700;
+        font-size: 13px;
+        line-height: 1.35;
+        width: 120px;
+    }
+
+    .date-day {
+        display: block;
+        color: #6f7a89;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .date-time {
+        display: block;
+        color: #9aa5b1;
+        font-size: 12px;
+        font-weight: 700;
+        margin-top: 3px;
+    }
+
+    .deal-meta {
+        margin-top: 7px;
+        color: #9aa5b1;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .deal-name {
+        font-size: 16px;
+        font-weight: 900;
+        color: #172033;
+        line-height: 1.35;
+    }
+
+    .trade-badge,
+    .item-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 11px;
+        border-radius: 999px;
+        font-weight: 900;
+        font-size: 13px;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+
+    .trade-badge-group {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    .badge-purchase {
+        background: #e6f7ec;
+        color: #1f7a3a;
+        border-color: #a9dbba;
+    }
+
+    .badge-sell {
+        background: #ffecec;
+        color: #c0392b;
+        border-color: #efb5b2;
+    }
+
+    .badge-process {
+        background: #fff7df;
+        color: #856404;
+        border-color: #f3d57c;
+    }
+
+    .badge-done {
+        background: #eef3f7;
+        color: #4e5f6d;
+        border-color: #d6e0e8;
+    }
+
+    .badge-empty {
+        background: #ffecec;
+        color: #c0392b;
+        border-color: #efb5b2;
+    }
+
+    .items-list {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 9px;
+    }
+
+    .item-row {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: #f8fbfd;
+        border: 1px solid #dce6ed;
+    }
+
+    .item-main {
+        color: #172033;
+        font-weight: 800;
+        line-height: 1.45;
+        margin-bottom: 10px;
+    }
+
+    .item-main strong {
+        font-weight: 900;
+    }
+
+    .qty-block {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+    }
+
+    .qty-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 900;
+        border: 1px solid transparent;
+        white-space: nowrap;
+    }
+
+    .qty-label {
+        font-size: 12px;
+        font-weight: 800;
+        opacity: 0.75;
+    }
+
+    .qty-requested {
+        background: #eef3f7;
+        color: #4e5f6d;
+        border-color: #d6e0e8;
+    }
+
+    .qty-fulfilled {
+        background: #e6f7ec;
+        color: #1f7a3a;
+        border-color: #a9dbba;
+    }
+
+    .qty-unit {
+        color: #6f7a89;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .more-items {
+        display: inline-flex;
+        align-items: center;
+        margin-top: 10px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 13px;
+        font-weight: 900;
+        border: 1px solid #cfe3ed;
+    }
+
+    .open-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #417690;
+        color: white;
+        padding: 10px 14px;
+        border-radius: 14px;
+        text-decoration: none;
+        font-weight: 800;
+        white-space: nowrap;
+        transition: background 0.2s ease;
+    }
+
+    .open-btn:hover {
+        background: #2b5063;
+    }
+
+    .empty-state {
+        padding: 60px 24px;
+        text-align: center;
+        color: #6f7a89;
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #dbe5ec;
+    }
+
+    .empty-icon {
+        width: 68px;
+        height: 68px;
+        margin: 0 auto 18px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background: #e8f3f8;
+        color: #417690;
+        font-size: 30px;
+        border: 1px solid #cfe3ed;
+    }
+
+    .empty-title {
+        color: #172033;
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    @media (max-width: 1000px) {
+        .trading-hero-content {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .trading-title {
+            font-size: 34px;
+        }
+
+        .trading-table-shell {
+            overflow-x: auto;
+            overflow-y: visible;
+        }
+
+        .trading-table {
+            min-width: 980px;
+        }
+    }
+</style>
+
+<section class="trading-hero">
+    <div class="trading-hero-content">
+        <div class="trading-title-block">
+            <div class="trading-eyebrow">📑 Операции склада</div>
+            <h1 class="trading-title">{{ page_title }}</h1>
+            <p class="trading-subtitle">
+                Просмотр покупок, продаж, статусов выполнения и позиций по сделкам.
+            </p>
+        </div>
+
+        <a href="{% url 'trading_create' %}" class="trading-create-btn">
+            <span>＋</span>
+            <span>Создать сделку</span>
         </a>
     </div>
+</section>
 
-    <a href="{% url 'trading_create' %}" style="
-        background: #5bc0de;
-        color: white;
-        padding: 8px 12px;
-        border-radius: 6px;
-        text-decoration: none;
-        font-weight: 600;
-    ">
-        + Создать сделку
+<div class="trading-toolbar">
+    <a href="{% if is_orders_page %}{% url 'orders_list' %}{% else %}{% url 'trading_list' %}{% endif %}"
+       class="filter-pill {% if not current_type %}active-all{% endif %}">
+        Все
+    </a>
+
+    <a href="?type=purchase"
+       class="filter-pill {% if current_type == 'purchase' %}active-purchase{% endif %}">
+        Покупки
+    </a>
+
+    <a href="?type=sell"
+       class="filter-pill {% if current_type == 'sell' %}active-sell{% endif %}">
+        Продажи
     </a>
 </div>
 
-<div class="module">
-    <h2>{{ page_title }}</h2>
+<div class="trading-table-shell">
+    <table class="trading-table">
+        <tbody>
+            {% for trading in tradings %}
+                <tr>
+                    <td class="date-cell">
+                        <span class="date-day">
+                            {{ trading.created_at|date:"d.m.Y" }}
+                        </span>
+                        <span class="date-time">
+                            {{ trading.created_at|date:"H:i" }}
+                        </span>
+                    </td>
 
-    <div class="module-content">
-        <table style="
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 0 10px;
-            font-size: 14px;
-        ">
-            <thead>
-                <tr style="background: #f5f7fa;">
-                    <th style="padding: 12px; text-align: left;">Дата</th>
-                    <th style="padding: 12px; text-align: left;">Название</th>
-                    <th style="padding: 12px; text-align: left;">Тип</th>
-                    <th style="padding: 12px; text-align: left;">Позиции</th>
-                    <th style="padding: 12px; text-align: right;">Действия</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                {% for trading in tradings %}
-                    <tr style="
-                        background: white;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-                    ">
-                        <td style="
-                            padding: 14px 12px;
-                            border-top: 1px solid #e5e7eb;
-                            border-bottom: 1px solid #e5e7eb;
-                            border-left: 1px solid #e5e7eb;
-                            border-radius: 8px 0 0 8px;
-                            white-space: nowrap;
-                        ">
-                            {{ trading.created_at|date:"d.m.Y H:i" }}
-                        </td>
-
-                        <td style="
-                            padding: 14px 12px;
-                            border-top: 1px solid #e5e7eb;
-                            border-bottom: 1px solid #e5e7eb;
-                            font-weight: 600;
-                        ">
+                    <td>
+                        <div class="deal-name">
                             {{ trading.name|default:"—" }}
-                        </td>
+                        </div>
+                    </td>
 
-                        <td style="
-                            padding: 14px 12px;
-                            border-top: 1px solid #e5e7eb;
-                            border-bottom: 1px solid #e5e7eb;
-                        ">
-                            {% if trading.trade_type == "purchase" and trading.is_in_progress %}
-                                <span style="background:#fff3cd; color:#856404; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
-                                    Покупка (В процессе)
-                                </span>
-                            {% elif trading.trade_type == "purchase" %}
-                                <span style="background:#dff0d8; color:#3c763d; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
-                                    Покупка
-                                </span>
-                            {% elif trading.trade_type == "sell" and trading.is_in_progress %}
-                                <span style="background:#fff3cd; color:#856404; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
-                                    Продажа (В процессе)
-                                </span>
-                            {% elif trading.trade_type == "sell" %}
-                                <span style="background:#f2dede; color:#a94442; padding:5px 9px; border-radius:6px; font-weight:700; white-space:nowrap;">
-                                    Продажа
-                                </span>
+                    <td>
+                        <div class="trade-badge-group">
+                            {% if trading.trade_type == "purchase" %}
+                                <span class="trade-badge badge-purchase">Покупка</span>
                             {% else %}
-                                {{ trading.get_trade_type_display }}
+                                <span class="trade-badge badge-sell">Продажа</span>
                             {% endif %}
-                        </td>
 
-                        <td style="
-                            padding: 14px 12px;
-                            border-top: 1px solid #e5e7eb;
-                            border-bottom: 1px solid #e5e7eb;
-                        ">
-                            {% if trading.grouped_items %}
-                                <ul style="margin: 0; padding-left: 18px;">
-                                    {% for item in trading.grouped_items %}
-                                        <li style="margin-bottom: 5px;">
-                                            {{ item.product.name }} —
-                                            {{ item.warehouse.city }} —
-                                            <strong>
-                                                заказано {{ item.requested_quantity }} / выполнено {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}
-                                            </strong>
-
-                                            {% if item.fulfilled_quantity == 0 %}
-                                                <span style="background:#f2dede; color:#a94442; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
-                                                    Не выполнено
-                                                </span>
-                                            {% elif item.fulfilled_quantity < item.requested_quantity %}
-                                                <span style="background:#fff3cd; color:#856404; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
-                                                    В процессе
-                                                </span>
-                                            {% else %}
-                                                <span style="background:#dff0d8; color:#3c763d; padding:3px 7px; border-radius:6px; font-weight:600; margin-left:6px;">
-                                                    Выполнено
-                                                </span>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
+                            {% if trading.is_in_progress %}
+                                <span class="trade-badge badge-process">В процессе</span>
                             {% else %}
-                                {{ trading.product }} —
-                                <strong>{{ trading.quantity }} {{ trading.product.get_unit_display }}</strong>
+                                <span class="trade-badge badge-done">Завершено</span>
                             {% endif %}
-                        </td>
+                        </div>
+                    </td>
 
-                        <td style="
-                            padding: 14px 12px;
-                            text-align: right;
-                            border-top: 1px solid #e5e7eb;
-                            border-bottom: 1px solid #e5e7eb;
-                            border-right: 1px solid #e5e7eb;
-                            border-radius: 0 8px 8px 0;
-                            white-space: nowrap;
-                        ">
-                            <a href="{% url 'trading_detail' trading.id %}" style="
-                                background: #5bc0de;
-                                color: white;
-                                padding: 7px 11px;
-                                border-radius: 6px;
-                                text-decoration: none;
-                                font-weight: 600;
-                            ">
-                                Открыть
-                            </a>
-                        </td>
-                    </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5" style="
-                            padding: 24px;
-                            text-align: center;
-                            color: #777;
-                            background: #fff;
-                            border: 1px solid #e5e7eb;
-                            border-radius: 8px;
-                        ">
-                            Нет записей
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+                    <td>
+                        {% if trading.grouped_items %}
+                            <ul class="items-list">
+                                {% for item in trading.grouped_items|slice:":1" %}
+                                    <li class="item-row">
+                                        <div class="item-main">
+                                            {{ item.product.name }} — {{ item.warehouse.city }}
+                                        </div>
+
+                                        <div class="qty-block">
+                                            <span class="qty-chip qty-requested">
+                                                <span class="qty-label">Заказано</span>
+                                                {{ item.requested_quantity }}
+                                            </span>
+
+                                            <span class="qty-chip qty-fulfilled">
+                                                <span class="qty-label">Выполнено</span>
+                                                {{ item.fulfilled_quantity }}
+                                            </span>
+
+                                            <span class="qty-unit">
+                                                {{ item.product.get_unit_display }}
+                                            </span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+
+                            {% with total=trading.grouped_items|length %}
+                                {% if total > 1 %}
+                                    <div class="more-items">
+                                        + ещё {{ total|add:"-1" }} позиций
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                        {% else %}
+                            {{ trading.product }} —
+                            <strong>{{ trading.quantity }} {{ trading.product.get_unit_display }}</strong>
+                        {% endif %}
+                    </td>
+
+                    <td style="text-align:right;">
+                        <a href="{% url 'trading_detail' trading.id %}" class="open-btn">
+                            Открыть
+                        </a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">
+                        <div class="empty-state">
+                            <div class="empty-icon">📑</div>
+                            <div class="empty-title">Нет записей</div>
+                            <div>Пока здесь нет сделок по выбранному фильтру.</div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}

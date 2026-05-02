@@ -67,7 +67,9 @@
                     <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                             <h4 class="item-title" style="margin:0;">Позиция {{ forloop.counter }}</h4>
-                            <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                            {% if not form.instance.pk %}
+                                <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                            {% endif %}
                         </div>
 
                         {% if item_form.non_field_errors %}
@@ -89,8 +91,7 @@
                         {% endfor %}
 
                         {% if item_form.DELETE %}
-                            <div class="form-row delete-row" style="margin-top:10px;">
-                                <label>Удалить</label>
+                            <div class="delete-row" style="display:none;">
                                 {{ item_form.DELETE }}
                             </div>
                         {% endif %}
@@ -117,7 +118,9 @@
                 <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                         <h4 class="item-title" style="margin:0;">Позиция __number__</h4>
-                        <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                        {% if not form.instance.pk %}
+                                <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                            {% endif %}
                     </div>
 
                     {% for field in item_formset.empty_form %}

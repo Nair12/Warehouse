@@ -2,46 +2,223 @@
 
 {% block content %}
     <style>
-        .container {
-            max-width: 1300px;
-            margin: 40px auto;
-            padding: 0 20px;
+        body {
+            background: #f4f7f9;
         }
 
-        .header {
+        .container {
+            max-width: 1320px;
+            margin: 42px auto 70px;
+            padding: 0 24px;
+        }
+
+        .products-hero {
+            border-radius: 26px;
+            padding: 30px;
+            margin-bottom: 24px;
+            background: #ffffff;
+            border: 1px solid #e8eef2;
+            box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+        }
+
+        .hero-content {
             display: flex;
+            align-items: flex-end;
             justify-content: space-between;
+            gap: 28px;
+        }
+
+        .title-block {
+            max-width: 520px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
             align-items: center;
-            margin-bottom: 30px;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 7px 12px;
+            border-radius: 999px;
+            background: #e8f3f8;
+            color: #2b5063;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
         }
 
         .title {
-            font-size: 34px;
-            font-weight: 700;
+            margin: 0;
+            color: #172033;
+            font-size: 40px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
+        .subtitle {
+            margin: 12px 0 0;
+            color: #6f7a89;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: flex-end;
         }
 
         .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             background: #417690;
             color: white;
             text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 15px;
-            transition: 0.2s;
+            padding: 13px 18px;
+            border-radius: 16px;
+            font-weight: 800;
+            font-size: 14px;
+            transition: background 0.2s ease;
+            white-space: nowrap;
         }
 
         .btn-add:hover {
             background: #2b5063;
         }
 
+        .toolbar-card {
+            margin-bottom: 24px;
+            padding: 16px;
+            border-radius: 22px;
+            background: #ffffff;
+            border: 1px solid #e8eef2;
+            box-shadow: 0 6px 18px rgba(31, 59, 74, 0.06);
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 320px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid #dce5eb;
+            padding: 8px 8px 8px 14px;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .search-box:focus-within {
+            border-color: #417690;
+            box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.10);
+        }
+
+        .search-icon {
+            display: grid;
+            place-items: center;
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            background: #e8f3f8;
+            color: #417690;
+            font-size: 15px;
+            flex: 0 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 120px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            color: #172033;
+            background: transparent;
+        }
+
+        .search-input::placeholder {
+            color: #9aa4b2;
+        }
+
+        .search-btn {
+            background: #417690;
+            color: white;
+            border: none;
+            padding: 11px 18px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 800;
+            transition: background 0.2s ease;
+        }
+
+        .search-btn:hover {
+            background: #2b5063;
+        }
+
+        .filter-check {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #ffffff;
+            border: 1px solid #dce5eb;
+            padding: 12px 15px;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #172033;
+            transition: border-color 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .filter-check:hover {
+            border-color: #417690;
+        }
+
+        .filter-check input {
+            accent-color: #417690;
+        }
+
+        .sort-select {
+            min-width: 150px;
+            padding: 12px 15px;
+            border-radius: 16px;
+            border: 1px solid #dce5eb;
+            background: #ffffff;
+            cursor: pointer;
+            font-size: 14px;
+            color: #172033;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .sort-select:hover,
+        .sort-select:focus {
+            outline: none;
+            border-color: #417690;
+            box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.10);
+        }
+
+        .table-shell {
+            overflow: hidden;
+            border-radius: 26px;
+            background: #ffffff;
+            border: 1px solid #e8eef2;
+            box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+        }
+
         .table {
             width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 18px;
-            overflow: hidden;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border-collapse: separate;
+            border-spacing: 0;
+            background: transparent;
         }
 
         .table thead {
@@ -51,23 +228,30 @@
         .table th {
             text-align: left;
             padding: 18px 24px;
-            font-size: 14px;
+            font-size: 12px;
             text-transform: uppercase;
-            color: #888;
+            letter-spacing: 0.6px;
+            color: #7c8797;
+            border-bottom: 1px solid #e8eef2;
         }
 
         .table td {
-            padding: 20px 24px;
-            border-top: 1px solid #eee;
+            padding: 22px 24px;
+            border-bottom: 1px solid #eef2f5;
             vertical-align: middle;
         }
 
-        .table tr {
-            transition: 0.2s;
+        .table tbody tr {
+            cursor: pointer;
+            transition: background 0.15s ease;
         }
 
-        .table tr:hover {
-            background: #f9fbfd;
+        .table tbody tr:hover {
+            background: #f8fbfd;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: none;
         }
 
         .product-cell {
@@ -76,252 +260,289 @@
             gap: 18px;
         }
 
+        .product-img,
+        .placeholder {
+            width: 82px;
+            height: 82px;
+            border-radius: 20px;
+            flex: 0 0 auto;
+        }
+
         .product-img {
-            width: 80px;
-            height: 80px;
-            border-radius: 14px;
             object-fit: cover;
-            background: #eee;
+            background: #eef2f5;
         }
 
         .placeholder {
-            width: 80px;
-            height: 80px;
-            border-radius: 14px;
-            background: #eee;
+            background: #eef2f5;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 13px;
-            color: #999;
+            font-size: 12px;
+            color: #94a0ad;
+            border: 1px solid #e1e7eb;
         }
 
         .product-name {
-            font-size: 18px;
+            color: #172033;
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 6px;
+        }
+
+        .product-meta {
+            color: #93a0ad;
+            font-size: 13px;
             font-weight: 600;
-            margin-bottom: 4px;
         }
 
         .product-desc {
+            max-width: 430px;
             font-size: 15px;
-            color: #666;
-            line-height: 1.4;
+            color: #5f6b7a;
+            line-height: 1.55;
         }
 
         .price {
+            color: #172033;
             font-size: 18px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .price small {
+            color: #6f7a89;
+            font-size: 13px;
             font-weight: 700;
         }
 
+        .qty-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 72px;
+            padding: 8px 13px;
+            border-radius: 999px;
+            font-weight: 900;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .qty-badge.empty-stock {
+            background: #fff0f0;
+            color: #c0392b;
+        }
+
+        .qty-badge.in-stock {
+            background: #e9f8ef;
+            color: #2e7d32;
+        }
+
         .empty {
+            margin-top: 26px;
+            padding: 60px 24px;
             text-align: center;
-            margin-top: 60px;
-            font-size: 18px;
-            color: #777;
+            border-radius: 26px;
+            background: #ffffff;
+            border: 1px solid #e8eef2;
+            box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+            color: #6f7a89;
         }
 
-        .toolbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 30px;
+        .empty-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+            display: grid;
+            place-items: center;
+            border-radius: 22px;
+            background: #e8f3f8;
+            color: #417690;
+            font-size: 32px;
         }
 
-        .toolbar-form {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            flex-wrap: wrap;
+        .empty-title {
+            color: #172033;
+            font-size: 22px;
+            font-weight: 900;
+            margin-bottom: 8px;
         }
 
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: white;
-            border-radius: 14px;
-            border: 1px solid #ddd;
-            padding: 6px 10px;
-            min-width: 320px;
-            transition: 0.2s;
-        }
-
-        .search-box:focus-within {
-            border-color: #417690;
-            box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.15);
-        }
-
-        .search-icon {
-            margin-right: 8px;
-            color: #888;
-        }
-
-        .search-input {
-            border: none;
-            outline: none;
+        .empty-text {
             font-size: 15px;
-            width: 100%;
         }
 
-        .search-btn {
-            background: #417690;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: 0.2s;
+        @media (max-width: 980px) {
+            .hero-content {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .hero-actions {
+                justify-content: flex-start;
+            }
+
+            .title {
+                font-size: 34px;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .filter-check,
+            .sort-select {
+                flex: 1;
+            }
+
+            .table-shell {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 820px;
+            }
         }
 
-        .search-btn:hover {
-            background: #2b5063;
-        }
+        @media (max-width: 640px) {
+            .container {
+                margin-top: 24px;
+                padding: 0 14px;
+            }
 
-        .filter-check {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            background: white;
-            border: 1px solid #ddd;
-            padding: 10px 14px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-        }
+            .products-hero {
+                padding: 24px;
+                border-radius: 22px;
+            }
 
-        .filter-check:hover {
-            border-color: #417690;
-        }
+            .title {
+                font-size: 30px;
+            }
 
-        .sort-select {
-            padding: 10px 14px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-            background: white;
-            cursor: pointer;
-            font-size: 14px;
-            transition: 0.2s;
-        }
+            .toolbar-card {
+                border-radius: 20px;
+            }
 
-        .sort-select:hover {
-            border-color: #417690;
-        }
-
-        .sort-select:focus {
-            outline: none;
-            border-color: #417690;
-            box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.15);
+            .search-form {
+                gap: 10px;
+            }
         }
     </style>
 
     <div class="container">
 
-        <div class="header">
-            <div class="title">Товары</div>
+        <section class="products-hero">
+            <div class="hero-content">
+                <div class="title-block">
+                    <div class="eyebrow">📦 Складской каталог</div>
+                    <h1 class="title">Товары</h1>
+                    <p class="subtitle">
+                        Быстрый просмотр остатков, описаний и цен по всем продуктам в системе.
+                    </p>
+                </div>
 
-            <div style="display:flex; gap:15px; align-items:center;">
-
-                <form method="get" class="search-form"
-                      style="display:flex; gap:12px; align-items:center; flex-wrap: wrap;">
-
-                    <div class="search-box">
-                        <span class="search-icon">🔍</span>
-
-                        <input type="text"
-                               name="q"
-                               value="{{ query }}"
-                               placeholder="Поиск по товарам..."
-                               class="search-input">
-
-                        <button type="submit" class="search-btn">Найти</button>
-                    </div>
-
-                    <label class="filter-check">
-                        <input type="checkbox" name="in_stock" value="1"
-                               {% if in_stock == "1" %}checked{% endif %}
-                               onchange="this.form.submit()">
-                        <span>В наличии</span>
-                    </label>
-
-
-                    <select name="sort" onchange="this.form.submit()" class="sort-select">
-                        <option value="">Сортировка</option>
-                        <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Цена ↑</option>
-                        <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Цена ↓</option>
-                        <option value="qty_asc" {% if sort == "qty_asc" %}selected{% endif %}>Кол-во ↑</option>
-                        <option value="qty_desc" {% if sort == "qty_desc" %}selected{% endif %}>Кол-во ↓</option>
-                    </select>
-
-                </form>
-
-                {% if request.user.role == "admin" or request.user.role == "senior_manager"%}
-                    <a href="{% url 'products:product_create' %}" class="btn-add">
-                        + Добавить продукт
-                    </a>
-                {% endif %}
-
+                <div class="hero-actions">
+                    {% if request.user.role == "admin" or request.user.role == "senior_manager"%}
+                        <a href="{% url 'products:product_create' %}" class="btn-add">
+                            <span>＋</span>
+                            <span>Добавить продукт</span>
+                        </a>
+                    {% endif %}
+                </div>
             </div>
+        </section>
+
+        <div class="toolbar-card">
+            <form method="get" class="search-form">
+
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+
+                    <input type="text"
+                           name="q"
+                           value="{{ query }}"
+                           placeholder="Поиск по названию, описанию или артикулу..."
+                           class="search-input">
+
+                    <button type="submit" class="search-btn">Найти</button>
+                </div>
+
+                <label class="filter-check">
+                    <input type="checkbox" name="in_stock" value="1"
+                           {% if in_stock == "1" %}checked{% endif %}
+                           onchange="this.form.submit()">
+                    <span>В наличии</span>
+                </label>
+
+                <select name="sort" onchange="this.form.submit()" class="sort-select">
+                    <option value="">Сортировка</option>
+                    <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Цена ↑</option>
+                    <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Цена ↓</option>
+                    <option value="qty_asc" {% if sort == "qty_asc" %}selected{% endif %}>Кол-во ↑</option>
+                    <option value="qty_desc" {% if sort == "qty_desc" %}selected{% endif %}>Кол-во ↓</option>
+                </select>
+
+            </form>
         </div>
 
         {% if products %}
-            <table class="table">
-                <thead>
-                <tr>
-                    <th>Товар</th>
-                    <th>Описание</th>
-                    {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
-                        <th>Цена</th>
-                    {% endif %}
-                    <th>Кол-во</th>
-
-                </tr>
-                </thead>
-                <tbody>
-                {% for product in products %}
-                    <tr onclick="window.location.href='{% url 'products:product_detail' product.pk %}'"
-                        style="cursor:pointer;">
-
-                        <td>
-                            <div class="product-cell">
-                                {% if product.picture %}
-                                    <img src="{{ product.picture.url }}" class="product-img">
-                                {% else %}
-                                    <div class="placeholder">Нет фото</div>
-                                {% endif %}
-
-                                <div>
-                                    <div class="product-name">{{ product.name }}</div>
-                                </div>
-                            </div>
-                        </td>
-
-                        <td class="product-desc">
-                            {{ product.description|default:"Без описания"|truncatechars:120 }}
-                        </td>
-                       {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
-                        <td class="price">
-                            {{ product.price }} $
-                        </td>
-                     {% endif %}
-                        <td>
-    <span style="
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            background: {% if product.total_quantity == 0 %}#ffecec{% else %}#e6f7ec{% endif %};
-            color: {% if product.total_quantity == 0 %}#c0392b{% else %}#2e7d32{% endif %};
-            ">
-        {{ product.total_quantity }} {{ product.get_unit_display }}
-    </span>
-                        </td>
-
+            <div class="table-shell">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Товар</th>
+                        <th>Описание</th>
+                        {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
+                            <th>Цена</th>
+                        {% endif %}
+                        <th>Кол-во</th>
                     </tr>
-                {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                        <tr onclick="window.location.href='{% url 'products:product_detail' product.pk %}'">
+                            <td>
+                                <div class="product-cell">
+                                    {% if product.picture %}
+                                        <img src="{{ product.picture.url }}" class="product-img" alt="{{ product.name }}">
+                                    {% else %}
+                                        <div class="placeholder">Нет фото</div>
+                                    {% endif %}
+
+                                    <div>
+                                        <div class="product-name">{{ product.name }}</div>
+                                        <div class="product-meta">Нажмите, чтобы открыть карточку</div>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="product-desc">
+                                {{ product.description|default:"Без описания"|truncatechars:120 }}
+                            </td>
+
+                            {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
+                                <td class="price">
+                                    {{ product.price }} <small>$</small>
+                                </td>
+                            {% endif %}
+
+                            <td>
+                                <span class="qty-badge {% if product.total_quantity == 0 %}empty-stock{% else %}in-stock{% endif %}">
+                                    {{ product.total_quantity }} {{ product.get_unit_display }}
+                                </span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
-            <div class="empty">Нет продуктов</div>
+            <div class="empty">
+                <div class="empty-icon">📦</div>
+                <div class="empty-title">Товары не найдены</div>
+                <div class="empty-text">Попробуйте изменить поиск или фильтр наличия.</div>
+            </div>
         {% endif %}
     </div>
 
