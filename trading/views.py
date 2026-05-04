@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.db import transaction, models
 from django.http import JsonResponse, HttpResponseForbidden
 from django.forms import formset_factory
+from django.core.paginator import Paginator
 
 from .models import Trading, TradingItem, TradingAuditLog, TradingComment
 from .forms import TradingForm, TradingItemForm, AttachmentFormSet, TradingCommentForm
@@ -58,6 +59,10 @@ def manager_24h_limit_expired(user, trading):
 @role_required(['admin', 'manager', "senior_manager"])
 def trading_list(request):
     current_type = request.GET.get('type')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    search_query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort', 'newest')
 
     tradings = Trading.objects.select_related(
         'product', 'warehouse', 'user'
@@ -68,52 +73,58 @@ def trading_list(request):
     if current_type in ['purchase', 'sell']:
         tradings = tradings.filter(trade_type=current_type)
 
+    if date_from:
+        tradings = tradings.filter(created_at__date__gte=date_from)
+
+    if date_to:
+        tradings = tradings.filter(created_at__date__lte=date_to)
+
+    if sort_by == 'oldest':
+        tradings = tradings.order_by('created_at', 'id')
+    elif sort_by == 'name_az':
+        tradings = tradings.order_by('name', 'id')
+    elif sort_by == 'name_za':
+        tradings = tradings.order_by('-name', '-id')
+    else:
+        sort_by = 'newest'
+        tradings = tradings.order_by('-created_at', '-id')
+
     tradings = list(tradings)
 
+    if search_query:
+        search_text = search_query.lower()
+        filtered_tradings = []
+
+        for trading in tradings:
+            searchable_parts = [
+                trading.name or '',
+                trading.comment or '',
+                trading.product.name if trading.product else '',
+                trading.warehouse.city if trading.warehouse else '',
+            ]
+
+            for item in trading.items.all():
+                searchable_parts.append(item.product.name if item.product else '')
+                searchable_parts.append(item.warehouse.city if item.warehouse else '')
+
+            searchable_text = ' '.join(searchable_parts).lower()
+
+            if search_text in searchable_text:
+                filtered_tradings.append(trading)
+
+        tradings = filtered_tradings
+
     for trading in tradings:
-        grouped_items = {}
+        total_requested = 0
+        total_fulfilled = 0
 
         for item in trading.items.all():
-            key = (item.product_id, item.warehouse_id)
+            total_requested += item.requested_quantity
+            total_fulfilled += item.fulfilled_quantity
 
-            if key not in grouped_items:
-                grouped_items[key] = {
-                    'product': item.product,
-                    'warehouse': item.warehouse,
-                    'requested_quantity': 0,
-                    'fulfilled_quantity': 0,
-                }
+        trading.total_requested = total_requested
+        trading.total_fulfilled = total_fulfilled
 
-            grouped_items[key]['requested_quantity'] += item.requested_quantity
-            grouped_items[key]['fulfilled_quantity'] += item.fulfilled_quantity
-
-        trading.grouped_items = list(grouped_items.values())
-        trading.is_in_progress = False
-
-    return render(request, 'trading/trading_list.html', {
-        'tradings': tradings,
-        'current_type': current_type,
-        'page_title': 'История сделок',
-        'is_orders_page': False,
-    })
-
-
-@role_required(['admin', 'manager', "senior_manager"])
-def orders_list(request):
-    current_type = request.GET.get('type')
-
-    tradings = Trading.objects.select_related(
-        'product', 'warehouse', 'user'
-    ).prefetch_related(
-        'items', 'items__product', 'items__warehouse'
-    ).filter(status=Trading.Status.PENDING)
-
-    if current_type in ['purchase', 'sell']:
-        tradings = tradings.filter(trade_type=current_type)
-
-    tradings = list(tradings)
-
-    for trading in tradings:
         grouped_items = {}
 
         for item in trading.items.all():
@@ -133,12 +144,138 @@ def orders_list(request):
         trading.grouped_items = list(grouped_items.values())
         trading.is_in_progress = True
 
+    paginator = Paginator(tradings, 5)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    query_params = request.GET.copy()
+    query_params.pop('page', None)
+
     return render(request, 'trading/trading_list.html', {
-        'tradings': tradings,
+        'tradings': page_obj,
+        'page_obj': page_obj,
+        'current_type': current_type,
+        'page_title': 'История сделок',
+        'is_orders_page': False,
+        'date_from': date_from,
+        'date_to': date_to,
+        'search_query': search_query,
+        'sort_by': sort_by,
+        'query_string': query_params.urlencode(),
+    })
+
+
+
+
+@role_required(['admin', 'manager', "senior_manager"])
+def orders_list(request):
+    current_type = request.GET.get('type')
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    search_query = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort', 'newest')
+
+    tradings = Trading.objects.select_related(
+        'product', 'warehouse', 'user'
+    ).prefetch_related(
+        'items', 'items__product', 'items__warehouse'
+    ).filter(status=Trading.Status.PENDING)
+
+    if current_type in ['purchase', 'sell']:
+        tradings = tradings.filter(trade_type=current_type)
+
+    if date_from:
+        tradings = tradings.filter(created_at__date__gte=date_from)
+
+    if date_to:
+        tradings = tradings.filter(created_at__date__lte=date_to)
+
+    if sort_by == 'oldest':
+        tradings = tradings.order_by('created_at', 'id')
+    elif sort_by == 'name_az':
+        tradings = tradings.order_by('name', 'id')
+    elif sort_by == 'name_za':
+        tradings = tradings.order_by('-name', '-id')
+    else:
+        sort_by = 'newest'
+        tradings = tradings.order_by('-created_at', '-id')
+
+    tradings = list(tradings)
+
+    if search_query:
+        search_text = search_query.lower()
+        filtered_tradings = []
+
+        for trading in tradings:
+            searchable_parts = [
+                trading.name or '',
+                trading.comment or '',
+                trading.product.name if trading.product else '',
+                trading.warehouse.city if trading.warehouse else '',
+            ]
+
+            for item in trading.items.all():
+                searchable_parts.append(item.product.name if item.product else '')
+                searchable_parts.append(item.warehouse.city if item.warehouse else '')
+
+            searchable_text = ' '.join(searchable_parts).lower()
+
+            if search_text in searchable_text:
+                filtered_tradings.append(trading)
+
+        tradings = filtered_tradings
+
+    for trading in tradings:
+        total_requested = 0
+        total_fulfilled = 0
+
+        for item in trading.items.all():
+            total_requested += item.requested_quantity
+            total_fulfilled += item.fulfilled_quantity
+
+        trading.total_requested = total_requested
+        trading.total_fulfilled = total_fulfilled
+
+        grouped_items = {}
+
+        for item in trading.items.all():
+            key = (item.product_id, item.warehouse_id)
+
+            if key not in grouped_items:
+                grouped_items[key] = {
+                    'product': item.product,
+                    'warehouse': item.warehouse,
+                    'requested_quantity': 0,
+                    'fulfilled_quantity': 0,
+                }
+
+            grouped_items[key]['requested_quantity'] += item.requested_quantity
+            grouped_items[key]['fulfilled_quantity'] += item.fulfilled_quantity
+
+        trading.grouped_items = list(grouped_items.values())
+        trading.is_in_progress = True
+
+    paginator = Paginator(tradings, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    query_params = request.GET.copy()
+    query_params.pop('page', None)
+
+    return render(request, 'trading/trading_list.html', {
+        'tradings': page_obj,
+        'page_obj': page_obj,
         'current_type': current_type,
         'page_title': 'Заказы',
         'is_orders_page': True,
+        'date_from': date_from,
+        'date_to': date_to,
+        'search_query': search_query,
+        'sort_by': sort_by,
+        'query_string': query_params.urlencode(),
     })
+
+
 
 
 @role_required(['admin'])
@@ -446,14 +583,20 @@ def trading_update(request, pk):
     if request.method == 'POST':
         form = TradingForm(request.POST, instance=trading)
         item_formset = TradingItemEditFormSet(request.POST, prefix='items')
+        formset = AttachmentFormSet(request.POST, request.FILES)
 
-        if form.is_valid() and item_formset.is_valid():
+        if form.is_valid() and item_formset.is_valid() and formset.is_valid():
             with transaction.atomic():
                 trading = Trading.objects.select_for_update().get(pk=pk)
                 before_snapshot = make_trading_snapshot(trading)
 
                 form = TradingForm(request.POST, instance=trading)
                 form.save()
+
+                attachments = formset.save(commit=False)
+                for attachment in attachments:
+                    attachment.trade = trading
+                    attachment.save()
 
                 locked_items = list(
                     trading.items.select_related(
@@ -624,10 +767,12 @@ def trading_update(request, pk):
             initial=initial_items,
             prefix='items'
         )
+        formset = AttachmentFormSet()
 
     return render(request, 'trading/trading_add.html', {
         'form': form,
         'item_formset': item_formset,
+        'formset': formset,
         'trading': trading,
     })
 

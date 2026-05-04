@@ -3,129 +3,436 @@
 {% block content %}
 
 <style>
-    .container {
-        max-width: 1100px;
-        margin: 40px auto;
-        padding: 0 20px;
+    body {
+        background: #f4f7f9;
     }
 
-    .top-bar {
+    @keyframes pageFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes cardFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+            filter: blur(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .page-hero {
+        position: relative;
+        overflow: hidden;
         display: flex;
         justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+        margin-bottom: 22px;
+        padding: 30px;
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(121, 174, 200, 0.20), transparent 36%),
+            linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 38px rgba(31, 59, 74, 0.10);
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .page-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    }
+
+    .hero-left,
+    .hero-right {
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-eyebrow {
+        display: inline-flex;
         align-items: center;
-        margin-bottom: 20px;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
     }
 
     .title {
-        font-size: 32px;
-        font-weight: 700;
+        margin: 0;
+        color: #07172f;
+        font-size: 44px;
+        line-height: 1.05;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+    }
+
+    .page-subtitle {
+        margin: 12px 0 0;
+        color: #6f7a89;
+        font-size: 16px;
+        line-height: 1.55;
+        font-weight: 650;
     }
 
     .create-btn {
-        background: #2e7d32;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 46px;
+        padding: 0 19px;
+        border-radius: 16px;
+        background: #417690;
         color: white;
-        padding: 10px 16px;
-        border-radius: 10px;
         text-decoration: none;
-        font-weight: 600;
-        transition: 0.2s;
+        font-size: 14px;
+        font-weight: 900;
+        box-shadow: 0 10px 22px rgba(65, 118, 144, 0.18);
+        transition: 0.22s ease;
+        white-space: nowrap;
     }
 
     .create-btn:hover {
-        background: #1b5e20;
+        background: #2b5063;
+        transform: translateY(-2px);
+        box-shadow: 0 14px 28px rgba(43, 80, 99, 0.24);
     }
 
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    .content-card {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 28px;
+        padding: 24px;
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 36px rgba(31, 59, 74, 0.10);
+        animation: pageFadeUp 0.55s ease both;
+        animation-delay: 0.10s;
     }
 
-    .table th, .table td {
-        padding: 14px 16px;
-        text-align: left;
+    .section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 20px;
     }
 
-    .table th {
-        background: #417690;
-        color: white;
-        font-weight: 600;
+    .section-title {
+        margin: 0;
+        color: #07172f;
+        font-size: 25px;
+        font-weight: 950;
+        letter-spacing: -0.25px;
     }
 
-    .table tr:nth-child(even) {
-        background: #f9f9f9;
-    }
-
-    .badge {
-        padding: 6px 10px;
-        border-radius: 12px;
+    .section-note {
+        color: #6f7a89;
         font-size: 13px;
-        font-weight: 600;
+        font-weight: 750;
+        margin-top: 4px;
+    }
+
+    .transfer-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .transfer-card {
+        position: relative;
+        overflow: hidden;
+        display: grid;
+        grid-template-columns: 1.3fr 1fr 1fr 0.85fr 1fr 1fr;
+        gap: 16px;
+        align-items: center;
+        padding: 20px 22px 20px 26px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 8px 22px rgba(31, 59, 74, 0.055);
+        transition: 0.24s ease;
+        animation: cardFadeUp 0.45s ease both;
+    }
+
+    .transfer-card:nth-child(1) { animation-delay: 0.05s; }
+    .transfer-card:nth-child(2) { animation-delay: 0.09s; }
+    .transfer-card:nth-child(3) { animation-delay: 0.13s; }
+    .transfer-card:nth-child(4) { animation-delay: 0.17s; }
+    .transfer-card:nth-child(5) { animation-delay: 0.21s; }
+    .transfer-card:nth-child(6) { animation-delay: 0.25s; }
+    .transfer-card:nth-child(7) { animation-delay: 0.29s; }
+    .transfer-card:nth-child(8) { animation-delay: 0.33s; }
+
+    .transfer-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 16px;
+        bottom: 16px;
+        width: 5px;
+        border-radius: 0 999px 999px 0;
+        background: #417690;
+    }
+
+    .transfer-card:hover {
+        transform: translateY(-4px) scale(1.006);
+        background: #ffffff;
+        box-shadow: 0 16px 34px rgba(31, 59, 74, 0.12);
+        border-color: #b9d3df;
+    }
+
+    .transfer-label {
+        margin-bottom: 6px;
+        color: #6f7a89;
+        font-size: 11px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.35px;
+    }
+
+    .transfer-value {
+        color: #07172f;
+        font-size: 14px;
+        font-weight: 950;
+        line-height: 1.25;
+        word-break: break-word;
+    }
+
+    .product-value {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .product-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        flex-shrink: 0;
+    }
+
+    .route-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        border: 1px solid #c7dfeb;
+        font-size: 13px;
+        font-weight: 950;
+        transition: 0.2s ease;
+    }
+
+    .transfer-card:hover .route-chip {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(31, 59, 74, 0.08);
+    }
+
+    .qty-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
         background: #e6f7ec;
-        color: #2e7d32;
+        color: #1f7a3a;
+        border: 1px solid #a9dbba;
+        font-size: 13px;
+        font-weight: 950;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+    .qty-badge.zero {
+        background: #fdecea;
+        color: #c62828;
+        border-color: #f4b8b2;
+    }
+
+    .transfer-card:hover .qty-badge {
+        transform: scale(1.06);
     }
 
     .empty {
-        margin-top: 30px;
-        font-size: 18px;
-        color: #777;
+        padding: 46px 20px;
+        border-radius: 22px;
+        background: #f8fbfd;
+        border: 1px dashed #cfdfe8;
+        color: #6f7a89;
         text-align: center;
+        font-size: 16px;
+        font-weight: 850;
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 16px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background: #e8f3f8;
+        color: #417690;
+        font-size: 32px;
+        border: 1px solid #c7dfeb;
+    }
+
+    @media (max-width: 1000px) {
+        .page-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .transfer-card {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .container {
+            margin-top: 24px;
+            padding: 0 14px;
+        }
+
+        .page-hero {
+            padding: 24px;
+        }
+
+        .transfer-card {
+            grid-template-columns: 1fr;
+        }
+
+        .title {
+            font-size: 34px;
+        }
     }
 </style>
 
 <div class="container">
 
+    <section class="page-hero">
+        <div class="hero-left">
+            <div class="page-eyebrow">🔁 Перемещения склада</div>
+            <h1 class="title">Перемещения</h1>
+            <p class="page-subtitle">
+                История перемещений товаров между складами.
+            </p>
+        </div>
 
-<div class="top-bar">
-    <div class="title">Перемещения</div>
+        <div class="hero-right">
+            <a href="{% url 'warehouses:warehouse_transfer_create' %}" class="create-btn">
+                <span>＋</span>
+                <span>Создать перемещение</span>
+            </a>
+        </div>
+    </section>
 
-    <a href="{% url 'warehouses:warehouse_transfer_create' %}" class="create-btn">
-        + Создать перемещение
-    </a>
-</div>
+    <div class="content-card">
+        <div class="section-head">
+            <div>
+                <h2 class="section-title">История перемещений</h2>
+                <div class="section-note">Товар, маршрут, количество и дата операции</div>
+            </div>
+        </div>
 
-{% if transfers %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Откуда</th>
-                <th>Куда</th>
-                <th>Количество</th>
-                <th>Кто</th>
-                <th>Дата</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for t in transfers %}
-                <tr>
-                    <td>{{ t.product.name }}</td>
-                    <td>{{ t.from_warehouse.city }}</td>
-                    <td>{{ t.to_warehouse.city }}</td>
-                    <td>
-                        <span class="badge">
-                            {{ t.quantity }} {{ t.product.get_unit_display }}
-                        </span>
-                    </td>
-                    <td>
-                        {% if t.created_by %}
-                            {{ t.created_by }}
-                        {% else %}
-                            —
-                        {% endif %}
-                    </td>
-                    <td>{{ t.created_at|date:"Y-m-d H:i" }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% else %}
-    <div class="empty">Пока нет перемещений</div>
-{% endif %}
+        {% if transfers %}
+            <div class="transfer-list">
+                {% for t in transfers %}
+                    <div class="transfer-card">
+                        <div>
+                            <div class="transfer-label">Товар</div>
+                            <div class="transfer-value product-value">
+                                <span class="product-icon">📦</span>
+                                <span>{{ t.product.name }}</span>
+                            </div>
+                        </div>
 
+                        <div>
+                            <div class="transfer-label">Откуда</div>
+                            <div class="transfer-value">
+                                <span class="route-chip">{{ t.from_warehouse.city }}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="transfer-label">Куда</div>
+                            <div class="transfer-value">
+                                <span class="route-chip">{{ t.to_warehouse.city }}</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="transfer-label">Количество</div>
+                            <span class="qty-badge {% if t.quantity == 0 %}zero{% endif %}">
+                                {{ t.quantity }} {{ t.product.get_unit_display }}
+                            </span>
+                        </div>
+
+                        <div>
+                            <div class="transfer-label">Кто</div>
+                            <div class="transfer-value">
+                                {% if t.created_by %}
+                                    {{ t.created_by }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="transfer-label">Дата</div>
+                            <div class="transfer-value">{{ t.created_at|date:"d.m.Y H:i" }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty">
+                <div class="empty-icon">🔁</div>
+                Пока нет перемещений
+            </div>
+        {% endif %}
+    </div>
 
 </div>
 {% endblock %}

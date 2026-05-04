@@ -1,63 +1,336 @@
 {% extends "base_manager.html" %}
 
 {% block manager_content %}
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1 style="margin:0;">Список складов</h1>
+
+<style>
+    .warehouses-page {
+        max-width: 1180px;
+        margin: 34px auto;
+        padding: 0 20px;
+    }
+
+    .warehouses-hero {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 24px;
+        padding: 26px 28px;
+        border-radius: 24px;
+        background: linear-gradient(135deg, #ffffff 0%, #f4f9fc 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 12px 30px rgba(31, 59, 74, 0.08);
+    }
+
+    .warehouses-title-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .warehouses-eyebrow {
+        display: inline-flex;
+        width: fit-content;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
+    }
+
+    .warehouses-title {
+        margin: 0;
+        color: #172033;
+        font-size: 36px;
+        line-height: 1.1;
+        font-weight: 900;
+    }
+
+    .warehouses-subtitle {
+        margin: 0;
+        color: #6f7a89;
+        font-size: 15px;
+        line-height: 1.45;
+    }
+
+    .create-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 14px;
+        background: #417690;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 900;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.18);
+        transition: 0.2s;
+        white-space: nowrap;
+    }
+
+    .create-btn:hover {
+        background: #2b5063;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(43, 80, 99, 0.24);
+    }
+
+    .warehouse-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .warehouse-card {
+        position: relative;
+        overflow: hidden;
+        display: block;
+        padding: 22px;
+        border-radius: 22px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.07);
+        text-decoration: none;
+        color: inherit;
+        transition: 0.2s;
+    }
+
+    .warehouse-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18px;
+        bottom: 18px;
+        width: 5px;
+        border-radius: 0 999px 999px 0;
+        background: #417690;
+    }
+
+    .warehouse-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 16px 34px rgba(31, 59, 74, 0.13);
+        border-color: #b9d3df;
+        background: #ffffff;
+    }
+
+    .warehouse-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .warehouse-main {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .warehouse-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        font-size: 26px;
+        flex-shrink: 0;
+    }
+
+    .warehouse-city {
+        margin: 0;
+        color: #172033;
+        font-size: 23px;
+        line-height: 1.15;
+        font-weight: 900;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .warehouse-note {
+        margin-top: 5px;
+        color: #6f7a89;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .warehouse-open {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 34px;
+        padding: 0 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        border: 1px solid #c7dfeb;
+        font-size: 13px;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .warehouse-stats {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .stat-box {
+        padding: 13px 14px;
+        border-radius: 16px;
+        background: #f3f8fb;
+        border: 1px solid #d4e3eb;
+    }
+
+    .stat-label {
+        color: #6f7a89;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 0.2px;
+        margin-bottom: 6px;
+    }
+
+    .stat-value {
+        color: #172033;
+        font-size: 15px;
+        font-weight: 900;
+    }
+
+    .empty-box {
+        padding: 40px 24px;
+        border-radius: 22px;
+        background: white;
+        border: 1px dashed #cfdfe8;
+        text-align: center;
+        color: #6f7a89;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.05);
+    }
+
+    .empty-title {
+        color: #172033;
+        font-size: 22px;
+        font-weight: 900;
+        margin-bottom: 8px;
+    }
+
+    @media (max-width: 900px) {
+        .warehouses-hero {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .create-btn {
+            width: 100%;
+        }
+
+        .warehouse-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 560px) {
+        .warehouse-card-top {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .warehouse-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .warehouses-title {
+            font-size: 30px;
+        }
+    }
+</style>
+
+<div class="warehouses-page">
+
+    <section class="warehouses-hero">
+        <div class="warehouses-title-wrap">
+            <div class="warehouses-eyebrow">🏢 Управление складами</div>
+            <h1 class="warehouses-title">Склады</h1>
+            <p class="warehouses-subtitle">
+                Список всех зарегистрированных складов и базовая информация по ним.
+            </p>
+        </div>
 
         {% if request.user.role == "admin" or request.user.role == "manager" or request.user.role == "senior_manager" %}
-            <a href="{% url 'add_warehouse_view' %}" class="btn-save" style="text-decoration:none;">
+            <a href="{% url 'add_warehouse_view' %}" class="create-btn">
                 + Создать склад
             </a>
         {% endif %}
-    </div>
+    </section>
 
-    <div class="module">
-        <h2>Зарегистрированные локации</h2>
-        <div class="module-content">
-            {% if warehouses %}
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Город</th>
-                            <th>ID (UUID)</th>
-                            <th>Дата создания</th>
-                            {% if request.user.role == "admin" or request.user.role == "manager" %}
-                                <th>Действия</th>
-                            {% endif %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for warehouse in warehouses %}
-                            <tr>
-                                <td>
-                                    <strong>
-                                        <a href="{% url 'warehouses:warehouse_detail' warehouse.pk %}">
-                                            {{ warehouse.city }}
-                                        </a>
-                                    </strong>
-                                </td>
-                                <td style="color: #999; font-size: 12px;">{{ warehouse.id }}</td>
-                                <td>{{ warehouse.created_at|date:"d.m.Y H:i" }}</td>
+    {% if warehouses %}
+        <div class="warehouse-grid">
+            {% for warehouse in warehouses %}
+                <a href="{% url 'warehouses:warehouse_detail' warehouse.pk %}" class="warehouse-card">
 
-                                {% if request.user.role == "admin" or request.user.role == "manager" %}
-                                    <td>
-                                        <a href="#" class="action-link">Изменить</a>
-                                    </td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            {% else %}
-                <p>
-                    Склады еще не созданы.
-                    {% if request.user.role == "admin" or request.user.role == "manager" %}
-                        <a href="{% url 'add_warehouse_view' %}" class="action-link">
-                            Создать первый склад
-                        </a>
-                    {% endif %}
-                </p>
+                    <div class="warehouse-card-top">
+                        <div class="warehouse-main">
+                            <div class="warehouse-icon">📦</div>
+
+                            <div>
+                                <h2 class="warehouse-city">{{ warehouse.city }}</h2>
+                                <div class="warehouse-note">Складская локация</div>
+                            </div>
+                        </div>
+
+                        <div class="warehouse-open">
+                            Открыть →
+                        </div>
+                    </div>
+
+                    <div class="warehouse-stats">
+                        <div class="stat-box">
+                            <div class="stat-label">Количество всех товаров</div>
+                            <div class="stat-value">
+                                {{ warehouse.total_quantity|default:0 }}
+                            </div>
+                        </div>
+
+                        <div class="stat-box">
+                            <div class="stat-label">Создан</div>
+                            <div class="stat-value">
+                                {{ warehouse.created_at|date:"d.m.Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-box">
+            <div class="empty-title">Склады еще не созданы</div>
+            <div>
+                Добавьте первый склад, чтобы начать вести остатки товаров.
+            </div>
+
+            {% if request.user.role == "admin" or request.user.role == "manager" %}
+                <br>
+                <a href="{% url 'add_warehouse_view' %}" class="create-btn">
+                    + Создать первый склад
+                </a>
             {% endif %}
         </div>
-    </div>
+    {% endif %}
+
+</div>
+
 {% endblock %}

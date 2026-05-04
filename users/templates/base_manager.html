@@ -12,6 +12,10 @@
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             margin: 0;
             font-family: Arial, sans-serif;
@@ -19,99 +23,305 @@
             color: #172033;
         }
 
-        .header {
-            background: #417690;
-            padding: 18px 30px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(31, 59, 74, 0.12);
+        @keyframes pageFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+                filter: blur(3px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
         }
 
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        @keyframes cardFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+                filter: blur(3px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
         }
 
-        .logo-img {
-            width: 34px;
-            height: 34px;
-            border-radius: 8px;
-            padding: 4px;
-            object-fit: cover;
+        @keyframes headerDrop {
+            from {
+                opacity: 0;
+                transform: translateY(-18px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header-shell {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(121, 174, 200, 0.35), transparent 34%),
+                linear-gradient(135deg, #2b5063 0%, #417690 55%, #2f667e 100%);
+            box-shadow: 0 16px 34px rgba(31, 59, 74, 0.18);
+            animation: headerDrop 0.45s ease both;
+        }
+
+        .header-top {
+            padding: 18px 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
         }
 
         .logo-text {
-            font-size: 22px;
-            font-weight: 800;
-            letter-spacing: 1px;
+            font-size: 24px;
+            font-weight: 950;
+            letter-spacing: 1.2px;
             text-transform: uppercase;
             color: #ffffff;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+            white-space: nowrap;
         }
 
-        .sub-header {
-            background: #79aec8;
-            color: white;
-            padding: 12px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 18px;
+        .header-user {
+            color: rgba(255, 255, 255, 0.92);
             font-size: 14px;
+            font-weight: 750;
+            white-space: nowrap;
         }
 
-        .sub-header a {
-            color: white;
+        .header-user strong {
+            color: #ffffff;
+            font-weight: 950;
+        }
+
+        .header-nav {
+            padding: 12px 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: rgba(121, 174, 200, 0.42);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.92);
             text-decoration: none;
-            margin-left: 15px;
-            font-weight: 600;
-            opacity: 0.95;
+            font-size: 14px;
+            font-weight: 900;
+            transition: 0.2s;
         }
 
-        .sub-header a:hover {
-            opacity: 1;
-            text-decoration: underline;
+        .nav-links a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .nav-links a.active {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
         }
 
         .search-form {
-            display: inline-flex;
+            position: relative;
+            display: flex;
             align-items: center;
-            gap: 6px;
-            margin-left: 18px;
+            margin: 0;
         }
 
         .search-input {
-            padding: 9px 12px;
-            border: 1px solid rgba(255, 255, 255, 0.35);
-            border-radius: 10px;
-            font-size: 14px;
+            width: 260px;
+            height: 44px;
+            padding: 0 52px 0 16px;
+            border: 1px solid rgba(255, 255, 255, 0.30);
+            border-radius: 16px;
             outline: none;
-            min-width: 190px;
+            background: rgba(255, 255, 255, 0.96);
+            color: #172033;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 24px rgba(31, 59, 74, 0.12);
+            transition: 0.22s;
+        }
+
+        .search-input::placeholder {
+            color: #7c8797;
+            font-weight: 650;
         }
 
         .search-input:focus {
-            border-color: #ffffff;
+            width: 320px;
+            border-color: rgba(255, 255, 255, 0.85);
+            box-shadow:
+                0 12px 28px rgba(31, 59, 74, 0.18),
+                0 0 0 4px rgba(255, 255, 255, 0.18);
         }
 
         .search-btn {
-            padding: 9px 11px;
+            position: absolute;
+            right: 5px;
+            width: 34px;
+            height: 34px;
             border: none;
-            background: #2b5063;
-            color: white;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2b5063, #1f3b4a);
+            color: #ffffff;
             cursor: pointer;
-            border-radius: 10px;
-            transition: background 0.2s ease;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            box-shadow: 0 8px 18px rgba(31, 59, 74, 0.20);
         }
 
         .search-btn:hover {
-            background: #1f3b4a;
+            transform: scale(1.06);
+            background: linear-gradient(135deg, #1f3b4a, #172033);
         }
 
-                .container {
+        .logout-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .logout-btn {
+            min-height: 40px;
+            padding: 0 13px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            cursor: pointer;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 900;
+            transition: 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: translateY(-1px);
+        }
+
+        .container {
             width: 100%;
             max-width: 1600px;
             margin: 42px auto 70px;
             padding: 0 32px;
+            animation: pageFadeUp 0.55s ease both;
+        }
+
+        .container > * {
+            animation: cardFadeUp 0.55s ease both;
+        }
+
+        .container > *:nth-child(1) {
+            animation-delay: 0.04s;
+        }
+
+        .container > *:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .container > *:nth-child(3) {
+            animation-delay: 0.16s;
+        }
+
+        .container > *:nth-child(4) {
+            animation-delay: 0.22s;
+        }
+
+        .container > *:nth-child(5) {
+            animation-delay: 0.28s;
+        }
+
+        .dashboard-card,
+        .kpi-card,
+        .panel,
+        .module,
+        .warehouse-card,
+        .trade-card,
+        .order-card,
+        .product-card,
+        .item-block,
+        .card,
+        table {
+            animation: cardFadeUp 0.55s ease both;
+        }
+
+        .dashboard-card:nth-child(1),
+        .kpi-card:nth-child(1),
+        .warehouse-card:nth-child(1),
+        .trade-card:nth-child(1),
+        .order-card:nth-child(1),
+        .product-card:nth-child(1),
+        .item-block:nth-child(1),
+        .card:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .dashboard-card:nth-child(2),
+        .kpi-card:nth-child(2),
+        .warehouse-card:nth-child(2),
+        .trade-card:nth-child(2),
+        .order-card:nth-child(2),
+        .product-card:nth-child(2),
+        .item-block:nth-child(2),
+        .card:nth-child(2) {
+            animation-delay: 0.10s;
+        }
+
+        .dashboard-card:nth-child(3),
+        .kpi-card:nth-child(3),
+        .warehouse-card:nth-child(3),
+        .trade-card:nth-child(3),
+        .order-card:nth-child(3),
+        .product-card:nth-child(3),
+        .item-block:nth-child(3),
+        .card:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .dashboard-card:nth-child(4),
+        .kpi-card:nth-child(4),
+        .warehouse-card:nth-child(4),
+        .trade-card:nth-child(4),
+        .order-card:nth-child(4),
+        .product-card:nth-child(4),
+        .item-block:nth-child(4),
+        .card:nth-child(4) {
+            animation-delay: 0.20s;
         }
 
         h1 {
@@ -214,12 +424,14 @@
             cursor: pointer;
             font-weight: 800;
             border-radius: 14px;
-            transition: background 0.2s ease;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .btn-save:hover,
         .btn-add:hover {
             background: #2b5063;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(43, 80, 99, 0.18);
         }
 
         .btn-add {
@@ -258,22 +470,77 @@
             box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.10);
         }
 
-        @media (max-width: 900px) {
-            .sub-header {
+        .trading-table-shell,
+        .trading-table {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .trading-table {
+            border-radius: 0 !important;
+            overflow: visible !important;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.001ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.001ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .header-nav {
                 align-items: flex-start;
                 flex-direction: column;
             }
 
-            .sub-header div:last-child {
-                display: flex;
-                align-items: center;
-                flex-wrap: wrap;
-                gap: 10px;
+            .header-actions {
+                width: 100%;
             }
 
-            .sub-header a,
             .search-form {
-                margin-left: 0;
+                width: 100%;
+            }
+
+            .search-input,
+            .search-input:focus {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .header-top {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 16px;
+            }
+
+            .header-nav {
+                padding: 12px 16px;
+            }
+
+            .nav-links {
+                gap: 6px;
+            }
+
+            .nav-links a {
+                min-height: 34px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+
+            .header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .logout-btn {
+                width: 100%;
             }
 
             .container {
@@ -286,53 +553,50 @@
                 overflow-x: auto;
                 white-space: nowrap;
             }
+
+            .trading-table {
+                overflow: visible !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="brand">
+<div class="header-shell">
+    <div class="header-top">
         <div class="logo-text">Warehouse Manager</div>
-    </div>
-</div>
 
-<div class="sub-header">
-    <div>
-        Добро пожаловать, <strong>{{ request.user.username }}</strong>
+        <div class="header-user">
+            Добро пожаловать, <strong>{{ request.user.username }}</strong>
+        </div>
     </div>
 
-    <div>
-        <a href="{% url 'manager_dashboard' %}">Дашборд</a>
-        <a href="{% url 'trading_list' %}">Сделки</a>
-        <a href="{% url 'orders_list' %}">Заказы</a>
-        {% if request.user.role == "admin" %}
-        <a href="{% url 'admin_trading_history' %}">История</a>
-        {% endif %}
-        <a href="{% url 'warehouse_list' %}">Склады</a>
-        <a href="{% url 'products:product_list' %}">Продукты</a>
-        <a href="{% url 'warehouses:warehouse_transfer_history' %}">Перемещения</a>
+    <div class="header-nav">
+        <nav class="nav-links">
+            <a href="{% url 'manager_dashboard' %}" class="{% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">Дашборд</a>
+            <a href="{% url 'trading_list' %}" class="{% if request.resolver_match.url_name == 'trading_list' %}active{% endif %}">Сделки</a>
+            <a href="{% url 'orders_list' %}" class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">Заказы</a>
 
-        <form method="get" action="{% url 'global_search' %}" class="search-form">
-            <input type="text" name="q" placeholder="Поиск..." class="search-input">
-            <button type="submit" class="search-btn">🔍</button>
-        </form>
+            {% if request.user.role == "admin" %}
+                <a href="{% url 'admin_trading_history' %}" class="{% if request.resolver_match.url_name == 'admin_trading_history' %}active{% endif %}">История</a>
+            {% endif %}
 
-        <form method="post" action="{% url 'logout' %}" style="display:inline; margin-left:15px;">
-            {% csrf_token %}
-            <button type="submit" style="
-                    background:none;
-                    border:none;
-                    padding:0;
-                    margin:0;
-                    color:white;
-                    cursor:pointer;
-                    font:inherit;
-                    font-weight:700;
-                ">
-                Выйти
-            </button>
-        </form>
+            <a href="{% url 'warehouse_list' %}" class="{% if request.resolver_match.url_name == 'warehouse_list' %}active{% endif %}">Склады</a>
+            <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.namespace == 'products' %}active{% endif %}">Продукты</a>
+            <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="{% if request.resolver_match.namespace == 'warehouses' %}active{% endif %}">Перемещения</a>
+        </nav>
+
+        <div class="header-actions">
+            <form method="get" action="{% url 'global_search' %}" class="search-form">
+                <input type="text" name="q" placeholder="Поиск по системе..." class="search-input">
+                <button type="submit" class="search-btn">🔍</button>
+            </form>
+
+            <form method="post" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn">Выйти</button>
+            </form>
+        </div>
     </div>
 </div>
 

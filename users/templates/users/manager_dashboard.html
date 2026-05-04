@@ -2,354 +2,715 @@
 
 {% block manager_content %}
 <style>
-    .dashboard-top {
+    .dashboard-pro {
+        max-width: 1540px;
+        margin: 0 auto;
+    }
+
+    .dashboard-head {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: flex-end;
         gap: 20px;
-        margin-bottom: 26px;
+        margin-bottom: 22px;
     }
 
     .dashboard-title {
         margin: 0;
-        font-size: 38px;
-        line-height: 1.1;
-        font-weight: 800;
-        color: #172033;
+        color: #07172f;
+        font-size: 40px;
+        line-height: 1.05;
+        font-weight: 950;
+        letter-spacing: -0.8px;
     }
 
     .dashboard-date {
         color: #6f7a89;
         font-size: 14px;
-        padding-top: 8px;
+        font-weight: 800;
         white-space: nowrap;
     }
 
-    .dashboard-cards {
+    .kpi-grid {
         display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 22px;
-        margin-bottom: 28px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 24px;
     }
 
-    .dashboard-card {
-        background: #ffffff;
-        border: 1px solid #e8eef2;
+    .kpi-card {
+        position: relative;
+        overflow: hidden;
+        padding: 22px;
+        min-height: 155px;
         border-radius: 26px;
-        padding: 24px;
-        box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
-        min-height: 150px;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 34px rgba(31, 59, 74, 0.08);
+        transition: 0.25s;
     }
 
-    .dashboard-card-head {
+    .kpi-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 22px 45px rgba(31, 59, 74, 0.14);
+        border-color: #b9d3df;
+    }
+
+    .kpi-card::after {
+        content: "";
+        position: absolute;
+        right: -38px;
+        bottom: -44px;
+        width: 135px;
+        height: 135px;
+        border-radius: 50%;
+        background: rgba(65, 118, 144, 0.10);
+    }
+
+    .kpi-top {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
-        gap: 14px;
-        margin-bottom: 22px;
+        gap: 12px;
+        margin-bottom: 20px;
     }
 
-    .dashboard-card-title {
-        color: #172033;
-        font-size: 16px;
-        font-weight: 800;
+    .kpi-label {
+        color: #607086;
+        font-size: 13px;
+        font-weight: 950;
+        letter-spacing: 0.35px;
+        text-transform: uppercase;
     }
 
-    .dashboard-card-icon {
-        width: 44px;
-        height: 44px;
+    .kpi-icon {
+        width: 46px;
+        height: 46px;
         border-radius: 16px;
-        background: #e8f3f8;
-        color: #417690;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 21px;
-    }
-
-    .dashboard-card-value {
-        color: #07172f;
-        font-size: 31px;
-        line-height: 1;
-        font-weight: 900;
-        margin-bottom: 10px;
-    }
-
-    .dashboard-card-note {
-        color: #6f7a89;
-        font-size: 15px;
-        line-height: 1.4;
-    }
-
-    .dashboard-user-name {
-        color: #07172f;
-        font-size: 22px;
-        font-weight: 900;
-        margin-bottom: 8px;
-    }
-
-    .role-badge {
-        display: inline-flex;
-        align-items: center;
-        padding: 7px 12px;
-        border-radius: 999px;
         background: #e8f3f8;
-        color: #2b5063;
-        font-size: 13px;
-        font-weight: 800;
+        border: 1px solid #c7dfeb;
+        font-size: 22px;
+        flex-shrink: 0;
     }
 
-    .stats-card {
-        background: #fff;
-        border-radius: 26px;
-        box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+    .kpi-value {
+        color: #07172f;
+        font-size: 38px;
+        line-height: 1;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+    }
+
+    .kpi-note {
+        margin-top: 10px;
+        color: #6f7a89;
+        font-size: 14px;
+        font-weight: 750;
+    }
+
+    .main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr);
+        gap: 22px;
+        align-items: start;
+    }
+
+    .panel {
+        border-radius: 30px;
+        background: rgba(255,255,255,0.96);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 18px 45px rgba(31, 59, 74, 0.10);
         overflow: hidden;
-        margin-bottom: 24px;
-        border: 1px solid #e8eef2;
     }
 
-    .stats-header {
-        padding: 28px 32px 20px;
+    .panel-header {
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        gap: 24px;
-        flex-wrap: wrap;
-        border-bottom: 1px solid #eef2f6;
-        background: #ffffff;
+        gap: 18px;
+        padding: 26px 28px 20px;
+        border-bottom: 1px solid #e6eef3;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(121, 174, 200, 0.18), transparent 36%),
+            #ffffff;
     }
 
-    .stats-title {
+    .panel-title {
         margin: 0;
-        font-size: 28px;
-        font-weight: 800;
-        color: #172033;
+        color: #07172f;
+        font-size: 30px;
+        line-height: 1.08;
+        font-weight: 950;
+        letter-spacing: -0.45px;
     }
 
-    .stats-subtitle {
-        margin-top: 8px;
+    .panel-subtitle {
+        margin-top: 7px;
         color: #6f7a89;
-        font-size: 15px;
+        font-size: 14px;
+        font-weight: 750;
     }
 
     .period-filter {
         display: flex;
-        gap: 8px;
-        background: #f3f6f9;
-        padding: 8px;
+        gap: 7px;
+        padding: 7px;
         border-radius: 18px;
-        border: 1px solid #e5eaf0;
+        background: #f3f8fb;
+        border: 1px solid #d4e3eb;
+        flex-wrap: wrap;
     }
 
     .period-filter a {
-        text-decoration: none;
-        padding: 11px 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 0 13px;
         border-radius: 13px;
-        color: #4b5563;
-        font-size: 14px;
-        font-weight: 700;
-        transition: background 0.2s ease, color 0.2s ease;
+        color: #516172;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 950;
+        transition: 0.2s;
         white-space: nowrap;
     }
 
     .period-filter a:hover {
-        background: #e7eef5;
-        color: #243746;
+        background: #e8f3f8;
+        color: #2b5063;
+        transform: translateY(-1px);
     }
 
     .period-filter a.active {
         background: #417690;
-        color: white;
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.20);
     }
 
-    .chart-box {
-        padding: 28px 32px 34px;
+    .chart-stage {
+        position: relative;
+        padding: 30px;
+        min-height: 610px;
+        background:
+            linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(247,251,253,0.92) 100%);
+        perspective: 1000px;
+    }
+
+    .chart-board {
+        position: relative;
+        height: 535px;
+        padding: 22px;
+        border-radius: 30px;
+        background:
+            linear-gradient(145deg, rgba(255,255,255,0.94), rgba(232,243,248,0.72));
+        border: 1px solid #d4e3eb;
+        box-shadow:
+            0 30px 55px rgba(31, 59, 74, 0.15),
+            inset 0 1px 0 rgba(255,255,255,0.88);
+        transform: perspective(1200px) rotateX(4deg);
+        transform-origin: center bottom;
+        transition: 0.28s ease;
+    }
+
+    .chart-board:hover {
+        transform: perspective(1200px) rotateX(0deg) translateY(-4px);
+        box-shadow:
+            0 38px 68px rgba(31, 59, 74, 0.20),
+            inset 0 1px 0 rgba(255,255,255,0.92);
+    }
+
+    .chart-board::before {
+        content: "";
+        position: absolute;
+        inset: 18px;
+        border-radius: 24px;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.055) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.055) 1px, transparent 1px);
+        background-size: 42px 42px;
+        pointer-events: none;
+    }
+
+    .chart-board::after {
+        content: "";
+        position: absolute;
+        left: 8%;
+        right: 8%;
+        bottom: -20px;
+        height: 36px;
+        border-radius: 50%;
+        background: rgba(31, 59, 74, 0.17);
+        filter: blur(18px);
+        z-index: -1;
+        transition: 0.28s ease;
+    }
+
+    .chart-board:hover::after {
+        background: rgba(31, 59, 74, 0.24);
+        filter: blur(22px);
     }
 
     .chart-wrapper {
         position: relative;
-        height: 520px;
+        height: 100%;
         width: 100%;
+        z-index: 1;
     }
 
-    .quick-actions {
+    .chart-hover-card {
+        position: absolute;
+        right: 28px;
+        top: 28px;
+        z-index: 3;
+        display: none;
+        min-width: 190px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(7, 23, 47, 0.88);
+        color: white;
+        box-shadow: 0 18px 34px rgba(7, 23, 47, 0.22);
+        backdrop-filter: blur(10px);
+        transform: translateY(-4px);
+        pointer-events: none;
+    }
+
+    .chart-hover-card.show {
+        display: block;
+        animation: popTooltip 0.18s ease-out;
+    }
+
+    @keyframes popTooltip {
+        from {
+            opacity: 0;
+            transform: translateY(8px) scale(0.96);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(-4px) scale(1);
+        }
+    }
+
+    .hover-date {
+        font-size: 13px;
+        font-weight: 950;
+        opacity: 0.82;
+        margin-bottom: 9px;
+    }
+
+    .hover-row {
         display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 14px;
+        font-size: 13px;
+        font-weight: 850;
+        margin-top: 5px;
     }
 
-    @media (max-width: 1000px) {
-        .dashboard-cards {
+    .hover-sale {
+        color: #ffb4b4;
+    }
+
+    .hover-purchase {
+        color: #a8f5bf;
+    }
+
+    .chart-summary {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 26px;
+    }
+
+    .chart-mini {
+        padding: 15px;
+        border-radius: 18px;
+        background: #ffffff;
+        border: 1px solid #dce9ef;
+        box-shadow: 0 12px 22px rgba(31, 59, 74, 0.06);
+        transition: 0.2s;
+    }
+
+    .chart-mini:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 16px 28px rgba(31, 59, 74, 0.10);
+    }
+
+    .chart-mini-label {
+        color: #6f7a89;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.25px;
+    }
+
+    .chart-mini-value {
+        margin-top: 7px;
+        color: #07172f;
+        font-size: 24px;
+        font-weight: 950;
+    }
+
+    .side-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+    }
+
+    .popular-list {
+        padding: 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .popular-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 15px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #f8fbfd, #ffffff);
+        border: 1px solid #dce9ef;
+        transition: 0.2s;
+    }
+
+    .popular-item:hover {
+        transform: translateX(4px);
+        border-color: #b9d3df;
+        box-shadow: 0 12px 22px rgba(31, 59, 74, 0.08);
+    }
+
+    .popular-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+    }
+
+    .popular-rank {
+        width: 36px;
+        height: 36px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        color: #2b5063;
+        font-weight: 950;
+        flex-shrink: 0;
+    }
+
+    .popular-name {
+        color: #172033;
+        font-size: 14px;
+        font-weight: 900;
+        text-decoration: none;
+        display: block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 245px;
+    }
+
+    .popular-name:hover {
+        color: #417690;
+    }
+
+    .popular-caption {
+        color: #6f7a89;
+        font-size: 12px;
+        font-weight: 750;
+        margin-top: 3px;
+    }
+
+    .popular-value {
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: #eef7fb;
+        color: #2b5063;
+        border: 1px solid #c7dfeb;
+        font-size: 13px;
+        font-weight: 950;
+        white-space: nowrap;
+    }
+
+    .insight-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+        padding: 18px;
+    }
+
+    .insight {
+        padding: 16px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #ffffff, #f8fbfd);
+        border: 1px solid #dce9ef;
+        transition: 0.2s;
+    }
+
+    .insight:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 22px rgba(31, 59, 74, 0.08);
+    }
+
+    .insight-label {
+        color: #6f7a89;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        font-weight: 950;
+    }
+
+    .insight-value {
+        margin-top: 8px;
+        color: #07172f;
+        font-size: 23px;
+        font-weight: 950;
+    }
+
+    .insight-note {
+        margin-top: 5px;
+        color: #6f7a89;
+        font-size: 13px;
+        font-weight: 750;
+    }
+
+    .empty-state {
+        padding: 24px;
+        color: #6f7a89;
+        font-weight: 750;
+        text-align: center;
+    }
+
+    @media (max-width: 1180px) {
+        .main-grid {
             grid-template-columns: 1fr;
         }
 
-        .dashboard-top {
+        .kpi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 760px) {
+        .dashboard-head {
             flex-direction: column;
+            align-items: flex-start;
         }
 
         .dashboard-title {
-            font-size: 32px;
+            font-size: 34px;
         }
 
-        .chart-wrapper {
-            height: 420px;
+        .kpi-grid,
+        .chart-summary {
+            grid-template-columns: 1fr;
+        }
+
+        .panel-header {
+            flex-direction: column;
+            padding: 22px;
+        }
+
+        .chart-stage {
+            padding: 16px;
+            min-height: 440px;
+        }
+
+        .chart-board {
+            height: 390px;
+            transform: none;
+        }
+
+        .period-filter {
+            width: 100%;
+        }
+
+        .period-filter a {
+            flex: 1;
         }
     }
 </style>
 
-<div class="dashboard-top">
-    <h1 class="dashboard-title">Дашборд менеджера</h1>
-    <div class="dashboard-date">
-        Сегодня: {% now "d.m.Y H:i" %}
-    </div>
-</div>
+<div class="dashboard-pro">
 
-<div class="dashboard-cards">
-    <div class="dashboard-card">
-        <div class="dashboard-card-head">
-            <div class="dashboard-card-title">Пользователь</div>
-            <div class="dashboard-card-icon">👤</div>
-        </div>
-
-        <div class="dashboard-user-name">
-            {{ request.user.username }}
-        </div>
-
-        <div class="role-badge">
-            Роль: {{ request.user.role }}
-        </div>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="dashboard-card-head">
-            <div class="dashboard-card-title">Товары</div>
-            <div class="dashboard-card-icon">📦</div>
-        </div>
-
-        <div class="dashboard-card-value">
-            {{ products_count|default:"0" }}
-        </div>
-
-        <div class="dashboard-card-note">
-            Всего товаров в системе
-        </div>
-    </div>
-
-    <div class="dashboard-card">
-        <div class="dashboard-card-head">
-            <div class="dashboard-card-title">Склады</div>
-            <div class="dashboard-card-icon">🏬</div>
-        </div>
-
-        <div class="dashboard-card-value">
-            {{ warehouses_count|default:"0" }}
-        </div>
-
-        <div class="dashboard-card-note">
-            Доступных складов
-        </div>
-    </div>
-</div>
-
-<div class="stats-card">
-    <div class="stats-header">
+    <div class="dashboard-head">
         <div>
-            <h2 class="stats-title">Статистика движения товаров</h2>
-            <div class="stats-subtitle">
-                Продажи и покупки за выбранный период
+            <h1 class="dashboard-title">Дашборд менеджера</h1>
+        </div>
+
+        <div class="dashboard-date">
+            Сегодня: {% now "d.m.Y H:i" %}
+        </div>
+    </div>
+
+    <section class="kpi-grid">
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div class="kpi-label">Товары</div>
+                <div class="kpi-icon">📦</div>
+            </div>
+            <div class="kpi-value">{{ products_count|default:"0" }}</div>
+            <div class="kpi-note">Всего товаров в системе</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div class="kpi-label">Склады</div>
+                <div class="kpi-icon">🏬</div>
+            </div>
+            <div class="kpi-value">{{ warehouses_count|default:"0" }}</div>
+            <div class="kpi-note">Зарегистрированные локации</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div class="kpi-label">Остатки</div>
+                <div class="kpi-icon">🧮</div>
+            </div>
+            <div class="kpi-value">{{ total_inventory|default:"0" }}</div>
+            <div class="kpi-note">Общее количество на складах</div>
+        </div>
+
+        <div class="kpi-card">
+            <div class="kpi-top">
+                <div class="kpi-label">Период</div>
+                <div class="kpi-icon">🗓️</div>
+            </div>
+            <div class="kpi-value">
+                {% if period == "7d" %}7{% elif period == "30d" %}30{% elif period == "90d" %}90{% elif period == "year" %}365{% else %}∞{% endif %}
+            </div>
+            <div class="kpi-note">Дней в текущем отчёте</div>
+        </div>
+    </section>
+
+    <section class="main-grid">
+        <div class="panel">
+            <div class="panel-header">
+                <div>
+                    <h2 class="panel-title">Движение товаров</h2>
+                    <div class="panel-subtitle">Продажи и закупки за выбранный период</div>
+                </div>
+
+                <div class="period-filter">
+                    <a href="?period=7d" class="{% if period == '7d' %}active{% endif %}">7 дней</a>
+                    <a href="?period=30d" class="{% if period == '30d' %}active{% endif %}">30 дней</a>
+                    <a href="?period=90d" class="{% if period == '90d' %}active{% endif %}">90 дней</a>
+                    <a href="?period=year" class="{% if period == 'year' %}active{% endif %}">Год</a>
+                    <a href="?period=all" class="{% if period == 'all' %}active{% endif %}">Все</a>
+                </div>
+            </div>
+
+            <div class="chart-stage">
+                <div class="chart-board" id="chartBoard">
+                    <div class="chart-hover-card" id="chartHoverCard">
+                        <div class="hover-date" id="hoverDate">—</div>
+                        <div class="hover-row">
+                            <span class="hover-sale">Продажи</span>
+                            <strong id="hoverSales">0</strong>
+                        </div>
+                        <div class="hover-row">
+                            <span class="hover-purchase">Покупки</span>
+                            <strong id="hoverPurchase">0</strong>
+                        </div>
+                    </div>
+
+                    <div class="chart-wrapper">
+                        <canvas id="salesChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-summary">
+                    <div class="chart-mini">
+                        <div class="chart-mini-label">Продажи за период</div>
+                        <div class="chart-mini-value" id="salesTotalBox">0</div>
+                    </div>
+
+                    <div class="chart-mini">
+                        <div class="chart-mini-label">Закупки за период</div>
+                        <div class="chart-mini-value" id="purchaseTotalBox">0</div>
+                    </div>
+
+                    <div class="chart-mini">
+                        <div class="chart-mini-label">Общее движение</div>
+                        <div class="chart-mini-value" id="chartTotalBox">0</div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="period-filter">
-            <a href="?period=7d" class="{% if period == '7d' %}active{% endif %}">7 дней</a>
-            <a href="?period=30d" class="{% if period == '30d' %}active{% endif %}">30 дней</a>
-            <a href="?period=90d" class="{% if period == '90d' %}active{% endif %}">90 дней</a>
-            <a href="?period=year" class="{% if period == 'year' %}active{% endif %}">Год</a>
-            <a href="?period=all" class="{% if period == 'all' %}active{% endif %}">Все</a>
-        </div>
-    </div>
+        <aside class="side-stack">
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Топ товаров</h2>
+                        <div class="panel-subtitle">Самые продаваемые позиции</div>
+                    </div>
+                </div>
 
-    <div class="chart-box">
-        <div class="chart-wrapper">
-            <canvas id="salesChart"></canvas>
-        </div>
-    </div>
-</div>
+                {% if popular_products %}
+                    <div class="popular-list">
+                        {% for product in popular_products %}
+                            <div class="popular-item">
+                                <div class="popular-left">
+                                    <div class="popular-rank">{{ forloop.counter }}</div>
+                                    <div>
+                                        <a href="{% url 'products:product_detail' product.product__id %}" class="popular-name">
+                                            {{ product.product__name }}
+                                        </a>
+                                        <div class="popular-caption">продажи</div>
+                                    </div>
+                                </div>
 
-<div class="module">
-    <h2>Самые популярные товары</h2>
-    <div class="module-content">
-        {% if popular_products %}
-        <table>
-            <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Продано</th>
-            </tr>
-            </thead>
-            <tbody>
-            {% for product in popular_products %}
-            <tr>
-                <td>
-                    <a href="{% url 'products:product_detail' product.product__id %}" class="action-link">
-                        {{ product.product__name }}
-                    </a>
-                </td>
-                <td>
-                    <strong>{{ product.total_sold }}</strong>
-                </td>
-            </tr>
-            {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p class="note">Пока нет данных по продажам.</p>
-        {% endif %}
-    </div>
-</div>
+                                <div class="popular-value">
+                                    {{ product.total_sold }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">Пока нет данных по продажам.</div>
+                {% endif %}
+            </div>
 
-<div class="module">
-    <h2>Быстрые действия</h2>
-    <div class="module-content">
-        <div class="quick-actions">
-            <a href="{% url 'products:product_list' %}" class="btn-add">Открыть товары</a>
-            <a href="{% url 'trading_list' %}" class="btn-add">Открыть сделки</a>
-            <a href="{% url 'warehouse_list' %}" class="btn-add">Открыть склады</a>
-            <a href="{% url 'trading_create' %}" class="btn-add">Создать сделку</a>
-        </div>
-    </div>
-</div>
+            <div class="panel">
+                <div class="panel-header">
+                    <div>
+                        <h2 class="panel-title">Сводка</h2>
+                        <div class="panel-subtitle">Ключевые показатели системы</div>
+                    </div>
+                </div>
 
-<div class="module">
-    <h2>Права доступа</h2>
-    <div class="module-content">
-        <table>
-            <tr>
-                <th>Раздел</th>
-                <th>Статус</th>
-            </tr>
-            <tr>
-                <td>Просмотр товаров</td>
-                <td>Разрешено</td>
-            </tr>
-            <tr>
-                <td>Управление остатками</td>
-                <td>Разрешено</td>
-            </tr>
-            <tr>
-                <td>Создание сделок</td>
-                <td>Разрешено</td>
-            </tr>
-            <tr>
-                <td>Управление пользователями</td>
-                <td>Запрещено</td>
-            </tr>
-            <tr>
-                <td>Доступ к админке Django</td>
-                <td>Запрещено</td>
-            </tr>
-        </table>
-    </div>
+                <div class="insight-grid">
+                    <div class="insight">
+                        <div class="insight-label">Общий складской объём</div>
+                        <div class="insight-value">{{ total_inventory|default:"0" }}</div>
+                        <div class="insight-note">сумма всех остатков</div>
+                    </div>
+
+                    <div class="insight">
+                        <div class="insight-label">Средняя загрузка склада</div>
+                        <div class="insight-value" id="avgStock">0</div>
+                        <div class="insight-note">остатки / склады</div>
+                    </div>
+
+                    <div class="insight">
+                        <div class="insight-label">Активность графика</div>
+                        <div class="insight-value" id="chartTotalSide">0</div>
+                        <div class="insight-note">продажи + закупки</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </section>
+
 </div>
 
 <script>
@@ -357,99 +718,194 @@
     const salesValues = {{ sales_values|default:"[]"|safe }};
     const purchaseValues = {{ purchase_values|default:"[]"|safe }};
 
-    const ctx = document.getElementById('salesChart').getContext('2d');
+    const totalInventory = Number("{{ total_inventory|default:'0' }}".replace(",", "."));
+    const warehousesCount = Number("{{ warehouses_count|default:'0' }}");
 
-    const salesGradient = ctx.createLinearGradient(0, 0, 0, 390);
-    salesGradient.addColorStop(0, 'rgba(220, 53, 69, 0.22)');
-    salesGradient.addColorStop(1, 'rgba(220, 53, 69, 0.02)');
+    const salesTotal = salesValues.reduce((a, b) => a + Number(b || 0), 0);
+    const purchaseTotal = purchaseValues.reduce((a, b) => a + Number(b || 0), 0);
+    const chartTotal = salesTotal + purchaseTotal;
 
-    const purchaseGradient = ctx.createLinearGradient(0, 0, 0, 390);
-    purchaseGradient.addColorStop(0, 'rgba(40, 167, 69, 0.22)');
-    purchaseGradient.addColorStop(1, 'rgba(40, 167, 69, 0.02)');
+    document.getElementById("salesTotalBox").textContent = Math.round(salesTotal);
+    document.getElementById("purchaseTotalBox").textContent = Math.round(purchaseTotal);
+    document.getElementById("chartTotalBox").textContent = Math.round(chartTotal);
+    document.getElementById("chartTotalSide").textContent = Math.round(chartTotal);
+    document.getElementById("avgStock").textContent = warehousesCount > 0 ? Math.round(totalInventory / warehousesCount) : 0;
 
-    new Chart(ctx, {
-        type: 'line',
+    const ctx = document.getElementById("salesChart").getContext("2d");
+    const chartBoard = document.getElementById("chartBoard");
+    const hoverCard = document.getElementById("chartHoverCard");
+    const hoverDate = document.getElementById("hoverDate");
+    const hoverSales = document.getElementById("hoverSales");
+    const hoverPurchase = document.getElementById("hoverPurchase");
+
+    const salesGradient = ctx.createLinearGradient(0, 0, 0, 460);
+    salesGradient.addColorStop(0, "rgba(239, 68, 68, 0.30)");
+    salesGradient.addColorStop(0.55, "rgba(239, 68, 68, 0.10)");
+    salesGradient.addColorStop(1, "rgba(239, 68, 68, 0.01)");
+
+    const purchaseGradient = ctx.createLinearGradient(0, 0, 0, 460);
+    purchaseGradient.addColorStop(0, "rgba(34, 197, 94, 0.30)");
+    purchaseGradient.addColorStop(0.55, "rgba(34, 197, 94, 0.10)");
+    purchaseGradient.addColorStop(1, "rgba(34, 197, 94, 0.01)");
+
+    const verticalLinePlugin = {
+        id: "verticalLinePlugin",
+        afterDraw(chart) {
+            if (chart.tooltip && chart.tooltip._active && chart.tooltip._active.length) {
+                const ctx = chart.ctx;
+                const activePoint = chart.tooltip._active[0];
+                const x = activePoint.element.x;
+                const topY = chart.scales.y.top;
+                const bottomY = chart.scales.y.bottom;
+
+                ctx.save();
+                ctx.beginPath();
+                ctx.moveTo(x, topY);
+                ctx.lineTo(x, bottomY);
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = "rgba(65, 118, 144, 0.28)";
+                ctx.setLineDash([6, 6]);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+    };
+
+    const glowPlugin = {
+        id: "glowPlugin",
+        beforeDatasetDraw(chart, args) {
+            const {ctx} = chart;
+            ctx.save();
+            ctx.shadowColor = args.index === 0 ? "rgba(239, 68, 68, 0.42)" : "rgba(34, 197, 94, 0.42)";
+            ctx.shadowBlur = 18;
+            ctx.shadowOffsetY = 8;
+        },
+        afterDatasetDraw(chart) {
+            chart.ctx.restore();
+        }
+    };
+
+    const dashboardChart = new Chart(ctx, {
+        type: "line",
         data: {
             labels: salesLabels,
             datasets: [
                 {
-                    label: 'Продажи',
+                    label: "Продажи",
                     data: salesValues,
-                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderColor: "rgba(239, 68, 68, 1)",
                     backgroundColor: salesGradient,
                     fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: 'rgba(220, 53, 69, 1)',
-                    pointBorderWidth: 2
+                    tension: 0.46,
+                    borderWidth: 4,
+                    pointRadius: 5,
+                    pointHoverRadius: 11,
+                    pointHitRadius: 20,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "rgba(239, 68, 68, 1)",
+                    pointBorderWidth: 3
                 },
                 {
-                    label: 'Покупки',
+                    label: "Покупки",
                     data: purchaseValues,
-                    borderColor: 'rgba(40, 167, 69, 1)',
+                    borderColor: "rgba(34, 197, 94, 1)",
                     backgroundColor: purchaseGradient,
                     fill: true,
-                    tension: 0.4,
-                    borderWidth: 3,
-                    pointRadius: 4,
-                    pointHoverRadius: 7,
-                    pointBackgroundColor: '#fff',
-                    pointBorderColor: 'rgba(40, 167, 69, 1)',
-                    pointBorderWidth: 2
+                    tension: 0.46,
+                    borderWidth: 4,
+                    pointRadius: 5,
+                    pointHoverRadius: 11,
+                    pointHitRadius: 20,
+                    pointBackgroundColor: "#ffffff",
+                    pointBorderColor: "rgba(34, 197, 94, 1)",
+                    pointBorderWidth: 3
                 }
             ]
         },
+        plugins: [glowPlugin, verticalLinePlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            animation: {
+                duration: 1300,
+                easing: "easeOutQuart"
+            },
+            hover: {
+                mode: "index",
+                intersect: false,
+                animationDuration: 180
+            },
             interaction: {
-                mode: 'index',
+                mode: "index",
                 intersect: false
+            },
+            onHover: function(event, activeElements, chart) {
+                if (activeElements.length) {
+                    const index = activeElements[0].index;
+
+                    hoverDate.textContent = salesLabels[index] || "—";
+                    hoverSales.textContent = Math.round(Number(salesValues[index] || 0));
+                    hoverPurchase.textContent = Math.round(Number(purchaseValues[index] || 0));
+                    hoverCard.classList.add("show");
+
+                    chartBoard.style.transform = "perspective(1200px) rotateX(0deg) translateY(-4px)";
+                } else {
+                    hoverCard.classList.remove("show");
+                    chartBoard.style.transform = "";
+                }
             },
             plugins: {
                 legend: {
-                    position: 'top',
+                    position: "top",
                     labels: {
                         usePointStyle: true,
-                        boxWidth: 8,
+                        boxWidth: 9,
+                        color: "#172033",
+                        padding: 18,
                         font: {
                             size: 13,
-                            weight: '600'
+                            weight: "800"
                         }
                     }
                 },
                 tooltip: {
-                    backgroundColor: '#1f2937',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    padding: 12,
-                    cornerRadius: 10
+                    enabled: false
                 }
             },
             scales: {
                 x: {
                     grid: {
-                        display: false
+                        color: "rgba(65, 118, 144, 0.055)"
                     },
                     ticks: {
-                        color: '#6b7280'
+                        color: "#607086",
+                        font: {
+                            weight: "800"
+                        }
                     }
                 },
                 y: {
                     beginAtZero: true,
                     grid: {
-                        color: 'rgba(0,0,0,0.06)'
+                        color: "rgba(65, 118, 144, 0.10)"
                     },
                     ticks: {
                         precision: 0,
-                        color: '#6b7280'
+                        color: "#607086",
+                        font: {
+                            weight: "800"
+                        }
                     }
                 }
             }
         }
+    });
+
+    document.getElementById("salesChart").addEventListener("mouseleave", function() {
+        hoverCard.classList.remove("show");
+        chartBoard.style.transform = "";
+        dashboardChart.setActiveElements([]);
+        dashboardChart.update();
     });
 </script>
 {% endblock %}

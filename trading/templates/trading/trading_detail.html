@@ -6,32 +6,249 @@
 
 <style>
 .container { max-width: 1200px; margin: 40px auto; }
-.title { font-size: 32px; font-weight: 700; margin-bottom: 25px; }
-.card {
-    background: white; border-radius: 20px; padding: 28px 32px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08); margin-bottom: 25px;
-}
-.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px 60px; }
-.label { font-size: 14px; color: #888; margin-bottom: 4px; }
-.value { font-size: 17px; font-weight: 600; }
 
-.section-title { font-size: 24px; font-weight: 700; margin-bottom: 20px; }
+.detail-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+    border: 1px solid #cfdfe8;
+    box-shadow: 0 12px 30px rgba(31, 59, 74, 0.09);
+}
+
+.detail-hero::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 18px;
+    bottom: 18px;
+    width: 5px;
+    border-radius: 0 999px 999px 0;
+    background: #417690;
+}
+
+.detail-hero.purchase::before {
+    background: #2ecc71;
+}
+
+.detail-hero.sell::before {
+    background: #e74c3c;
+}
+
+.detail-hero-content {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.detail-title-block {
+    max-width: 720px;
+}
+
+.detail-status-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.detail-status-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.detail-status-chip.done {
+    background: #e6f7ec;
+    color: #1f7a3a;
+    border-color: #a9dbba;
+}
+
+.detail-status-chip.pending {
+    background: #fff7df;
+    color: #856404;
+    border-color: #f3d57c;
+}
+
+.detail-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 6px 11px;
+    border-radius: 999px;
+    background: #e8f3f8;
+    color: #2b5063;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    border: 1px solid #c7dfeb;
+}
+
+.title {
+    margin: 0;
+    color: #172033;
+    font-size: 34px;
+    line-height: 1.1;
+    font-weight: 800;
+}
+
+.detail-subtitle {
+    margin: 10px 0 0;
+    color: #6f7a89;
+    font-size: 15px;
+    line-height: 1.45;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 22px;
+    padding: 28px 32px;
+    border: 1px solid #cfdfe8;
+    box-shadow: 0 12px 30px rgba(31, 59, 74, 0.07);
+    margin-bottom: 24px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    animation: detailFadeIn 0.35s ease both;
+}
+
+.card:nth-of-type(2) { animation-delay: 0.04s; }
+.card:nth-of-type(3) { animation-delay: 0.08s; }
+.card:nth-of-type(4) { animation-delay: 0.12s; }
+.card:nth-of-type(5) { animation-delay: 0.16s; }
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(31, 59, 74, 0.10);
+}
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.info-cell {
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%);
+    border: 1px solid #d4e3eb;
+}
+
+.label {
+    font-size: 12px;
+    color: #6f7a89;
+    margin-bottom: 7px;
+    font-weight: 800;
+}
+
+.value {
+    font-size: 17px;
+    font-weight: 900;
+    color: #172033;
+    line-height: 1.25;
+}
+
+.trade-type-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 900;
+    border: 1px solid transparent;
+}
+
+.trade-type-chip.purchase {
+    background: #e6f7ec;
+    color: #1f7a3a;
+    border-color: #a9dbba;
+}
+
+.trade-type-chip.sell {
+    background: #ffecec;
+    color: #c0392b;
+    border-color: #efb5b2;
+}
+
+.comment-value {
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    color: #4e5f6d;
+    font-weight: 800;
+    max-height: 96px;
+    overflow-y: auto;
+    padding-right: 4px;
+}
+
+.section-title { font-size: 24px; font-weight: 800; margin-bottom: 20px; color: #172033; }
 
 .item-card {
     display:flex; justify-content:space-between; align-items:center;
     padding:22px 24px; border-radius:16px; margin-bottom:14px;
-    background:#f9fbfc; border:1px solid #eee; transition:0.2s;
+    background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%); border:1px solid #d4e3eb; transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 .item-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    transform: translateY(-3px);
+    background: #fbfdff;
+    box-shadow: 0 10px 24px rgba(31, 59, 74, 0.09);
 }
 
 .item-left { display:flex; flex-direction:column; gap:4px; }
-.item-title { font-weight:700; font-size:18px; }
-.item-meta { font-size:14px; color:#777; }
+.item-title { font-weight:800; font-size:18px; color:#172033; }
+.item-meta { font-size:14px; color:#6f7a89; }
 
-.qty-block { display:flex; flex-direction:column; gap:4px; font-size:14px; }
+.qty-block {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    font-size: 14px;
+}
+
+.qty-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 10px;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 900;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.qty-label {
+    font-size: 11px;
+    font-weight: 800;
+    opacity: 0.75;
+}
+
+.qty-requested {
+    background: #eef3f7;
+    color: #4e5f6d;
+    border-color: #d6e0e8;
+}
+
+.qty-fulfilled {
+    background: #e6f7ec;
+    color: #1f7a3a;
+    border-color: #a9dbba;
+}
+
+.qty-remaining {
+    background: #fff7df;
+    color: #856404;
+    border-color: #f3d57c;
+}
 
 .badge { padding:7px 12px; border-radius:12px; font-size:13px; font-weight:600; }
 .badge.pending { background:#fff3cd; color:#856404; }
@@ -120,56 +337,148 @@
     background: #ffe0e0;
 }
 
-.actions { margin-top:25px; display:flex; gap:12px; }
+.actions {
+    margin-top: 25px;
+    margin-bottom: 8px;
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.94);
+    border: 1px solid #cfdfe8;
+    box-shadow: 0 10px 24px rgba(31, 59, 74, 0.07);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 
 .btn {
     padding:12px 18px; border-radius:12px; text-decoration:none;
-    font-weight:600; color:white; font-size:14px; border:none; cursor:pointer;
+    font-weight:800; color:white; font-size:14px; border:none; cursor:pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 18px rgba(31, 59, 74, 0.14);
 }
 .btn-blue { background:#417690; }
+.btn-blue:hover { background:#2b5063; }
 .btn-green { background:#2e7d32; }
+.btn-green:hover { background:#256b29; }
 .btn-red { background:#d9534f; }
+.btn-red:hover { background:#c9433f; }
 .btn-orange { background:#f0ad4e; color:black; }
+.btn-orange:hover { background:#e7a13d; }
+
+@keyframes detailFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+@media (max-width: 900px) {
+    .detail-hero-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .detail-status-block {
+        justify-content: flex-start;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .item-card {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .actions {
+        flex-wrap: wrap;
+    }
+}
 </style>
 
 <div class="container">
 
-<div class="title">Сделка #{{ trading.id }}</div>
+<section class="detail-hero {% if trading.trade_type == 'purchase' %}purchase{% else %}sell{% endif %}">
+    <div class="detail-hero-content">
+        <div class="detail-title-block">
+            <div class="detail-eyebrow">📑 Операции склада</div>
+            <h1 class="title">
+                {{ trading.name|default:"Без названия" }}
+                <span style="
+                    display:inline-block;
+                    margin-left:10px;
+                    padding:5px 10px;
+                    font-size:13px;
+                    font-weight:800;
+                    border-radius:999px;
+                    background:#eef3f7;
+                    color:#4e5f6d;
+                    border:1px solid #d6e0e8;
+                    vertical-align:middle;
+                ">
+                    #{{ trading.id }}
+                </span>
+            </h1>
+            <p class="detail-subtitle">
+                Детальный просмотр сделки, позиций, документов и комментариев.
+            </p>
+        </div>
+
+        <div class="detail-status-block">
+            {% if trading.status == "completed" %}
+                <span class="detail-status-chip done">✔ Завершено</span>
+            {% else %}
+                <span class="detail-status-chip pending">В процессе</span>
+            {% endif %}
+        </div>
+    </div>
+</section>
 
 <div class="card">
     <div class="grid">
-        <div>
+        <div class="info-cell">
             <div class="label">Название</div>
             <div class="value">{{ trading.name|default:"Без названия" }}</div>
         </div>
 
-        <div>
+        <div class="info-cell">
             <div class="label">Тип</div>
             <div class="value">
                 {% if trading.trade_type == "purchase" %}
-                    <span style="color:green;">Покупка</span>
+                    <span class="trade-type-chip purchase">Покупка</span>
                 {% else %}
-                    <span style="color:#b94a48;">Продажа</span>
+                    <span class="trade-type-chip sell">Продажа</span>
                 {% endif %}
             </div>
         </div>
 
-        <div>
+        <div class="info-cell">
             <div class="label">Пользователь</div>
             <div class="value">{{ trading.user.username }}</div>
         </div>
 
-        <div>
+        <div class="info-cell">
             <div class="label">Комментарий</div>
-            <div class="value">{{ trading.comment|default:"—" }}</div>
+            <div class="value comment-value">{{ trading.comment|default:"—" }}</div>
         </div>
 
-        <div>
+        <div class="info-cell">
             <div class="label">Создано</div>
             <div class="value">{{ trading.created_at|date:"d.m.Y H:i" }}</div>
         </div>
 
-        <div>
+        <div class="info-cell">
             <div class="label">Обновлено</div>
             <div class="value">{{ trading.updated_at|date:"d.m.Y H:i" }}</div>
         </div>
@@ -187,9 +496,22 @@
         </div>
 
         <div class="qty-block">
-            <div>Заказ: {{ item.requested_quantity }} {{ item.product.get_unit_display }}</div>
-            <div>Вып: {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</div>
-            <div>Ост: {{ item.remaining_quantity }} {{ item.product.get_unit_display }}</div>
+            <span class="qty-chip qty-requested">
+                <span class="qty-label">Заказано</span>
+                {{ item.requested_quantity }} {{ item.product.get_unit_display }}
+            </span>
+
+            <span class="qty-chip qty-fulfilled">
+                <span class="qty-label">Выполнено</span>
+                {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}
+            </span>
+
+            {% if item.remaining_quantity > 0 %}
+                <span class="qty-chip qty-remaining">
+                    <span class="qty-label">Остаток</span>
+                    {{ item.remaining_quantity }} {{ item.product.get_unit_display }}
+                </span>
+            {% endif %}
         </div>
 
         <div>

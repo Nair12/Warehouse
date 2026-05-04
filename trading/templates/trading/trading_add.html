@@ -5,16 +5,453 @@
 {% endblock %}
 
 {% block manager_content %}
-<h1>
-    {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
-</h1>
 
-<div class="module">
-    <h2>
-        {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
-    </h2>
+<style>
+    .trade-form-page {
+        max-width: 1200px;
+        margin: 40px auto;
+    }
 
-    <div class="module-content">
+    .trade-form-hero {
+        border-radius: 24px;
+        padding: 24px;
+        margin-bottom: 20px;
+        background: linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+        border: 1px solid #cfdfe8;
+        box-shadow: 0 12px 30px rgba(31, 59, 74, 0.09);
+    }
+
+    .trade-form-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+        padding: 6px 11px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
+    }
+
+    .trade-form-title {
+        margin: 0;
+        color: #172033;
+        font-size: 34px;
+        line-height: 1.1;
+        font-weight: 900;
+    }
+
+    .trade-form-subtitle {
+        margin: 10px 0 0;
+        color: #6f7a89;
+        font-size: 15px;
+        line-height: 1.45;
+    }
+
+    .trade-form-card {
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 22px;
+        padding: 24px;
+        border: 1px solid #cfdfe8;
+        box-shadow: 0 12px 30px rgba(31, 59, 74, 0.07);
+        margin-bottom: 22px;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .trade-form-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 14px 32px rgba(31, 59, 74, 0.10);
+    }
+
+    .trade-section-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .trade-section-title {
+        margin: 0;
+        color: #172033;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .trade-section-note {
+        color: #6f7a89;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .trade-fields-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .form-row {
+        margin-bottom: 14px;
+    }
+
+    .trade-fields-grid .form-row {
+        margin: 0;
+        padding: 16px 18px;
+        border-radius: 16px;
+        background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%);
+        border: 1px solid #d4e3eb;
+    }
+
+    .form-row label {
+        display: block;
+        margin-bottom: 7px;
+        color: #172033;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .form-row input,
+    .form-row select,
+    .form-row textarea {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 12px;
+        border-radius: 13px;
+        border: 1px solid #cfdfe8;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        font-family: inherit;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-row textarea {
+        min-height: 92px;
+        resize: vertical;
+    }
+
+    .form-row input:focus,
+    .form-row select:focus,
+    .form-row textarea:focus {
+        border-color: #417690;
+        box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
+    }
+
+    .unit-label {
+        display: inline-flex;
+        margin-top: 6px;
+        color: #6f7a89 !important;
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .errors {
+        margin-top: 7px;
+        padding: 8px 10px;
+        border-radius: 12px;
+        background: #ffecec;
+        color: #c0392b;
+        font-size: 13px;
+        font-weight: 800;
+        border: 1px solid #efb5b2;
+    }
+
+    .attachment-list-modern {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .attachment-item {
+        margin: 0 !important;
+        padding: 14px !important;
+        border-radius: 16px !important;
+        border: 1px solid #d4e3eb !important;
+        background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%) !important;
+    }
+
+    .attachment-item label {
+        display: block;
+        margin-bottom: 8px;
+        color: #172033;
+        font-size: 13px;
+        font-weight: 900;
+    }
+
+    .attachment-item input[type="file"] {
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .trade-divider {
+        height: 1px;
+        background: #d8e6ef;
+        border: none;
+        margin: 22px 0;
+    }
+
+    .items-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        margin-bottom: 14px;
+    }
+
+    .items-title {
+        margin: 0;
+        color: #172033;
+        font-size: 22px;
+        font-weight: 900;
+    }
+
+    .item-block {
+        position: relative;
+        overflow: hidden;
+        padding: 20px !important;
+        margin-bottom: 16px !important;
+        border-radius: 20px !important;
+        background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%) !important;
+        border: 1px solid #d4e3eb !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .item-block::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 16px;
+        bottom: 16px;
+        width: 4px;
+        border-radius: 0 999px 999px 0;
+        background: #417690;
+    }
+
+    .item-block:hover {
+        transform: translateY(-2px);
+        background: #fbfdff !important;
+        box-shadow: 0 10px 24px rgba(31, 59, 74, 0.09);
+    }
+
+    .item-block > div:first-child {
+        padding-left: 6px;
+    }
+
+    .item-title {
+        color: #172033;
+        font-size: 17px;
+        font-weight: 900;
+    }
+
+    .remove-item-btn {
+        color: #c0392b !important;
+        font-size: 13px;
+        font-weight: 900;
+        padding: 7px 10px;
+        border-radius: 10px;
+        transition: background 0.2s ease;
+    }
+
+    .remove-item-btn:hover {
+        background: #ffecec !important;
+    }
+
+    .item-block .form-row {
+        max-width: 100%;
+    }
+
+    .stock-info {
+        display: inline-flex;
+        align-items: center;
+        min-height: 32px;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063 !important;
+        border: 1px solid #c7dfeb;
+        font-size: 13px;
+        font-weight: 900 !important;
+    }
+
+    .stock-error {
+        padding: 9px 11px;
+        border-radius: 12px;
+        background: #ffecec;
+        color: #c0392b !important;
+        border: 1px solid #efb5b2;
+    }
+
+    .form-actions {
+        margin-top: 18px;
+        padding: 14px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid #cfdfe8;
+        box-shadow: 0 10px 24px rgba(31, 59, 74, 0.07);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .btn-save,
+    .btn-modern {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 42px;
+        padding: 0 16px;
+        border: none;
+        border-radius: 13px;
+        background: #417690;
+        color: #ffffff;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 900;
+        font-family: inherit;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.18);
+    }
+
+    .btn-save:hover,
+    .btn-modern:hover {
+        background: #2b5063;
+        transform: translateY(-1px);
+        box-shadow: 0 10px 22px rgba(43, 80, 99, 0.22);
+    }
+
+    .action-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 13px;
+        color: #2b5063;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        font-size: 14px;
+        font-weight: 900;
+        text-decoration: none;
+        transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .action-link:hover {
+        background: #dff0f7;
+        transform: translateY(-1px);
+    }
+
+    .hidden-searchable-select {
+        display: none !important;
+    }
+
+    .custom-searchable-dropdown {
+        position: relative;
+        width: 100%;
+    }
+
+    .custom-searchable-input {
+        width: 100%;
+        min-height: 42px;
+        padding: 10px 12px;
+        border-radius: 13px;
+        border: 1px solid #cfdfe8;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        font-family: inherit;
+        box-sizing: border-box;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .custom-searchable-input:focus {
+        border-color: #417690;
+        box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
+    }
+
+    .custom-searchable-options {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        background: #ffffff;
+        border: 1px solid #cfdfe8;
+        border-radius: 14px;
+        box-shadow: 0 12px 30px rgba(31, 59, 74, 0.16);
+        z-index: 100;
+        padding: 6px;
+    }
+
+    .custom-searchable-options.show {
+        display: block;
+    }
+
+    .custom-searchable-option {
+        padding: 11px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #172033;
+    }
+
+    .custom-searchable-option:hover {
+        background: #e8f3f8;
+    }
+
+    .custom-searchable-option.empty {
+        color: #6f7a89;
+        cursor: default;
+    }
+
+    .custom-searchable-option.empty:hover {
+        background: transparent;
+    }
+
+    @media (max-width: 900px) {
+        .trade-fields-grid,
+        .attachment-list-modern {
+            grid-template-columns: 1fr;
+        }
+
+        .trade-form-title {
+            font-size: 30px;
+        }
+    }
+</style>
+
+<div class="trade-form-page">
+    <section class="trade-form-hero">
+        <div class="trade-form-eyebrow">📑 Операции склада</div>
+        <h1 class="trade-form-title">
+            {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
+        </h1>
+        <p class="trade-form-subtitle">
+            Заполните основные данные, добавьте товары, склад и количество выполнения.
+        </p>
+    </section>
+
+    <div class="trade-form-card">
+        <div class="trade-section-head">
+            <div>
+                <h2 class="trade-section-title">
+                    {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
+                </h2>
+                <div class="trade-section-note">Основная информация по сделке</div>
+            </div>
+        </div>
+
         <form method="post" enctype="multipart/form-data" id="trading-form">
             {% csrf_token %}
 
@@ -24,31 +461,38 @@
                 </div>
             {% endif %}
 
-            {% for field in form %}
-                <div class="form-row">
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
-                    {% if field.errors %}
-                        <div class="errors">{{ field.errors }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            <div class="trade-fields-grid">
+                {% for field in form %}
+                    <div class="form-row">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }} <span class="unit-label"></span>
+                        {% if field.errors %}
+                            <div class="errors">{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
 
             {% if formset %}
-                <div class="module">
-                    <h2>Прикрепить файлы</h2>
+                <div class="trade-form-card" style="margin-top:20px; box-shadow:none;">
+                    <div class="trade-section-head">
+                        <div>
+                            <h2 class="trade-section-title">Прикрепить файлы</h2>
+                            <div class="trade-section-note">Добавьте документы, фото или накладные</div>
+                        </div>
+                    </div>
 
                     {{ formset.management_form }}
 
-                    <div id="attachment-list">
+                    <div id="attachment-list" class="attachment-list-modern">
                         {% for attachment_form in formset %}
-                            <div class="attachment-item" style="margin-bottom: 10px; padding: 10px; border: 1px solid #eee;">
+                            <div class="attachment-item">
                                 {{ attachment_form.id }}
                                 <label>Файл {{ forloop.counter }}:</label>
                                 {{ attachment_form.file }}
 
                                 {% if attachment_form.file.errors %}
-                                    <div style="color: red; font-size: 12px;">{{ attachment_form.file.errors }}</div>
+                                    <div class="errors">{{ attachment_form.file.errors }}</div>
                                 {% endif %}
                             </div>
                         {% endfor %}
@@ -56,16 +500,21 @@
                 </div>
             {% endif %}
 
-            <hr style="margin: 25px 0;">
+            <div class="trade-divider"></div>
 
-            <h3 style="margin:0 0 15px 0;">Товары в сделке</h3>
+            <div class="items-header">
+                <div>
+                    <h3 class="items-title">Товары в сделке</h3>
+                    <div class="trade-section-note">Выберите товар, склад и количество</div>
+                </div>
+            </div>
 
             {{ item_formset.management_form }}
 
             <div id="items-container">
                 {% for item_form in item_formset %}
-                    <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <div class="item-block">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                             <h4 class="item-title" style="margin:0;">Позиция {{ forloop.counter }}</h4>
                             {% if not form.instance.pk %}
                                 <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
@@ -82,7 +531,7 @@
                             {% if field.name != "DELETE" %}
                                 <div class="form-row">
                                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
+                                    {{ field }} <span class="unit-label"></span>
                                     {% if field.errors %}
                                         <div class="errors">{{ field.errors }}</div>
                                     {% endif %}
@@ -98,13 +547,13 @@
 
                         <div class="form-row">
                             <label>Остаток на складе</label>
-                            <div class="stock-info" style="font-weight:bold; color:#417690;">
+                            <div class="stock-info">
                                 Выберите товар и склад
                             </div>
                         </div>
 
                         <div class="form-row stock-error-row" style="display:none;">
-                            <div class="stock-error" style="color:#ba2121; font-weight:bold;"></div>
+                            <div class="stock-error"></div>
                         </div>
                     </div>
                 {% endfor %}
@@ -115,44 +564,44 @@
             </div>
 
             <template id="empty-item-template">
-                <div class="item-block" style="border: 1px solid #ddd; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                <div class="item-block">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                         <h4 class="item-title" style="margin:0;">Позиция __number__</h4>
                         {% if not form.instance.pk %}
-                                <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
-                            {% endif %}
+                            <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                        {% endif %}
                     </div>
 
                     {% for field in item_formset.empty_form %}
                         {% if field.name != "DELETE" %}
                             <div class="form-row">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }} <span class="unit-label" style="margin-left:8px; color:#666;"></span>
+                                {{ field }} <span class="unit-label"></span>
                             </div>
                         {% endif %}
                     {% endfor %}
 
                     <div class="form-row">
                         <label>Остаток на складе</label>
-                        <div class="stock-info" style="font-weight:bold; color:#417690;">
+                        <div class="stock-info">
                             Выберите товар и склад
                         </div>
                     </div>
 
                     <div class="form-row stock-error-row" style="display:none;">
-                        <div class="stock-error" style="color:#ba2121; font-weight:bold;"></div>
+                        <div class="stock-error"></div>
                     </div>
                 </div>
             </template>
 
-            <button type="submit" id="save-btn" class="btn-save">Сохранить</button>
-            <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+            <div class="form-actions">
+                <button type="submit" id="save-btn" class="btn-save">Сохранить</button>
+                <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+            </div>
         </form>
     </div>
 </div>
 
-<link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -181,23 +630,129 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function updateSaveButtonState() {
         saveBtn.disabled = false;
-        saveBtn.style.opacity = '1';
-        saveBtn.style.cursor = 'pointer';
+        saveBtn.style.opacity = "1";
+        saveBtn.style.cursor = "pointer";
     }
 
-    function initTomSelectForSelect(selectElement) {
-        if (!selectElement) return;
-        if (selectElement.tomselect) return;
-        if (typeof TomSelect === "undefined") return;
+    function getSelectOptions(selectElement) {
+        return Array.from(selectElement.options).map(function(option) {
+            return {
+                value: option.value,
+                text: option.text
+            };
+        });
+    }
 
-        new TomSelect(selectElement, {
-            create: false,
-            sortField: {
-                field: "text",
-                direction: "asc"
-            },
-            allowEmptyOption: true,
-            placeholder: "Начните вводить для поиска..."
+    function getSelectedText(selectElement, options) {
+        if (!selectElement || !selectElement.value) {
+            return "";
+        }
+
+        const selectedOption = options.find(function(option) {
+            return option.value === selectElement.value;
+        });
+
+        return selectedOption ? selectedOption.text : "";
+    }
+
+    function createSearchableDropdown(selectElement, placeholderText, onChangeCallback) {
+        if (!selectElement) return;
+        if (selectElement.dataset.searchableReady === "1") return;
+
+        selectElement.dataset.searchableReady = "1";
+
+        const options = getSelectOptions(selectElement);
+        const wrapper = document.createElement("div");
+        wrapper.className = "custom-searchable-dropdown";
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.className = "custom-searchable-input";
+        input.placeholder = placeholderText || "Начните писать для поиска...";
+        input.autocomplete = "off";
+        input.value = getSelectedText(selectElement, options);
+
+        const optionsBox = document.createElement("div");
+        optionsBox.className = "custom-searchable-options";
+
+        selectElement.classList.add("hidden-searchable-select");
+        selectElement.parentNode.insertBefore(wrapper, selectElement);
+        wrapper.appendChild(input);
+        wrapper.appendChild(optionsBox);
+        wrapper.appendChild(selectElement);
+
+        function renderOptions() {
+            const searchValue = input.value.toLowerCase().trim();
+            optionsBox.innerHTML = "";
+
+            const filteredOptions = options.filter(function(option) {
+                if (option.value === "") {
+                    return false;
+                }
+
+                return option.text.toLowerCase().includes(searchValue);
+            });
+
+            if (filteredOptions.length === 0) {
+                const emptyItem = document.createElement("div");
+                emptyItem.className = "custom-searchable-option empty";
+                emptyItem.textContent = "Ничего не найдено";
+                optionsBox.appendChild(emptyItem);
+                return;
+            }
+
+            filteredOptions.forEach(function(optionData) {
+                const item = document.createElement("div");
+                item.className = "custom-searchable-option";
+                item.textContent = optionData.text;
+
+                item.addEventListener("mousedown", function(event) {
+                    event.preventDefault();
+
+                    selectElement.value = optionData.value;
+                    input.value = optionData.text;
+                    optionsBox.classList.remove("show");
+
+                    selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+
+                    if (typeof onChangeCallback === "function") {
+                        onChangeCallback();
+                    }
+                });
+
+                optionsBox.appendChild(item);
+            });
+        }
+
+        input.addEventListener("focus", function() {
+            renderOptions();
+            optionsBox.classList.add("show");
+        });
+
+        input.addEventListener("input", function() {
+            selectElement.value = "";
+            renderOptions();
+            optionsBox.classList.add("show");
+
+            selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+
+            if (typeof onChangeCallback === "function") {
+                onChangeCallback();
+            }
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            if (!wrapper.contains(event.target)) {
+                optionsBox.classList.remove("show");
+
+                if (!selectElement.value) {
+                    input.value = "";
+                }
+            }
+        });
+
+        selectElement.addEventListener("change", function() {
+            input.value = getSelectedText(selectElement, options);
         });
     }
 
@@ -205,28 +760,28 @@ document.addEventListener("DOMContentLoaded", function () {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
 
-        initTomSelectForSelect(productSelect);
-        initTomSelectForSelect(warehouseSelect);
+        createSearchableDropdown(productSelect, "Нажмите и начните писать название товара...", function() {
+            updateStock(block);
+            updateUnit(block);
+        });
 
-        function bindStockChange(selectElement) {
-            if (!selectElement) return;
+        createSearchableDropdown(warehouseSelect, "Нажмите и начните писать склад...", function() {
+            updateStock(block);
+        });
 
-            selectElement.addEventListener("change", function () {
+        if (productSelect) {
+            productSelect.addEventListener("change", function () {
                 updateStock(block);
-        updateUnit(block);
+                updateUnit(block);
             });
-
-            if (selectElement.tomselect) {
-                selectElement.tomselect.on("change", function () {
-                    updateStock(block);
-        updateUnit(block);
-                });
-            }
         }
 
-        bindStockChange(productSelect);
-        productSelect.addEventListener("change", function () { updateUnit(block); });
-        bindStockChange(warehouseSelect);
+        if (warehouseSelect) {
+            warehouseSelect.addEventListener("change", function () {
+                updateStock(block);
+            });
+        }
+
         updateStock(block);
         updateUnit(block);
     }
@@ -255,13 +810,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            const selects = block.querySelectorAll('select');
-            selects.forEach(function(select) {
-                if (select.tomselect) {
-                    select.tomselect.destroy();
-                }
-            });
-
             block.remove();
             rebuildIndexes();
             updateSaveButtonState();
@@ -272,13 +820,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const blocks = itemsContainer.querySelectorAll(".item-block");
 
         blocks.forEach(function (block, index) {
-            const selects = block.querySelectorAll('select');
-            selects.forEach(function(select) {
-                if (select.tomselect) {
-                    select.tomselect.destroy();
-                }
-            });
-
             block.querySelectorAll("input, select, textarea, label").forEach(function (el) {
                 if (el.name) {
                     el.name = el.name.replace(/items-\d+-/g, `items-${index}-`);
@@ -319,65 +860,44 @@ document.addEventListener("DOMContentLoaded", function () {
         updateSaveButtonState();
     }
 
-    const existingBlocks = itemsContainer.querySelectorAll(".item-block");
-    existingBlocks.forEach(function (block) {
-        initSearch(block);
-        bindRemoveButton(block);
-    });
-
-    updateTitles();
-    updateSaveButtonState();
-
-    addItemBtn.addEventListener("click", addNewItem);
-
-    form.addEventListener("submit", function (e) {
-        updateSaveButtonState();
-
-        if (saveBtn.disabled) {
-            e.preventDefault();
-        }
-    });
     function getStockUrl(productId, warehouseId) {
         const query = `product=${encodeURIComponent(productId)}&warehouse=${encodeURIComponent(warehouseId)}`;
         return `/trading/get-stock/?${query}`;
     }
 
-
     function updateUnit(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
-        const unitSpans = block.querySelectorAll('.unit-label');
+        const unitSpans = block.querySelectorAll(".unit-label");
 
         if (!productSelect) return;
 
         const selectedOption = productSelect.options[productSelect.selectedIndex];
         if (!selectedOption) return;
 
-        const text = selectedOption.text || '';
-        let unit = '';
+        const text = selectedOption.text || "";
+        let unit = "";
 
-        if (text.toLowerCase().includes('кг')) unit = 'кг';
-        if (text.toLowerCase().includes('шт')) unit = 'шт';
+        if (text.toLowerCase().includes("кг")) unit = "кг";
+        if (text.toLowerCase().includes("шт")) unit = "шт";
 
-        unitSpans.forEach(span => {
-            span.innerText = unit ? `(${unit})` : '';
+        unitSpans.forEach(function(span) {
+            span.innerText = unit ? `(${unit})` : "";
         });
 
         const quantityInput = block.querySelector('input[name$="-requested_quantity"]');
         if (!quantityInput) return;
 
-        if (unit === 'кг') {
-            quantityInput.step = "1";
-            quantityInput.min = "1";
+        quantityInput.step = "1";
+        quantityInput.min = "1";
+
+        if (unit === "кг") {
             quantityInput.placeholder = "кг";
-        } else if (unit === 'шт') {
-            quantityInput.step = "1";
-            quantityInput.min = "1";
+        } else if (unit === "шт") {
             quantityInput.placeholder = "шт";
         } else {
             quantityInput.placeholder = "кол-во";
         }
     }
-
 
     function updateStock(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
@@ -415,6 +935,24 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
+    const existingBlocks = itemsContainer.querySelectorAll(".item-block");
+    existingBlocks.forEach(function (block) {
+        initSearch(block);
+        bindRemoveButton(block);
+    });
+
+    updateTitles();
+    updateSaveButtonState();
+
+    addItemBtn.addEventListener("click", addNewItem);
+
+    form.addEventListener("submit", function (e) {
+        updateSaveButtonState();
+
+        if (saveBtn.disabled) {
+            e.preventDefault();
+        }
+    });
 });
 </script>
 

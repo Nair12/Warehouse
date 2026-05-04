@@ -1,4 +1,5 @@
 from django.db.models import Sum
+from django.db.models.functions import Coalesce
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -150,7 +151,14 @@ def warehouse_create_view(request):
 
 @role_required(["admin", "manager", "reader","senior_manager"])
 def warehouse_list_view(request):
-    warehouses = Warehouse.objects.all().order_by('-created_at')
+    warehouses = (
+        Warehouse.objects
+        .annotate(
+            total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
+        )
+        .order_by("-created_at")
+    )
+
     return render(request, 'warehouse_list.html', {'warehouses': warehouses})
 
 

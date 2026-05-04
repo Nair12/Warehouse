@@ -19,12 +19,19 @@
     .title {
         font-size: 30px;
         font-weight: 700;
-        margin-bottom: 24px;
+        margin-bottom: 8px;
         color: #2f2f2f;
+    }
+
+    .subtitle {
+        color: #888;
+        font-size: 14px;
+        margin-bottom: 24px;
     }
 
     .form-group {
         margin-bottom: 18px;
+        position: relative;
     }
 
     .form-group label {
@@ -51,6 +58,65 @@
     .form-group input:focus {
         border-color: #417690;
         box-shadow: 0 0 0 2px rgba(65, 118, 144, 0.15);
+    }
+
+    .form-group input.input-error {
+        border-color: #c0392b;
+        box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.12);
+    }
+
+    .hidden-product-select {
+        display: none;
+    }
+
+    .product-dropdown {
+        position: relative;
+    }
+
+    .product-search-input {
+        cursor: text;
+        background: white;
+    }
+
+    .product-options {
+        display: none;
+        position: absolute;
+        top: calc(100% + 6px);
+        left: 0;
+        right: 0;
+        max-height: 280px;
+        overflow-y: auto;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 14px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.14);
+        z-index: 50;
+        padding: 6px;
+    }
+
+    .product-options.show {
+        display: block;
+    }
+
+    .product-option {
+        padding: 11px 12px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 14px;
+        color: #2f2f2f;
+    }
+
+    .product-option:hover {
+        background: #eef7fb;
+    }
+
+    .product-option.empty {
+        color: #888;
+        cursor: default;
+    }
+
+    .product-option.empty:hover {
+        background: transparent;
     }
 
     .stock-info {
@@ -84,6 +150,10 @@
         margin-top: 6px;
     }
 
+    #quantity-error {
+        display: none;
+    }
+
     .actions {
         display: flex;
         gap: 12px;
@@ -107,6 +177,12 @@
         background: #1b5e20;
     }
 
+    .submit-btn:disabled {
+        background: #9e9e9e;
+        cursor: not-allowed;
+        opacity: 0.75;
+    }
+
     .back-link {
         color: #417690;
         text-decoration: none;
@@ -121,8 +197,9 @@
 <div class="container">
     <div class="card">
         <div class="title">Перемещение товара между складами</div>
+        <div class="subtitle">Выберите товар, склад отправления, склад получения и количество.</div>
 
-        <form method="post">
+        <form method="post" id="transfer-form">
             {% csrf_token %}
 
             {% if form.non_field_errors %}
@@ -135,7 +212,16 @@
 
             <div class="form-group">
                 <label for="{{ form.product.id_for_label }}">Товар</label>
-                {{ form.product }}
+
+                <div class="product-dropdown">
+                    <input type="text" id="product-search-input" class="product-search-input" placeholder="Нажмите и начните писать название товара..." autocomplete="off">
+                    <div id="product-options" class="product-options"></div>
+                </div>
+
+                <div class="hidden-product-select">
+                    {{ form.product }}
+                </div>
+
                 {% for error in form.product.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
@@ -161,13 +247,14 @@
             <div class="form-group">
                 <label for="{{ form.quantity.id_for_label }}">Количество</label>
                 {{ form.quantity }}
+                <div id="quantity-error" class="field-error">Нельзя передать 0 или меньше. Укажите количество больше 0.</div>
                 {% for error in form.quantity.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
             <div class="actions">
-                <button type="submit" class="submit-btn">Переместить товар</button>
+                <button type="submit" id="submit-btn" class="submit-btn">Переместить товар</button>
                 <a href="javascript:history.back()" class="back-link">Назад</a>
             </div>
         </form>
@@ -175,11 +262,87 @@
 </div>
 
 <script>
+    const transferForm = document.getElementById("transfer-form");
     const productSelect = document.getElementById("id_product");
+    const productSearchInput = document.getElementById("product-search-input");
+    const productOptionsBox = document.getElementById("product-options");
     const fromWarehouseSelect = document.getElementById("id_from_warehouse");
     const stockInfo = document.getElementById("stock-info");
+    const quantityInput = document.getElementById("id_quantity");
+    const quantityError = document.getElementById("quantity-error");
+    const submitBtn = document.getElementById("submit-btn");
+
+    let productOptions = [];
+
+    if (productSelect) {
+        productOptions = Array.from(productSelect.options).map(function(option) {
+            return {
+                value: option.value,
+                text: option.text
+            };
+        });
+    }
+
+    function getSelectedProductText() {
+        if (!productSelect || !productSelect.value) {
+            return "";
+        }
+
+        const selectedOption = productOptions.find(function(option) {
+            return option.value === productSelect.value;
+        });
+
+        return selectedOption ? selectedOption.text : "";
+    }
+
+    function renderProductOptions() {
+        if (!productOptionsBox || !productSearchInput) {
+            return;
+        }
+
+        const searchValue = productSearchInput.value.toLowerCase().trim();
+        productOptionsBox.innerHTML = "";
+
+        const filteredOptions = productOptions.filter(function(option) {
+            if (option.value === "") {
+                return false;
+            }
+
+            return option.text.toLowerCase().includes(searchValue);
+        });
+
+        if (filteredOptions.length === 0) {
+            const emptyItem = document.createElement("div");
+            emptyItem.className = "product-option empty";
+            emptyItem.textContent = "Товар не найден";
+            productOptionsBox.appendChild(emptyItem);
+            return;
+        }
+
+        filteredOptions.forEach(function(optionData) {
+            const item = document.createElement("div");
+            item.className = "product-option";
+            item.textContent = optionData.text;
+
+            item.addEventListener("mousedown", function(event) {
+                event.preventDefault();
+
+                productSelect.value = optionData.value;
+                productSearchInput.value = optionData.text;
+                productOptionsBox.classList.remove("show");
+
+                updateStockInfo();
+            });
+
+            productOptionsBox.appendChild(item);
+        });
+    }
 
     function updateStockInfo() {
+        if (!productSelect || !fromWarehouseSelect || !stockInfo) {
+            return;
+        }
+
         const productId = productSelect.value;
         const warehouseId = fromWarehouseSelect.value;
 
@@ -191,8 +354,10 @@
         }
 
         fetch(`/warehouses/api/inventory-quantity/?product_id=${productId}&warehouse_id=${warehouseId}`)
-            .then(response => response.json())
-            .then(data => {
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
                 stockInfo.style.display = "block";
                 stockInfo.textContent = data.message;
 
@@ -202,16 +367,81 @@
                     stockInfo.classList.remove("warning");
                 }
             })
-            .catch(() => {
+            .catch(function() {
                 stockInfo.style.display = "block";
                 stockInfo.textContent = "Не удалось загрузить остаток товара";
                 stockInfo.classList.add("warning");
             });
     }
 
-    productSelect.addEventListener("change", updateStockInfo);
-    fromWarehouseSelect.addEventListener("change", updateStockInfo);
+    function validateQuantity() {
+        if (!quantityInput || !quantityError || !submitBtn) {
+            return true;
+        }
+
+        const value = quantityInput.value.trim();
+        const numberValue = Number(value);
+        const isInvalid = value !== "" && numberValue <= 0;
+
+        if (isInvalid) {
+            quantityError.style.display = "block";
+            quantityInput.classList.add("input-error");
+            submitBtn.disabled = true;
+            return false;
+        }
+
+        quantityError.style.display = "none";
+        quantityInput.classList.remove("input-error");
+        submitBtn.disabled = false;
+        return true;
+    }
+
+    if (productSearchInput && productOptionsBox && productSelect) {
+        productSearchInput.value = getSelectedProductText();
+
+        productSearchInput.addEventListener("focus", function() {
+            renderProductOptions();
+            productOptionsBox.classList.add("show");
+        });
+
+        productSearchInput.addEventListener("input", function() {
+            productSelect.value = "";
+            renderProductOptions();
+            productOptionsBox.classList.add("show");
+            updateStockInfo();
+        });
+
+        document.addEventListener("mousedown", function(event) {
+            const dropdown = productSearchInput.closest(".product-dropdown");
+
+            if (dropdown && !dropdown.contains(event.target)) {
+                productOptionsBox.classList.remove("show");
+
+                if (!productSelect.value) {
+                    productSearchInput.value = "";
+                }
+            }
+        });
+    }
+
+    if (fromWarehouseSelect) {
+        fromWarehouseSelect.addEventListener("change", updateStockInfo);
+    }
+
+    if (quantityInput) {
+        quantityInput.addEventListener("input", validateQuantity);
+        quantityInput.addEventListener("blur", validateQuantity);
+    }
+
+    if (transferForm) {
+        transferForm.addEventListener("submit", function(event) {
+            if (!validateQuantity()) {
+                event.preventDefault();
+            }
+        });
+    }
 
     updateStockInfo();
+    validateQuantity();
 </script>
 {% endblock %}
