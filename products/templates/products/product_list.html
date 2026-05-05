@@ -391,19 +391,6 @@
             font-weight: 650;
         }
 
-        .price {
-            color: #172033;
-            font-size: 18px;
-            font-weight: 950;
-            white-space: nowrap;
-        }
-
-        .price small {
-            color: #6f7a89;
-            font-size: 13px;
-            font-weight: 800;
-        }
-
         .qty-badge {
             display: inline-flex;
             align-items: center;
@@ -494,7 +481,7 @@
             }
 
             .table {
-                min-width: 820px;
+                min-width: 720px;
             }
         }
 
@@ -531,7 +518,7 @@
                     <div class="eyebrow">📦 Складской каталог</div>
                     <h1 class="title">Товары</h1>
                     <p class="subtitle">
-                        Быстрый просмотр остатков, описаний и цен по всем продуктам в системе.
+                        Быстрый просмотр товаров, описаний и остатков по всем продуктам в системе.
                     </p>
                 </div>
 
@@ -555,7 +542,7 @@
                     <input type="text"
                            name="q"
                            value="{{ query }}"
-                           placeholder="Поиск по названию, описанию или артикулу..."
+                           placeholder="Поиск по названию или описанию..."
                            class="search-input">
 
                     <button type="submit" class="search-btn">Найти</button>
@@ -570,8 +557,6 @@
 
                 <select name="sort" onchange="this.form.submit()" class="sort-select">
                     <option value="">Сортировка</option>
-                    <option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Цена ↑</option>
-                    <option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Цена ↓</option>
                     <option value="qty_asc" {% if sort == "qty_asc" %}selected{% endif %}>Кол-во ↑</option>
                     <option value="qty_desc" {% if sort == "qty_desc" %}selected{% endif %}>Кол-во ↓</option>
                 </select>
@@ -586,9 +571,6 @@
                     <tr>
                         <th>Товар</th>
                         <th>Описание</th>
-                        {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
-                            <th>Цена</th>
-                        {% endif %}
                         <th>Кол-во</th>
                     </tr>
                     </thead>
@@ -613,12 +595,6 @@
                             <td class="product-desc">
                                 {{ product.description|default:"Без описания"|truncatechars:120 }}
                             </td>
-
-                            {% if request.user.role == "admin" or request.user.role == "senior_manager" %}
-                                <td class="price">
-                                    {{ product.price }} <small>$</small>
-                                </td>
-                            {% endif %}
 
                             <td>
                                 <span class="qty-badge {% if product.total_quantity == 0 %}empty-stock{% else %}in-stock{% endif %}">

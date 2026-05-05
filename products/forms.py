@@ -15,25 +15,10 @@ class InventoryQuantityForm(forms.ModelForm):
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'price', 'picture', 'unit']
+        fields = ['name', 'description', 'picture', 'unit']
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'rows': 2}),
-            'price': forms.NumberInput(attrs={'class': 'form-control'}),
             'picture': forms.ClearableFileInput(attrs={'class': 'form-control'}),
             'unit': forms.Select(attrs={'class': 'form-control'}),
-        }
-
-
-class ProductPriceUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Product
-        fields = ['price']
-        widgets = {
-            'price': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'step': '0.01',
-                'min': '0',
-                'placeholder': 'Новая цена',
-            }),
         }

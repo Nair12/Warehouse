@@ -2,273 +2,339 @@
 
 {% block content %}
 <style>
-    .price-main-box {
-    background: linear-gradient(135deg, #eef4ff, #f8fafc);
-    border: 1px solid #dbe7ff;
-    border-radius: 18px;
-    padding: 20px 22px;
-    margin-bottom: 16px;
-    max-width: 360px;
-}
+    body {
+        background:
+            radial-gradient(circle at 10% 0%, rgba(65, 118, 144, 0.13), transparent 34%),
+            linear-gradient(180deg, #f4f7f9 0%, #eef3f6 100%);
+    }
 
-.price-label {
-    display: block;
-    font-size: 13px;
-    color: #64748b;
-    margin-bottom: 8px;
-}
+    @keyframes pageFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(24px);
+            filter: blur(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
 
-.price-main-value {
-    font-size: 32px;
-    font-weight: 800;
-    color: #1f2937;
-}
+    @keyframes cardFloatIn {
+        from {
+            opacity: 0;
+            transform: translateY(28px) scale(0.985);
+            filter: blur(5px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
 
-.price-main-value span {
-    font-size: 16px;
-    font-weight: 600;
-    color: #64748b;
-}
+    @keyframes rowFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(14px);
+            filter: blur(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes softPulse {
+        0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 8px 20px rgba(31, 59, 74, 0.07);
+        }
+        50% {
+            transform: scale(1.045);
+            box-shadow: 0 14px 28px rgba(31, 59, 74, 0.12);
+        }
+    }
+
     .product-page {
-        max-width: 1200px;
-        margin: 40px auto;
-        padding: 0 20px 40px;
+        max-width: 1280px;
+        margin: 42px auto 70px;
+        padding: 0 24px 40px;
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .product-hero {
+        position: relative;
+        overflow: hidden;
+        border-radius: 30px;
+        background:
+            radial-gradient(circle at 15% 8%, rgba(121, 174, 200, 0.20), transparent 36%),
+            linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 18px 42px rgba(31, 59, 74, 0.11);
+        margin-bottom: 30px;
+        animation: cardFloatIn 0.62s ease both;
+    }
+
+    .product-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        mask-image: linear-gradient(to right, rgba(0,0,0,0.65), transparent 70%);
     }
 
     .product-card {
+        position: relative;
+        z-index: 1;
         display: grid;
-        grid-template-columns: 380px 1fr;
-        gap: 32px;
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        margin-bottom: 30px;
+        grid-template-columns: 420px 1fr;
+        min-height: 430px;
     }
 
     .product-media {
         background: #f5f6f8;
-        min-height: 420px;
+        min-height: 430px;
         display: flex;
         align-items: center;
         justify-content: center;
         position: relative;
+        overflow: hidden;
+    }
+
+    .product-media::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(255,255,255,0.20), transparent 58%);
+        pointer-events: none;
     }
 
     .product-media img {
         width: 100%;
         height: 100%;
-        min-height: 420px;
+        min-height: 430px;
         object-fit: cover;
         display: block;
+        transition: 0.35s ease;
+    }
+
+    .product-hero:hover .product-media img {
+        transform: scale(1.035);
     }
 
     .product-placeholder {
         width: 100%;
         height: 100%;
-        min-height: 420px;
+        min-height: 430px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 12px;
-        color: #9aa3ad;
+        gap: 14px;
+        color: #8e99a7;
         font-size: 16px;
+        font-weight: 700;
         background:
             linear-gradient(135deg, #f7f8fa 25%, #eef1f4 25%, #eef1f4 50%, #f7f8fa 50%, #f7f8fa 75%, #eef1f4 75%, #eef1f4 100%);
-        background-size: 28px 28px;
+        background-size: 30px 30px;
     }
 
     .product-placeholder-icon {
-        font-size: 54px;
+        width: 78px;
+        height: 78px;
+        display: grid;
+        place-items: center;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.85);
+        border: 1px solid #dce5eb;
+        font-size: 38px;
         line-height: 1;
+        animation: softPulse 3.2s ease-in-out infinite;
     }
 
     .product-info {
-        padding: 32px 32px 28px 0;
+        padding: 38px 38px 34px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
     .product-badge {
-        display: inline-block;
-        padding: 6px 12px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        width: fit-content;
+        padding: 8px 13px;
         border-radius: 999px;
-        background: #eef6ff;
-        color: #2f6fed;
+        background: #e8f3f8;
+        color: #2b5063;
         font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 14px;
+        font-weight: 900;
+        letter-spacing: 0.2px;
+        border: 1px solid #c7dfeb;
+        margin-bottom: 18px;
     }
 
     .product-title {
         margin: 0 0 14px;
-        font-size: 34px;
-        line-height: 1.2;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 42px;
+        line-height: 1.08;
+        font-weight: 950;
+        color: #07172f;
+        letter-spacing: -0.7px;
+    }
+
+    .product-description-box {
+        margin: 0 0 28px;
+        padding: 18px 20px;
+        border-radius: 18px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        transition: 0.2s ease;
+    }
+
+    .product-description-box:hover {
+        background: #f1f5f9;
+        transform: translateY(-2px);
+    }
+
+    .product-description-title {
+        font-size: 13px;
+        font-weight: 800;
+        color: #64748b;
+        margin-bottom: 8px;
+    }
+
+    .product-description-text {
+        font-size: 16px;
+        line-height: 1.7;
+        color: #475569;
+        font-weight: 600;
     }
 
     .product-description {
-        margin: 0 0 24px;
+        margin: 0 0 28px;
+        max-width: 700px;
         font-size: 16px;
-        line-height: 1.7;
-        color: #5b6470;
+        line-height: 1.75;
+        color: #5f6b7a;
+        font-weight: 650;
     }
 
     .product-meta {
         display: grid;
         grid-template-columns: repeat(2, minmax(180px, 1fr));
         gap: 16px;
-        margin-bottom: 10px;
     }
 
     .meta-box {
-        background: #f8fafc;
-        border: 1px solid #edf1f5;
-        border-radius: 14px;
-        padding: 16px 18px;
+        position: relative;
+        overflow: hidden;
+        background: rgba(255, 255, 255, 0.90);
+        border: 1px solid #dce5eb;
+        border-radius: 20px;
+        padding: 18px 20px;
+        transition: 0.24s ease;
+        box-shadow: 0 8px 20px rgba(31, 59, 74, 0.05);
+    }
+
+    .meta-box::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, rgba(65, 118, 144, 0.08), transparent 58%);
+        opacity: 0;
+        transition: 0.24s ease;
+    }
+
+    .meta-box:hover {
+        transform: translateY(-3px);
+        border-color: #b8d3df;
+        box-shadow: 0 14px 28px rgba(31, 59, 74, 0.09);
+    }
+
+    .meta-box:hover::before {
+        opacity: 1;
+    }
+
+    .meta-label,
+    .meta-value {
+        position: relative;
+        z-index: 1;
     }
 
     .meta-label {
         display: block;
         font-size: 13px;
-        color: #7b8794;
-        margin-bottom: 6px;
-    }
-
-
-    .price-update-box {
-        grid-column: 1 / -1;
-        background: #f8fafc;
-        border: 1px solid #edf1f5;
-        border-radius: 14px;
-        padding: 16px 18px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 16px;
-        flex-wrap: wrap;
-    }
-
-    .price-update-info {
-        display: flex;
-        flex-direction: column;
-        gap: 4px;
-    }
-
-    .price-update-title {
-        font-size: 15px;
-        font-weight: 700;
-        color: #1f2937;
-    }
-
-    .price-update-subtitle {
-        font-size: 13px;
-        color: #7b8794;
-    }
-
-    .price-form {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-    }
-
-    .price-form input {
-        width: 150px;
-        padding: 10px 12px;
-        border-radius: 10px;
-        border: 1px solid #cfd8e3;
-        font-size: 14px;
-        outline: none;
-    }
-
-    .price-form input:focus {
-        border-color: #2f6fed;
-        box-shadow: 0 0 0 3px rgba(47, 111, 237, 0.12);
-    }
-
-    .price-form button {
-        padding: 10px 16px;
-        border-radius: 10px;
-        border: none;
-        background: #2f6fed;
-        color: #fff;
-        font-weight: 700;
-        cursor: pointer;
-        transition: 0.2s ease;
-    }
-
-    .price-form button:hover {
-        background: #1e4fd6;
-    }
-
-    .history-type-badge {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: #ecfdf3;
-        color: #027a48;
-        font-weight: 700;
-        font-size: 13px;
-    }
-
-    .history-type-badge.update {
-        background: #fff7ed;
-        color: #c2410c;
+        color: #7c8797;
+        margin-bottom: 8px;
+        font-weight: 800;
     }
 
     .meta-value {
-        font-size: 16px;
-        font-weight: 600;
-        color: #1f2937;
+        font-size: 17px;
+        font-weight: 950;
+        color: #172033;
         word-break: break-word;
     }
 
     .stock-card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 30px;
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 18px 42px rgba(31, 59, 74, 0.10);
         overflow: hidden;
-        margin-bottom: 30px;
+        margin-bottom: 28px;
+        animation: cardFloatIn 0.62s ease both;
+        animation-delay: 0.12s;
     }
 
     .stock-header {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 24px 24px 18px;
-        border-bottom: 1px solid #eef2f6;
+        gap: 18px;
+        padding: 28px 28px 22px;
+        border-bottom: 1px solid #e8eef2;
+        background:
+            radial-gradient(circle at 0% 0%, rgba(65, 118, 144, 0.10), transparent 35%),
+            #ffffff;
     }
 
     .stock-title {
         margin: 0;
-        font-size: 24px;
-        font-weight: 700;
-        color: #1f2937;
+        font-size: 28px;
+        font-weight: 950;
+        color: #07172f;
+        letter-spacing: -0.4px;
     }
 
     .stock-subtitle {
-        margin: 6px 0 0;
+        margin: 8px 0 0;
         font-size: 14px;
-        color: #7b8794;
-    }
-
-    .price-history-card {
-        background: #fff;
-        border-radius: 20px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        overflow: hidden;
-        margin-bottom: 30px;
-    }
-
-    .price-badge {
-        display: inline-block;
-        padding: 6px 10px;
-        border-radius: 999px;
-        background: #eef4ff;
-        color: #2f6fed;
+        color: #7c8797;
         font-weight: 700;
-        font-size: 14px;
+    }
+
+    .stock-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        border: 1px solid #c7dfeb;
+        font-weight: 950;
+        white-space: nowrap;
     }
 
     .table-wrap {
@@ -277,227 +343,260 @@
 
     .stock-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
     .stock-table thead th {
         text-align: left;
-        font-size: 14px;
-        font-weight: 700;
-        color: #4b5563;
-        background: #f8fafc;
-        padding: 16px 20px;
-        border-bottom: 1px solid #eef2f6;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        color: #7c8797;
+        background: #f7f9fb;
+        padding: 17px 22px;
+        border-bottom: 1px solid #e8eef2;
     }
 
     .stock-table tbody td {
-        padding: 16px 20px;
-        border-bottom: 1px solid #f1f5f9;
+        padding: 20px 22px;
+        border-bottom: 1px solid #eef2f5;
         font-size: 15px;
         color: #374151;
         vertical-align: middle;
     }
 
+    .stock-table tbody tr {
+        transition: 0.24s ease;
+        animation: rowFadeUp 0.45s ease both;
+    }
+
+    .stock-table tbody tr:nth-child(1) { animation-delay: 0.18s; }
+    .stock-table tbody tr:nth-child(2) { animation-delay: 0.23s; }
+    .stock-table tbody tr:nth-child(3) { animation-delay: 0.28s; }
+    .stock-table tbody tr:nth-child(4) { animation-delay: 0.33s; }
+    .stock-table tbody tr:nth-child(5) { animation-delay: 0.38s; }
+
     .stock-table tbody tr:hover {
-        background: #fafcff;
+        background: linear-gradient(90deg, #f8fbfd 0%, #ffffff 100%);
+        transform: scale(1.006);
+        box-shadow: 0 10px 22px rgba(31, 59, 74, 0.06);
+    }
+
+    .stock-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .warehouse-name {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        color: #172033;
+        font-weight: 950;
+    }
+
+    .warehouse-icon {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+        border-radius: 13px;
+        background: #e8f3f8;
+        color: #417690;
+        border: 1px solid #c7dfeb;
     }
 
     .qty-badge {
-        display: inline-block;
-        min-width: 44px;
-        text-align: center;
-        padding: 6px 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 78px;
+        padding: 8px 13px;
         border-radius: 999px;
-        background: #ecfdf3;
-        color: #027a48;
-        font-weight: 700;
+        background: #e9f8ef;
+        color: #2e7d32;
+        font-weight: 950;
         font-size: 14px;
+        white-space: nowrap;
+        transition: 0.22s ease;
     }
 
     .qty-badge.zero {
-        background: #fef2f2;
-        color: #b42318;
+        background: #fff0f0;
+        color: #c0392b;
+    }
+
+    .stock-table tbody tr:hover .qty-badge {
+        transform: scale(1.06);
     }
 
     .action-btn {
-        display: inline-block;
-        padding: 8px 14px;
-        border-radius: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        padding: 9px 14px;
+        border-radius: 14px;
         text-decoration: none;
         font-size: 14px;
-        font-weight: 600;
-        transition: 0.2s ease;
+        font-weight: 900;
+        transition: 0.22s ease;
         border: 1px solid transparent;
+        white-space: nowrap;
     }
 
     .action-btn.edit {
         background: #eef4ff;
         color: #2f6fed;
+        border-color: #d9e6ff;
     }
 
     .action-btn.edit:hover {
         background: #dfeaff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(47, 111, 237, 0.12);
     }
 
     .action-btn.add {
         background: #ecfdf3;
         color: #027a48;
+        border-color: #d5f5e1;
     }
 
     .action-btn.add:hover {
         background: #dafbe8;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(2, 122, 72, 0.11);
     }
 
     .footer-actions {
-        margin-top: 24px;
+        margin-top: 26px;
         display: flex;
         gap: 12px;
         flex-wrap: wrap;
+        animation: pageFadeUp 0.55s ease both;
+        animation-delay: 0.20s;
     }
 
     .back-link {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        gap: 9px;
         text-decoration: none;
-        color: #2f6fed;
-        font-weight: 600;
-        padding: 10px 14px;
-        border-radius: 12px;
-        background: #eef4ff;
-        transition: 0.2s ease;
+        color: #2b5063;
+        font-weight: 950;
+        padding: 12px 16px;
+        border-radius: 16px;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        transition: 0.22s ease;
     }
 
     .back-link:hover {
-        background: #dfeaff;
+        background: #d8ebf3;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(31, 59, 74, 0.10);
     }
 
     .empty-row {
         text-align: center;
         color: #7b8794;
-        padding: 28px 20px;
+        padding: 34px 20px;
+        font-weight: 700;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
         .product-card {
             grid-template-columns: 1fr;
         }
 
         .product-info {
-            padding: 0 24px 24px;
+            padding: 30px 26px 28px;
         }
 
         .product-media,
         .product-media img,
         .product-placeholder {
-            min-height: 320px;
+            min-height: 330px;
+        }
+
+        .product-title {
+            font-size: 34px;
         }
 
         .product-meta {
             grid-template-columns: 1fr;
         }
+
+        .stock-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .product-page {
+            margin-top: 24px;
+            padding: 0 14px 34px;
+        }
+
+        .product-hero,
+        .stock-card {
+            border-radius: 24px;
+        }
+
+        .product-title {
+            font-size: 30px;
+        }
+
+        .stock-title {
+            font-size: 24px;
+        }
+
+        .stock-table {
+            min-width: 640px;
+        }
     }
 </style>
 
 <div class="product-page">
-    <div class="product-card">
-        <div class="product-media">
-            {% if product.picture %}
-                <img src="{{ product.picture.url }}" alt="{{ product.name }}">
-            {% else %}
-                <div class="product-placeholder">
-                    <div class="product-placeholder-icon">🖼️</div>
-                    <div>Изображение товара отсутствует</div>
-                </div>
-            {% endif %}
-        </div>
-
-        <div class="product-info">
-            <div class="product-badge">Карточка товара</div>
-            <h1 class="product-title">{{ product.name }}</h1>
-
-            <p class="product-description">
-                {{ product.description|default:"Описание для этого товара пока не добавлено." }}
-            </p>
-
-            <div class="product-meta">
-
-                <div class="price-main-box">
-                    <span class="price-label">Текущая цена</span>
-                    <div class="price-main-value">
-                        ${{ product.price }}
-                        <span>/ {{ product.get_unit_display }}</span>
-                    </div>
-                </div>
-
-                {% if request.user.role == "admin" or request.user.role == "manager" or request.user.role == "senior_manager" %}
-                    <div class="price-update-box">
-                        <div class="price-update-info">
-                            <span class="price-update-title">Обновить цену товара</span>
-                            <span class="price-update-subtitle">После сохранения новая цена автоматически появится в истории.</span>
-                        </div>
-
-                        <form method="post" class="price-form">
-                            {% csrf_token %}
-                            {{ price_form.price }}
-                            <button type="submit">Обновить цену</button>
-                        </form>
+    <div class="product-hero">
+        <div class="product-card">
+            <div class="product-media">
+                {% if product.picture %}
+                    <img src="{{ product.picture.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="product-placeholder">
+                        <div class="product-placeholder-icon">🖼️</div>
+                        <div>Изображение товара отсутствует</div>
                     </div>
                 {% endif %}
+            </div>
 
+            <div class="product-info">
+                <div class="product-badge">📦 Карточка товара</div>
+                <h1 class="product-title">{{ product.name }}</h1>
 
-                <div class="meta-box">
-                    <span class="meta-label">Дата добавления</span>
-                    <span class="meta-value">{{ product.created_at|date:"d.m.Y H:i" }}</span>
+                <div class="product-description-box">
+                    <div class="product-description-title">Описание товара</div>
+                    <div class="product-description-text">
+                        {{ product.description|default:"Описание для этого товара пока не добавлено." }}
+                    </div>
+                </div>
+
+                <div class="product-meta">
+                    <div class="meta-box">
+                        <span class="meta-label">Единица измерения</span>
+                        <span class="meta-value">{{ product.get_unit_display }}</span>
+                    </div>
+
+                    <div class="meta-box">
+                        <span class="meta-label">Дата добавления</span>
+                        <span class="meta-value">{{ product.created_at|date:"d.m.Y H:i" }}</span>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-
-    <div class="price-history-card">
-        <div class="stock-header">
-            <div>
-                <h2 class="stock-title">История цен</h2>
-                <p class="stock-subtitle">Все изменения цены этого товара по датам</p>
-            </div>
-        </div>
-
-        <div class="table-wrap">
-            <table class="stock-table">
-                <thead>
-                    <tr>
-                        <th>Дата изменения</th>
-                        <th>Цена</th>
-                        <th>Тип</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in price_history %}
-                        <tr>
-                            <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
-                            <td>
-                                <span class="price-badge">
-                                    {{ item.price }}$
-                                </span>
-                            </td>
-                            <td>
-                                {% if item.change_type == "initial" %}
-                                    <span class="history-type-badge">Создание</span>
-                                {% else %}
-                                    <span class="history-type-badge update">Обновление</span>
-                                {% endif %}
-                            </td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="3" class="empty-row">
-                                История цен пока отсутствует.
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
         </div>
     </div>
 
@@ -506,6 +605,10 @@
             <div>
                 <h2 class="stock-title">Остатки по складам</h2>
                 <p class="stock-subtitle">Наличие товара на каждом складе</p>
+            </div>
+
+            <div class="stock-count">
+                🏬 {{ warehouse_rows|length }} склада
             </div>
         </div>
 
@@ -523,7 +626,12 @@
                 <tbody>
                     {% for row in warehouse_rows %}
                         <tr>
-                            <td>{{ row.warehouse }}</td>
+                            <td>
+                                <span class="warehouse-name">
+                                    <span class="warehouse-icon">🏬</span>
+                                    {{ row.warehouse }}
+                                </span>
+                            </td>
                             <td>
                                 <span class="qty-badge {% if row.quantity == 0 %}zero{% endif %}">
                                     {{ row.quantity }} {{ product.get_unit_display }}
@@ -534,11 +642,11 @@
                                 <td>
                                     {% if row.inventory %}
                                         <a href="{% url 'products:inventory_edit' row.inventory.id %}" class="action-btn edit">
-                                            Изменить
+                                            ✏️ Изменить
                                         </a>
                                     {% else %}
                                         <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}" class="action-btn add">
-                                            Добавить
+                                            ＋ Добавить
                                         </a>
                                     {% endif %}
                                 </td>
