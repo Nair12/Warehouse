@@ -1,30 +1,40 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
 
-{% block title %}Дополнить заказ{% endblock %}
+{% block title %}{% trans "Дополнить заказ" %}{% endblock %}
 
 {% block manager_content %}
-<h1>Дополнить заказ #{{ trading.id }}</h1>
+<h1>{% trans "Дополнить заказ" %} #{{ trading.id }}</h1>
 
 <div class="module">
-    <h2>Информация</h2>
+    <h2>{% trans "Информация" %}</h2>
+
     <div class="module-content">
-        <p><strong>Название:</strong> {{ trading.name }}</p>
-        <p><strong>Тип:</strong> {{ trading.get_trade_type_display }}</p>
+        <p>
+            <strong>{% trans "Название" %}:</strong>
+            {{ trading.name }}
+        </p>
+
+        <p>
+            <strong>{% trans "Тип" %}:</strong>
+            {{ trading.get_trade_type_display }}
+        </p>
     </div>
 </div>
 
 <div class="module">
-    <h2>Позиции</h2>
+    <h2>{% trans "Позиции" %}</h2>
+
     <div class="module-content">
         <table>
             <thead>
             <tr>
-                <th>Товар</th>
-                <th>Склад</th>
-                <th>Заказано</th>
-                <th>Выполнено</th>
-                <th>Осталось</th>
-                <th>Дополнить</th>
+                <th>{% trans "Товар" %}</th>
+                <th>{% trans "Склад" %}</th>
+                <th>{% trans "Заказано" %}</th>
+                <th>{% trans "Выполнено" %}</th>
+                <th>{% trans "Осталось" %}</th>
+                <th>{% trans "Дополнить" %}</th>
             </tr>
             </thead>
 
@@ -34,14 +44,26 @@
                     <td>{{ item.product }}</td>
                     <td>{{ item.warehouse }}</td>
 
-                    <td>{{ item.requested_quantity }} {{ item.product.get_unit_display }}</td>
-                    <td>{{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}</td>
-                    <td>{{ item.remaining_quantity }} {{ item.product.get_unit_display }}</td>
+                    <td>
+                        {{ item.requested_quantity }}
+                        {{ item.product.get_unit_display }}
+                    </td>
+
+                    <td>
+                        {{ item.fulfilled_quantity }}
+                        {{ item.product.get_unit_display }}
+                    </td>
+
+                    <td>
+                        {{ item.remaining_quantity }}
+                        {{ item.product.get_unit_display }}
+                    </td>
 
                     <td>
                         {% if item.remaining_quantity > 0 %}
                             <form method="post" style="display:flex; gap:8px; align-items:center;">
                                 {% csrf_token %}
+
                                 <input type="hidden" name="item_id" value="{{ item.id }}">
 
                                 <input
@@ -55,21 +77,32 @@
                                     style="padding: 6px; width: 90px;"
                                 >
 
-                                <button type="submit" style="
-                                    background: #f0ad4e;
-                                    color: black;
-                                    padding: 6px 10px;
-                                    border: none;
-                                    border-radius: 6px;
-                                    font-weight: 600;
-                                    cursor: pointer;
-                                ">
-                                    Дополнить
+                                <button
+                                    type="submit"
+                                    style="
+                                        background: #f0ad4e;
+                                        color: black;
+                                        padding: 6px 10px;
+                                        border: none;
+                                        border-radius: 6px;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                    "
+                                >
+                                    {% trans "Дополнить" %}
                                 </button>
                             </form>
                         {% else %}
-                            <span style="color:white; background:#5cb85c; padding:4px 8px; border-radius:6px; font-weight:600;">
-                                Выполнено
+                            <span
+                                style="
+                                    color:white;
+                                    background:#5cb85c;
+                                    padding:4px 8px;
+                                    border-radius:6px;
+                                    font-weight:600;
+                                "
+                            >
+                                {% trans "Выполнено" %}
                             </span>
                         {% endif %}
                     </td>
@@ -79,8 +112,9 @@
         </table>
 
         <br>
+
         <a href="{% url 'trading_detail' trading.id %}" class="action-link">
-            Назад
+            {% trans "Назад" %}
         </a>
     </div>
 </div>

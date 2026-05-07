@@ -1,0 +1,1125 @@
+# Turkish translations for Warehouse Manager
+# Copyright (C) 2026
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Warehouse Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-07 14:40+0400\n"
+"PO-Revision-Date: 2026-05-07 11:20+0400\n"
+"Last-Translator: Warehouse Team\n"
+"Language-Team: Turkish\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Русский"
+msgstr "Rusça"
+
+#: .\Warehouse\settings.py:117
+
+msgid "English"
+msgstr "İngilizce"
+
+#: .\Warehouse\settings.py:118
+
+msgid "Türkçe"
+msgstr "Türkçe"
+
+#: .\products\models.py:11
+
+msgid "шт"
+msgstr "adet"
+
+#: .\products\models.py:12
+
+msgid "кг"
+msgstr "kg"
+
+#: .\products\models.py:23
+#: .\products\templates\products\product_detail.html:591
+
+msgid "Единица измерения"
+msgstr "Ölçü birimi"
+
+msgid "Изображение товара отсутствует"
+msgstr "Ürün görseli yok"
+
+msgid "Карточка товара"
+msgstr "Ürün kartı"
+
+msgid "Описание товара"
+msgstr "Ürün açıklaması"
+
+msgid "Дата добавления"
+msgstr "Eklenme tarihi"
+
+msgid "Остатки по {%% trans "
+msgstr "Depo stokları"
+
+#: .\products\templates\products\product_detail.html:608
+
+msgid "Наличие товара на каждом складе"
+msgstr "Her depodaki ürün durumu"
+
+msgid "склада"
+msgstr "depo"
+
+msgid "Склад"
+msgstr "Depo"
+
+msgid "Количество"
+msgstr "Miktar"
+
+msgid "Действие"
+msgstr "İşlem"
+
+msgid "Изменить"
+msgstr "Düzenle"
+
+msgid "Добавить"
+msgstr "Ekle"
+
+msgid "Вернуться к списку товаров"
+msgstr "Ürün listesine dön"
+
+msgid "Добавить продукт"
+msgstr "Ürün ekle"
+
+#: .\products\templates\products\product_form.html:13
+#: .\trading\templates\trading\trading_add.html:599
+
+msgid "Сохранить"
+msgstr "Kaydet"
+
+#: .\products\templates\products\product_list.html:519
+
+msgid "Складской каталог"
+msgstr "Depo kataloğu"
+
+#: .\products\templates\products\product_list.html:520
+#: .\users\templates\base_manager.html:645
+#: .\users\templates\users\manager_dashboard.html:560
+
+msgid "Товары"
+msgstr "Ürünler"
+
+#: .\products\templates\products\product_list.html:522
+
+msgid ""
+"Быстрый просмотр товаров, описаний и остатков по всем продуктам в системе."
+msgstr "Sistemdeki tüm ürünlerin açıklamalarını ve stok durumlarını hızlıca görüntüleyin."
+
+#: .\products\templates\products\product_list.html:546
+
+msgid "Поиск по названию или описанию..."
+msgstr "İsim veya açıklamaya göre ara..."
+
+#: .\products\templates\products\product_list.html:549
+#: .\trading\templates\trading\trading_list.html:921
+#: .\trading\templates\trading\trading_list.html:975
+#: .\warehouses\templates\warehouse_detail.html:266
+
+msgid "Найти"
+msgstr "Ara"
+
+#: .\products\templates\products\product_list.html:556
+
+msgid "В наличии"
+msgstr "Stokta var"
+
+#: .\products\templates\products\product_list.html:560
+#: .\trading\templates\trading\trading_list.html:965
+
+msgid "Сортировка"
+msgstr "Sıralama"
+
+#: .\products\templates\products\product_list.html:561
+
+msgid "Кол-во ↑"
+msgstr "Miktar ↑"
+
+#: .\products\templates\products\product_list.html:562
+
+msgid "Кол-во ↓"
+msgstr "Miktar ↓"
+
+#: .\products\templates\products\product_list.html:573 .\trading\forms.py:65
+#: .\trading\templates\trading\admin_trading_history.html:23
+#: .\trading\templates\trading\trading_fulfill.html:32
+#: .\warehouses\templates\warehouse_transfer_form.html:215
+#: .\warehouses\templates\warehouse_transfer_history.html:384
+
+msgid "Товар"
+msgstr "Ürün"
+
+#: .\products\templates\products\product_list.html:574
+
+msgid "Описание"
+msgstr "Açıklama"
+
+#: .\products\templates\products\product_list.html:575
+
+msgid "Кол-во"
+msgstr "Miktar"
+
+#: .\products\templates\products\product_list.html:586
+
+msgid "Нет фото"
+msgstr "Fotoğraf yok"
+
+#: .\products\templates\products\product_list.html:591
+
+msgid "Нажмите, чтобы открыть карточку"
+msgstr "Kartı açmak için tıklayın"
+
+#: .\products\templates\products\product_list.html:597
+
+msgid "Без описания"
+msgstr "Açıklama yok"
+
+#: .\products\templates\products\product_list.html:613
+
+msgid "Товары не найдены"
+msgstr "Ürün bulunamadı"
+
+#: .\products\templates\products\product_list.html:614
+
+msgid "Попробуйте изменить поиск или фильтр наличия."
+msgstr "Arama veya stok filtresini değiştirmeyi deneyin."
+
+#: .\trading\forms.py:18
+
+msgid "Введите название сделки"
+msgstr "İşlem adı girin"
+
+#: .\trading\forms.py:26
+
+msgid "Комментарий (необязательно)"
+msgstr "Yorum (isteğe bağlı)"
+
+#: .\trading\forms.py:31
+
+msgid "Название сделки"
+msgstr "İşlem adı"
+
+#: .\trading\forms.py:32
+
+msgid "Тип операции"
+msgstr "İşlem türü"
+
+#: .\trading\forms.py:33 .\trading\forms.py:145
+#: .\trading\templates\trading\trading_detail.html:473
+
+msgid "Комментарий"
+msgstr "Yorum"
+
+#: .\trading\forms.py:53
+
+msgid "Сколько заказано"
+msgstr "Sipariş miktarı"
+
+#: .\trading\forms.py:59
+
+msgid "Сколько выполнено сейчас"
+msgstr "Şimdi tamamlanan miktar"
+
+#: .\trading\forms.py:67 .\trading\templates\trading\trading_detail.html:501
+#: .\trading\templates\trading\trading_fulfill.html:34
+#: .\trading\templates\trading\trading_list.html:1036
+
+msgid "Заказано"
+msgstr "Sipariş edildi"
+
+#: .\trading\forms.py:68 .\trading\templates\trading\trading_detail.html:506
+#: .\trading\templates\trading\trading_detail.html:524
+#: .\trading\templates\trading\trading_fulfill.html:35
+#: .\trading\templates\trading\trading_fulfill.html:105
+#: .\trading\templates\trading\trading_list.html:1041
+#: .\trading\templates\trading\trading_list.html:1059
+
+msgid "Выполнено"
+msgstr "Tamamlandı"
+
+#: .\trading\forms.py:85 .\trading\forms.py:91
+
+msgid "Для товара в штуках нельзя вводить дробное количество."
+msgstr "Adet ürünler için kesirli miktar girilemez."
+
+#: .\trading\forms.py:118
+
+msgid "Файл"
+msgstr "Dosya"
+
+#: .\trading\forms.py:140
+
+msgid "Напишите комментарий..."
+msgstr "Yorum yazın..."
+
+#: .\trading\templates\trading\admin_trading_history.html:7
+
+msgid "История операций (Админ)"
+msgstr "İşlem geçmişi (Admin)"
+
+#: .\trading\templates\trading\admin_trading_history.html:12
+
+msgid "Все действия менеджеров"
+msgstr "Yöneticilerin tüm işlemleri"
+
+#: .\trading\templates\trading\admin_trading_history.html:20
+#: .\warehouses\templates\warehouse_transfer_history.html:424
+
+msgid "Дата"
+msgstr "Tarih"
+
+#: .\trading\templates\trading\admin_trading_history.html:21
+
+msgid "Кто сделал"
+msgstr "İşlemi yapan"
+
+#: .\trading\templates\trading\admin_trading_history.html:22
+#: .\trading\templates\trading\trading_detail.html:457
+#: .\trading\templates\trading\trading_fulfill.html:19
+
+msgid "Тип"
+msgstr "Tür"
+
+#: .\trading\templates\trading\admin_trading_history.html:26
+
+msgid "Было"
+msgstr "Önce"
+
+#: .\trading\templates\trading\admin_trading_history.html:27
+
+msgid "Стало"
+msgstr "Sonra"
+
+#: .\trading\templates\trading\admin_trading_history.html:45
+#: .\trading\templates\trading\trading_detail.html:460
+#: .\trading\templates\trading\trading_list.html:1012
+
+msgid "Покупка"
+msgstr "Satın alma"
+
+#: .\trading\templates\trading\admin_trading_history.html:49
+#: .\trading\templates\trading\trading_detail.html:462
+#: .\trading\templates\trading\trading_list.html:1014
+
+msgid "Продажа"
+msgstr "Satış"
+
+#: .\trading\templates\trading\admin_trading_history.html:71
+
+msgid "История пуста"
+msgstr "Geçmiş boş"
+
+#: .\trading\templates\trading\trading_add.html:5
+#: .\trading\templates\trading\trading_add.html:439
+
+msgid "Редактирование сделки"
+msgstr "İşlemi düzenle"
+
+#: .\trading\templates\trading\trading_add.html:5
+#: .\trading\templates\trading\trading_add.html:439
+
+msgid "Создание сделки"
+msgstr "İşlem oluştur"
+
+#: .\trading\templates\trading\trading_add.html:437
+#: .\trading\templates\trading\trading_detail.html:416
+#: .\trading\templates\trading\trading_list.html:880
+
+msgid "Операции склада"
+msgstr "Stok / Depolar"
+
+#: .\trading\templates\trading\trading_add.html:442
+
+msgid ""
+"Заполните основные данные, добавьте товары, склад и количество выполнения."
+msgstr "Temel bilgileri doldurun, ürünleri, depoyu ve tamamlanan miktarı ekleyin."
+
+#: .\trading\templates\trading\trading_add.html:450
+
+msgid "Изменить данные"
+msgstr "Bilgileri düzenle"
+
+#: .\trading\templates\trading\trading_add.html:450
+
+msgid "Новая сделка"
+msgstr "Yeni işlem"
+
+#: .\trading\templates\trading\trading_add.html:452
+
+msgid "Основная информация по сделке"
+msgstr "Temel işlem bilgileri"
+
+#: .\trading\templates\trading\trading_add.html:481
+
+msgid "Прикрепить файлы"
+msgstr "Dosya ekle"
+
+#: .\trading\templates\trading\trading_add.html:482
+
+msgid "Добавьте документы, фото или накладные"
+msgstr "Belgeler, fotoğraflar veya irsaliyeler ekleyin"
+
+#: .\trading\templates\trading\trading_add.html:508
+
+msgid "Товары в сделке"
+msgstr "İşlemdeki ürünler"
+
+#: .\trading\templates\trading\trading_add.html:509
+
+msgid "Выберите товар, склад и количество"
+msgstr "Ürün, depo ve miktar seçin"
+
+#: .\trading\templates\trading\trading_add.html:521
+#: .\trading\templates\trading\trading_add.html:572
+#: .\trading\templates\trading\trading_detail.html:577
+#: .\trading\templates\trading\trading_detail.html:596
+
+msgid "Удалить"
+msgstr "Sil"
+
+#: .\trading\templates\trading\trading_add.html:550
+#: .\trading\templates\trading\trading_add.html:586
+#: .\warehouses\templates\warehouse_detail.html:286
+
+msgid "Остаток на складе"
+msgstr "Depo stoğu"
+
+#: .\trading\templates\trading\trading_add.html:552
+#: .\trading\templates\trading\trading_add.html:588
+#: .\trading\templates\trading\trading_add.html:914
+
+msgid "Выберите товар и склад"
+msgstr "Ürün ve depo seçin"
+
+#: .\trading\templates\trading\trading_add.html:564
+
+msgid "Добавить товар"
+msgstr "Ürün ekle"
+
+#: .\trading\templates\trading\trading_add.html:600
+
+msgid "Назад к списку"
+msgstr "Listeye dön"
+
+#: .\trading\templates\trading\trading_add.html:625
+
+msgid "Позиция"
+msgstr "Kalem"
+
+#: .\trading\templates\trading\trading_add.html:672
+
+msgid "Начните писать для поиска..."
+msgstr "Aramak için yazmaya başlayın..."
+
+#: .\trading\templates\trading\trading_add.html:700
+
+msgid "Ничего не найдено"
+msgstr "Hiçbir şey bulunamadı"
+
+#: .\trading\templates\trading\trading_add.html:764
+#: .\warehouses\templates\warehouse_transfer_form.html:218
+
+msgid "Нажмите и начните писать название товара..."
+msgstr "Tıklayın ve ürün adını yazmaya başlayın..."
+
+#: .\trading\templates\trading\trading_add.html:769
+
+msgid "Нажмите и начните писать склад..."
+msgstr "Tıklayın ve depo adını yazmaya başlayın..."
+
+#: .\trading\templates\trading\trading_add.html:899
+
+msgid "кол-во"
+msgstr "miktar"
+
+#: .\trading\templates\trading\trading_add.html:918
+
+msgid "Загрузка..."
+msgstr "Yükleniyor..."
+
+#: .\trading\templates\trading\trading_add.html:935
+
+msgid "Ошибка загрузки"
+msgstr "Yükleme hatası"
+
+#: .\trading\templates\trading\trading_detail.html:4
+
+msgid "Сделка"
+msgstr "İşlem"
+
+#: .\trading\templates\trading\trading_detail.html:435
+
+msgid "Детальный просмотр сделки, позиций, документов и комментариев."
+msgstr "İşlem, kalemler, belgeler ve yorumların detaylı görüntüsü."
+
+#: .\trading\templates\trading\trading_detail.html:441
+#: .\trading\templates\trading\trading_list.html:1020
+#: .\trading\templates\trading\trading_list.html:1064
+#: .\trading\templates\trading\trading_list.html:1069
+
+msgid "Завершено"
+msgstr "Tamamlandı"
+
+#: .\trading\templates\trading\trading_detail.html:443
+#: .\trading\templates\trading\trading_detail.html:522
+#: .\trading\templates\trading\trading_list.html:1018
+
+msgid "В процессе"
+msgstr "Devam ediyor"
+
+#: .\trading\templates\trading\trading_detail.html:452
+#: .\trading\templates\trading\trading_fulfill.html:14
+
+msgid "Название"
+msgstr "Ad"
+
+#: .\trading\templates\trading\trading_detail.html:453
+
+msgid "Без названия"
+msgstr "İsimsiz"
+
+#: .\trading\templates\trading\trading_detail.html:468
+
+msgid "Пользователь"
+msgstr "Kullanıcı"
+
+#: .\trading\templates\trading\trading_detail.html:474
+
+msgid "—"
+msgstr "—"
+
+#: .\trading\templates\trading\trading_detail.html:478
+
+msgid "Создано"
+msgstr "Oluşturuldu"
+
+#: .\trading\templates\trading\trading_detail.html:483
+
+msgid "Обновлено"
+msgstr "Güncellendi"
+
+#: .\trading\templates\trading\trading_detail.html:490
+#: .\trading\templates\trading\trading_fulfill.html:26
+
+msgid "Позиции"
+msgstr "Kalemler"
+
+#: .\trading\templates\trading\trading_detail.html:512
+
+msgid "Остаток"
+msgstr "Kalan"
+
+#: .\trading\templates\trading\trading_detail.html:520
+
+msgid "Не выполнено"
+msgstr "Tamamlanmadı"
+
+#: .\trading\templates\trading\trading_detail.html:529
+
+msgid "Нет позиций сделки"
+msgstr "İşlem kalemi yok"
+
+#: .\trading\templates\trading\trading_detail.html:534
+
+msgid "Документы"
+msgstr "Belgeler"
+
+#: .\trading\templates\trading\trading_detail.html:545
+
+msgid "Нет документов"
+msgstr "Belge yok"
+
+#: .\trading\templates\trading\trading_detail.html:550
+
+msgid "Комментарии"
+msgstr "Yorumlar"
+
+#: .\trading\templates\trading\trading_detail.html:558
+
+msgid "Добавить комментарий"
+msgstr "Yorum ekle"
+
+#: .\trading\templates\trading\trading_detail.html:575
+
+msgid "Удалить комментарий?"
+msgstr "Yorum silinsin mi?"
+
+#: .\trading\templates\trading\trading_detail.html:582
+
+msgid "Комментариев пока нет"
+msgstr "Henüz yorum yok"
+
+#: .\trading\templates\trading\trading_detail.html:589
+
+msgid "Редактировать"
+msgstr "Düzenle"
+
+#: .\trading\templates\trading\trading_detail.html:602
+#: .\trading\templates\trading\trading_fulfill.html:4
+#: .\trading\templates\trading\trading_fulfill.html:7
+
+msgid "Дополнить заказ"
+msgstr "Siparişi tamamla"
+
+#: .\trading\templates\trading\trading_detail.html:607
+#: .\trading\templates\trading\trading_fulfill.html:117
+#: .\trading\templates\trading\trading_list.html:1129
+#: .\trading\templates\trading\trading_list.html:1133
+#: .\warehouses\templates\warehouse_transfer_form.html:259
+
+msgid "Назад"
+msgstr "Geri"
+
+#: .\trading\templates\trading\trading_fulfill.html:10
+
+msgid "Информация"
+msgstr "Bilgi"
+
+#: .\trading\templates\trading\trading_fulfill.html:36
+
+msgid "Осталось"
+msgstr "Kalan"
+
+#: .\trading\templates\trading\trading_fulfill.html:37
+#: .\trading\templates\trading\trading_fulfill.html:92
+
+msgid "Дополнить"
+msgstr "Tamamla"
+
+#: .\trading\templates\trading\trading_list.html:4
+#: .\users\templates\base_manager.html:627
+
+msgid "Сделки"
+msgstr "İşlemler"
+
+#: .\trading\templates\trading\trading_list.html:883
+
+msgid "Просмотр покупок, продаж, статусов выполнения и позиций по сделкам."
+msgstr "Satın alma, satış, tamamlanma durumu ve işlem kalemlerini görüntüleyin."
+
+#: .\trading\templates\trading\trading_list.html:889
+
+msgid "Создать сделку"
+msgstr "İşlem oluştur"
+
+#: .\trading\templates\trading\trading_list.html:916
+
+msgid "Поиск по названию сделки, товару, складу или комментарию..."
+msgstr "İşlem adı, ürün, depo veya yoruma göre ara..."
+
+#: .\trading\templates\trading\trading_list.html:930
+#: .\users\templates\users\manager_dashboard.html:610
+
+msgid "Все"
+msgstr "Tümü"
+
+#: .\trading\templates\trading\trading_list.html:935
+
+msgid "Покупки"
+msgstr "Satın almalar"
+
+#: .\trading\templates\trading\trading_list.html:940
+#: .\users\templates\users\manager_dashboard.html:619
+#: .\users\templates\users\manager_dashboard.html:720
+
+msgid "Продажи"
+msgstr "Satışlar"
+
+#: .\trading\templates\trading\trading_list.html:955
+
+msgid "С даты"
+msgstr "Başlangıç"
+
+#: .\trading\templates\trading\trading_list.html:960
+
+msgid "По дату"
+msgstr "Bitiş"
+
+#: .\trading\templates\trading\trading_list.html:967
+
+msgid "Сначала новые"
+msgstr "Önce yeniler"
+
+#: .\trading\templates\trading\trading_list.html:968
+
+msgid "Сначала старые"
+msgstr "Önce eskiler"
+
+#: .\trading\templates\trading\trading_list.html:969
+
+msgid "Название А-Я"
+msgstr "İsim A-Z"
+
+#: .\trading\templates\trading\trading_list.html:970
+
+msgid "Название Я-А"
+msgstr "İsim Z-A"
+
+#: .\trading\templates\trading\trading_list.html:980
+
+msgid "Сбросить"
+msgstr "Sıfırla"
+
+#: .\trading\templates\trading\trading_list.html:993
+
+msgid "Открыть сделку"
+msgstr "İşlemi aç"
+
+#: .\trading\templates\trading\trading_list.html:993
+
+msgid "без названия"
+msgstr "isimsiz"
+
+#: .\trading\templates\trading\trading_list.html:1079
+
+msgid "ещё"
+msgstr "daha"
+
+#: .\trading\templates\trading\trading_list.html:1079
+
+msgid "позиций"
+msgstr "kalem"
+
+#: .\trading\templates\trading\trading_list.html:1091
+#: .\users\templates\warehouse_list.html:305
+
+msgid "Открыть"
+msgstr "Aç"
+
+#: .\trading\templates\trading\trading_list.html:1100
+
+msgid "Нет записей"
+msgstr "Kayıt yok"
+
+#: .\trading\templates\trading\trading_list.html:1101
+
+msgid "Пока здесь нет сделок по выбранному фильтру."
+msgstr "Seçilen filtre için henüz işlem yok."
+
+#: .\trading\templates\trading\trading_list.html:1115
+
+msgid "Страница"
+msgstr "Sayfa"
+
+#: .\trading\templates\trading\trading_list.html:1117
+
+msgid "из"
+msgstr "/"
+
+#: .\trading\templates\trading\trading_list.html:1124
+
+msgid "Первая страница"
+msgstr "İlk sayfa"
+
+#: .\trading\templates\trading\trading_list.html:1150
+#: .\trading\templates\trading\trading_list.html:1158
+
+msgid "Вперёд"
+msgstr "İleri"
+
+#: .\trading\templates\trading\trading_list.html:1154
+
+msgid "Последняя страница"
+msgstr "Son sayfa"
+
+#: .\users\templates\base_manager.html:7
+#: .\users\templates\users\manager_dashboard.html:4
+#: .\users\templates\users\manager_dashboard.html:549
+
+msgid "Панель менеджера"
+msgstr "Yönetici Paneli"
+
+#: .\users\templates\base_manager.html:616
+
+msgid "Добро пожаловать"
+msgstr "Hoş geldiniz"
+
+#: .\users\templates\base_manager.html:623
+
+msgid "Панель"
+msgstr "Panel"
+
+#: .\users\templates\base_manager.html:631
+
+msgid "Заказы"
+msgstr "Siparişler"
+
+#: .\users\templates\base_manager.html:636
+
+msgid "История"
+msgstr "Geçmiş"
+
+#: .\users\templates\base_manager.html:641
+#: .\users\templates\users\manager_dashboard.html:569
+#: .\users\templates\warehouse_list.html:271
+
+msgid "Склады"
+msgstr "Depolar"
+
+#: .\users\templates\base_manager.html:649
+#: .\warehouses\templates\warehouse_transfer_history.html:357
+
+msgid "Перемещения"
+msgstr "Transferler"
+
+#: .\users\templates\base_manager.html:654
+
+msgid "Выбор языка"
+msgstr "Dil seçici"
+
+#: .\users\templates\base_manager.html:687
+
+msgid "Поиск по системе..."
+msgstr "Sistemde ara..."
+
+#: .\users\templates\base_manager.html:688
+
+msgid "Поиск"
+msgstr "Ara"
+
+#: .\users\templates\base_manager.html:693
+
+msgid "Выход"
+msgstr "Çıkış yap"
+
+# Login page compatibility
+#: .\users\templates\login.html:6
+
+msgid "Login"
+msgstr "Giriş"
+
+#: .\users\templates\login.html:184
+
+msgid "Login to system"
+msgstr "Sisteme giriş"
+
+#: .\users\templates\login.html:188
+
+msgid "Invalid username or password"
+msgstr "Kullanıcı adı veya şifre hatalı"
+
+#: .\users\templates\login.html:196
+
+msgid "Username"
+msgstr "Kullanıcı adı"
+
+#: .\users\templates\login.html:200
+
+msgid "Password"
+msgstr "Şifre"
+
+#: .\users\templates\login.html:203
+
+msgid "Sign in"
+msgstr "Giriş yap"
+
+#: .\users\templates\users\manager_dashboard.html:553
+
+msgid "Сегодня"
+msgstr "Bugün"
+
+#: .\users\templates\users\manager_dashboard.html:564
+
+msgid "Всего товаров в системе"
+msgstr "Sistemdeki toplam ürün sayısı"
+
+#: .\users\templates\users\manager_dashboard.html:573
+
+msgid "Зарегистрированные локации"
+msgstr "Kayıtlı lokasyonlar"
+
+#: .\users\templates\users\manager_dashboard.html:578
+
+msgid "Остатки"
+msgstr "Stok"
+
+#: .\users\templates\users\manager_dashboard.html:582
+
+msgid "Общее количество на складах"
+msgstr "Depolardaki toplam miktar"
+
+#: .\users\templates\users\manager_dashboard.html:587
+
+msgid "Период"
+msgstr "Dönem"
+
+#: .\users\templates\users\manager_dashboard.html:593
+
+msgid "Дней в текущем отчёте"
+msgstr "Geçerli rapordaki gün sayısı"
+
+#: .\users\templates\users\manager_dashboard.html:601
+
+msgid "Движение товаров"
+msgstr "Ürün hareketi"
+
+#: .\users\templates\users\manager_dashboard.html:602
+
+msgid "Продажи и закупки за выбранный период"
+msgstr "Seçilen dönem için satışlar ve satın almalar"
+
+#: .\users\templates\users\manager_dashboard.html:606
+
+msgid "7 дней"
+msgstr "7 gün"
+
+#: .\users\templates\users\manager_dashboard.html:607
+
+msgid "30 дней"
+msgstr "30 gün"
+
+#: .\users\templates\users\manager_dashboard.html:608
+
+msgid "90 дней"
+msgstr "90 gün"
+
+#: .\users\templates\users\manager_dashboard.html:609
+
+msgid "Год"
+msgstr "Yıl"
+
+#: .\users\templates\users\manager_dashboard.html:623
+#: .\users\templates\users\manager_dashboard.html:721
+
+msgid "Закупки"
+msgstr "Satın almalar"
+
+#: .\users\templates\users\manager_dashboard.html:635
+
+msgid "Продажи за период"
+msgstr "Dönem satışları"
+
+#: .\users\templates\users\manager_dashboard.html:640
+
+msgid "Закупки за период"
+msgstr "Dönem satın almaları"
+
+#: .\users\templates\users\manager_dashboard.html:645
+
+msgid "Общее движение"
+msgstr "Toplam hareket"
+
+#: .\users\templates\users\manager_dashboard.html:656
+
+msgid "Топ товаров"
+msgstr "En popüler ürünler"
+
+#: .\users\templates\users\manager_dashboard.html:657
+
+msgid "Самые продаваемые позиции"
+msgstr "En çok satılan ürünler"
+
+#: .\users\templates\users\manager_dashboard.html:671
+
+msgid "продажи"
+msgstr "satış"
+
+#: .\users\templates\users\manager_dashboard.html:682
+
+msgid "Пока нет данных по продажам."
+msgstr "Henüz satış verisi yok."
+
+#: .\users\templates\users\manager_dashboard.html:689
+
+msgid "Сводка"
+msgstr "Özet"
+
+#: .\users\templates\users\manager_dashboard.html:690
+
+msgid "Ключевые показатели системы"
+msgstr "Temel sistem göstergeleri"
+
+#: .\users\templates\users\manager_dashboard.html:696
+
+msgid "Общий складской объём"
+msgstr "Toplam depo hacmi"
+
+#: .\users\templates\users\manager_dashboard.html:698
+
+msgid "сумма всех остатков"
+msgstr "tüm stok bakiyelerinin toplamı"
+
+#: .\users\templates\users\manager_dashboard.html:702
+
+msgid "Средняя загрузка склада"
+msgstr "Ortalama depo yükü"
+
+#: .\users\templates\users\manager_dashboard.html:704
+
+msgid "остатки / склады"
+msgstr "stok / depolar"
+
+#: .\users\templates\users\manager_dashboard.html:708
+
+msgid "Активность графика"
+msgstr "Grafik aktivitesi"
+
+#: .\users\templates\users\manager_dashboard.html:710
+
+msgid "продажи + закупки"
+msgstr "satış + satın alma"
+
+#: .\users\templates\warehouse_list.html:267
+
+msgid "Управление складами"
+msgstr "Depo yönetimi"
+
+#: .\users\templates\warehouse_list.html:275
+
+msgid "Список всех зарегистрированных складов и базовая информация по ним."
+msgstr "Tüm kayıtlı depoların listesi ve temel bilgileri."
+
+#: .\users\templates\warehouse_list.html:281
+
+msgid "Создать склад"
+msgstr "Depo oluştur"
+
+#: .\users\templates\warehouse_list.html:299
+
+msgid "Складская локация"
+msgstr "Depo konumu"
+
+#: .\users\templates\warehouse_list.html:312
+
+msgid "Количество всех товаров"
+msgstr "Toplam ürün sayısı"
+
+#: .\users\templates\warehouse_list.html:322
+
+msgid "Создан"
+msgstr "Oluşturuldu"
+
+#: .\users\templates\warehouse_list.html:337
+
+msgid "Склады еще не созданы"
+msgstr "Henüz depo oluşturulmadı"
+
+#: .\users\templates\warehouse_list.html:341
+
+msgid "Добавьте первый склад, чтобы начать вести остатки товаров."
+msgstr "Stok yönetimine başlamak için ilk deponuzu ekleyin."
+
+#: .\users\templates\warehouse_list.html:348
+
+msgid "Создать первый склад"
+msgstr "İlk depoyu oluştur"
+
+#: .\warehouses\templates\warehouse_detail.html:248
+
+msgid "Остатки товаров на выбранном складе"
+msgstr "Seçilen depodaki ürün stokları"
+
+#: .\warehouses\templates\warehouse_detail.html:253
+#: .\warehouses\templates\warehouse_transfer_form.html:258
+
+msgid "Переместить товар"
+msgstr "Ürünü transfer et"
+
+#: .\warehouses\templates\warehouse_detail.html:257
+#: .\warehouses\templates\warehouse_transfer_history.html:374
+
+msgid "История перемещений"
+msgstr "Transfer geçmişi"
+
+#: .\warehouses\templates\warehouse_detail.html:265
+
+msgid "Поиск товара..."
+msgstr "Ürün ara..."
+
+#: .\warehouses\templates\warehouse_detail.html:309
+
+msgid "На складе нет товаров"
+msgstr "Bu depoda ürün yok"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:200
+
+msgid "Перемещение товара между складами"
+msgstr "Depolar arası ürün transferi"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:201
+
+msgid "Выберите товар, склад отправления, склад получения и количество."
+msgstr "Ürün, çıkış deposu, varış deposu ve miktar seçin."
+
+#: .\warehouses\templates\warehouse_transfer_form.html:232
+
+msgid "Со склада"
+msgstr "Çıkış deposu"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:241
+
+msgid "На склад"
+msgstr "Varış deposu"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:251
+
+msgid "Нельзя передать 0 или меньше. Укажите количество больше 0."
+msgstr "0 veya daha az transfer edilemez. 0'dan büyük bir miktar girin."
+
+#: .\warehouses\templates\warehouse_transfer_form.html:318
+
+msgid "Товар не найден"
+msgstr "Ürün bulunamadı"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:373
+
+msgid "Не удалось загрузить остаток товара"
+msgstr "Ürün stoğu yüklenemedi"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:356
+
+msgid "Перемещения склада"
+msgstr "Depo transferleri"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:359
+
+msgid "История перемещений товаров между складами."
+msgstr "Depolar arasındaki ürün transfer geçmişi."
+
+#: .\warehouses\templates\warehouse_transfer_history.html:366
+
+msgid "Создать перемещение"
+msgstr "Transfer oluştur"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:375
+
+msgid "Товар, маршрут, количество и дата операции"
+msgstr "Ürün, rota, miktar ve işlem tarihi"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:392
+
+msgid "Откуда"
+msgstr "Nereden"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:399
+
+msgid "Куда"
+msgstr "Nereye"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:413
+
+msgid "Кто"
+msgstr "Kim"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:433
+
+msgid "Пока нет перемещений"
+msgstr "Henüz transfer yok"
+
+msgid "История сделок"
+msgstr "İşlem geçmişi"
+
+msgid "Описание для этого товара пока не добавлено."
+msgstr "Bu ürün için henüz açıklama eklenmedi."
+
+msgid "Остатки по складам"
+msgstr "Depo stokları"
+
+msgid "Нет данных по остаткам на складах."
+msgstr "Depo stok verisi bulunamadı."

@@ -1,9 +1,10 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ CURRENT_LANGUAGE|default:'ru' }}">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}Дашборд менеджера{% endblock %}</title>
+    <title>{% block title %}{% trans "Панель менеджера" %}{% endblock %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -152,6 +153,80 @@
             flex-shrink: 0;
         }
 
+        .language-switcher {
+            display: flex;
+            align-items: center;
+            min-width: 170px;
+        }
+
+        .language-select-form {
+            width: 100%;
+            margin: 0;
+        }
+
+        .language-select-wrap {
+            position: relative;
+            width: 100%;
+        }
+
+        .language-select-wrap::after {
+            content: "⌄";
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-55%);
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 900;
+            pointer-events: none;
+        }
+
+        .language-select {
+            width: 100%;
+            height: 46px;
+            padding: 0 44px 0 18px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 16px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.22), rgba(255,255,255,0.10));
+            color: #ffffff;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 950;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.14),
+                0 10px 24px rgba(31, 59, 74, 0.13);
+            backdrop-filter: blur(12px);
+            transition: 0.22s ease;
+        }
+
+        .language-select:hover {
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.14));
+            transform: translateY(-1px);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.18),
+                0 12px 26px rgba(31, 59, 74, 0.16);
+        }
+
+        .language-select:focus {
+            border-color: rgba(255, 255, 255, 0.72);
+            box-shadow:
+                0 0 0 4px rgba(255,255,255,0.16),
+                0 12px 28px rgba(31, 59, 74, 0.18);
+        }
+
+        .language-select option {
+            color: #172033;
+            background: #ffffff;
+            font-weight: 800;
+        }
+
         .search-form {
             position: relative;
             display: flex;
@@ -246,25 +321,11 @@
             animation: cardFadeUp 0.55s ease both;
         }
 
-        .container > *:nth-child(1) {
-            animation-delay: 0.04s;
-        }
-
-        .container > *:nth-child(2) {
-            animation-delay: 0.10s;
-        }
-
-        .container > *:nth-child(3) {
-            animation-delay: 0.16s;
-        }
-
-        .container > *:nth-child(4) {
-            animation-delay: 0.22s;
-        }
-
-        .container > *:nth-child(5) {
-            animation-delay: 0.28s;
-        }
+        .container > *:nth-child(1) { animation-delay: 0.04s; }
+        .container > *:nth-child(2) { animation-delay: 0.10s; }
+        .container > *:nth-child(3) { animation-delay: 0.16s; }
+        .container > *:nth-child(4) { animation-delay: 0.22s; }
+        .container > *:nth-child(5) { animation-delay: 0.28s; }
 
         .dashboard-card,
         .kpi-card,
@@ -287,9 +348,7 @@
         .order-card:nth-child(1),
         .product-card:nth-child(1),
         .item-block:nth-child(1),
-        .card:nth-child(1) {
-            animation-delay: 0.05s;
-        }
+        .card:nth-child(1) { animation-delay: 0.05s; }
 
         .dashboard-card:nth-child(2),
         .kpi-card:nth-child(2),
@@ -298,9 +357,7 @@
         .order-card:nth-child(2),
         .product-card:nth-child(2),
         .item-block:nth-child(2),
-        .card:nth-child(2) {
-            animation-delay: 0.10s;
-        }
+        .card:nth-child(2) { animation-delay: 0.10s; }
 
         .dashboard-card:nth-child(3),
         .kpi-card:nth-child(3),
@@ -309,9 +366,7 @@
         .order-card:nth-child(3),
         .product-card:nth-child(3),
         .item-block:nth-child(3),
-        .card:nth-child(3) {
-            animation-delay: 0.15s;
-        }
+        .card:nth-child(3) { animation-delay: 0.15s; }
 
         .dashboard-card:nth-child(4),
         .kpi-card:nth-child(4),
@@ -320,9 +375,7 @@
         .order-card:nth-child(4),
         .product-card:nth-child(4),
         .item-block:nth-child(4),
-        .card:nth-child(4) {
-            animation-delay: 0.20s;
-        }
+        .card:nth-child(4) { animation-delay: 0.20s; }
 
         h1 {
             margin: 0 0 24px;
@@ -501,6 +554,19 @@
 
             .header-actions {
                 width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .language-switcher {
+                width: 100%;
+            }
+
+            .language-select-form {
+                width: 100%;
+            }
+
+            .language-select {
+                width: 100%;
             }
 
             .search-form {
@@ -567,34 +633,67 @@
         <div class="logo-text">Warehouse Manager</div>
 
         <div class="header-user">
-            Добро пожаловать, <strong>{{ request.user.username }}</strong>
+            {% trans "Добро пожаловать" %}, <strong>{{ request.user.username }}</strong>
         </div>
     </div>
 
     <div class="header-nav">
         <nav class="nav-links">
-            <a href="{% url 'manager_dashboard' %}" class="{% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">Дашборд</a>
-            <a href="{% url 'trading_list' %}" class="{% if request.resolver_match.url_name == 'trading_list' %}active{% endif %}">Сделки</a>
-            <a href="{% url 'orders_list' %}" class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">Заказы</a>
+            <a href="{% url 'manager_dashboard' %}" class="{% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">
+                {% trans "Панель" %}
+            </a>
+
+            <a href="{% url 'trading_list' %}" class="{% if request.resolver_match.url_name == 'trading_list' %}active{% endif %}">
+                {% trans "Сделки" %}
+            </a>
+
+            <a href="{% url 'orders_list' %}" class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">
+                {% trans "Заказы" %}
+            </a>
 
             {% if request.user.role == "admin" %}
-                <a href="{% url 'admin_trading_history' %}" class="{% if request.resolver_match.url_name == 'admin_trading_history' %}active{% endif %}">История</a>
+                <a href="{% url 'admin_trading_history' %}" class="{% if request.resolver_match.url_name == 'admin_trading_history' %}active{% endif %}">
+                    {% trans "История" %}
+                </a>
             {% endif %}
 
-            <a href="{% url 'warehouse_list' %}" class="{% if request.resolver_match.url_name == 'warehouse_list' %}active{% endif %}">Склады</a>
-            <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.namespace == 'products' %}active{% endif %}">Продукты</a>
-            <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="{% if request.resolver_match.namespace == 'warehouses' %}active{% endif %}">Перемещения</a>
+            <a href="{% url 'warehouse_list' %}" class="{% if request.resolver_match.url_name == 'warehouse_list' %}active{% endif %}">
+                {% trans "Склады" %}
+            </a>
+
+            <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.namespace == 'products' %}active{% endif %}">
+                {% trans "Товары" %}
+            </a>
+
+            <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="{% if request.resolver_match.namespace == 'warehouses' %}active{% endif %}">
+                {% trans "Перемещения" %}
+            </a>
         </nav>
 
         <div class="header-actions">
+            <div class="language-switcher" aria-label="{% trans 'Выбор языка' %}">
+                <form action="{% url 'set_language' %}" method="post" class="language-select-form">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+
+                    <div class="language-select-wrap">
+                        <select name="language" class="language-select" onchange="this.form.submit()">
+                            <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>Русский</option>
+                            <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>English</option>
+                            <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>Türkçe</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
             <form method="get" action="{% url 'global_search' %}" class="search-form">
-                <input type="text" name="q" placeholder="Поиск по системе..." class="search-input">
-                <button type="submit" class="search-btn">🔍</button>
+                <input type="text" name="q" placeholder="{% trans 'Поиск по системе...' %}" class="search-input">
+                <button type="submit" class="search-btn" title="{% trans 'Поиск' %}">🔍</button>
             </form>
 
             <form method="post" action="{% url 'logout' %}" class="logout-form">
                 {% csrf_token %}
-                <button type="submit" class="logout-btn">Выйти</button>
+                <button type="submit" class="logout-btn">{% trans "Выход" %}</button>
             </form>
         </div>
     </div>

@@ -1,4 +1,5 @@
 {% extends "products/base.html" %}
+{% load i18n %}
 
 {% block content %}
     <style>
@@ -515,10 +516,10 @@
         <section class="products-hero">
             <div class="hero-content">
                 <div class="title-block">
-                    <div class="eyebrow">📦 Складской каталог</div>
-                    <h1 class="title">Товары</h1>
+                    <div class="eyebrow">📦 {% trans "Складской каталог" %}</div>
+                    <h1 class="title">{% trans "Товары" %}</h1>
                     <p class="subtitle">
-                        Быстрый просмотр товаров, описаний и остатков по всем продуктам в системе.
+                        {% trans "Быстрый просмотр товаров, описаний и остатков по всем продуктам в системе." %}
                     </p>
                 </div>
 
@@ -526,7 +527,7 @@
                     {% if request.user.role == "admin" or request.user.role == "senior_manager"%}
                         <a href="{% url 'products:product_create' %}" class="btn-add">
                             <span>＋</span>
-                            <span>Добавить продукт</span>
+                            <span>{% trans "Добавить продукт" %}</span>
                         </a>
                     {% endif %}
                 </div>
@@ -542,23 +543,23 @@
                     <input type="text"
                            name="q"
                            value="{{ query }}"
-                           placeholder="Поиск по названию или описанию..."
+                           placeholder="{% trans 'Поиск по названию или описанию...' %}"
                            class="search-input">
 
-                    <button type="submit" class="search-btn">Найти</button>
+                    <button type="submit" class="search-btn">{% trans "Найти" %}</button>
                 </div>
 
                 <label class="filter-check">
                     <input type="checkbox" name="in_stock" value="1"
                            {% if in_stock == "1" %}checked{% endif %}
                            onchange="this.form.submit()">
-                    <span>В наличии</span>
+                    <span>{% trans "В наличии" %}</span>
                 </label>
 
                 <select name="sort" onchange="this.form.submit()" class="sort-select">
-                    <option value="">Сортировка</option>
-                    <option value="qty_asc" {% if sort == "qty_asc" %}selected{% endif %}>Кол-во ↑</option>
-                    <option value="qty_desc" {% if sort == "qty_desc" %}selected{% endif %}>Кол-во ↓</option>
+                    <option value="">{% trans "Сортировка" %}</option>
+                    <option value="qty_asc" {% if sort == "qty_asc" %}selected{% endif %}>{% trans "Кол-во ↑" %}</option>
+                    <option value="qty_desc" {% if sort == "qty_desc" %}selected{% endif %}>{% trans "Кол-во ↓" %}</option>
                 </select>
 
             </form>
@@ -569,9 +570,9 @@
                 <table class="table">
                     <thead>
                     <tr>
-                        <th>Товар</th>
-                        <th>Описание</th>
-                        <th>Кол-во</th>
+                        <th>{% trans "Товар" %}</th>
+                        <th>{% trans "Описание" %}</th>
+                        <th>{% trans "Кол-во" %}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -582,18 +583,18 @@
                                     {% if product.picture %}
                                         <img src="{{ product.picture.url }}" class="product-img" alt="{{ product.name }}">
                                     {% else %}
-                                        <div class="placeholder">Нет фото</div>
+                                        <div class="placeholder">{% trans "Нет фото" %}</div>
                                     {% endif %}
 
                                     <div>
                                         <div class="product-name">{{ product.name }}</div>
-                                        <div class="product-meta">Нажмите, чтобы открыть карточку</div>
+                                        <div class="product-meta">{% trans "Нажмите, чтобы открыть карточку" %}</div>
                                     </div>
                                 </div>
                             </td>
 
                             <td class="product-desc">
-                                {{ product.description|default:"Без описания"|truncatechars:120 }}
+                                {{ product.description|default:_("Без описания")|truncatechars:120 }}
                             </td>
 
                             <td>
@@ -609,8 +610,8 @@
         {% else %}
             <div class="empty">
                 <div class="empty-icon">📦</div>
-                <div class="empty-title">Товары не найдены</div>
-                <div class="empty-text">Попробуйте изменить поиск или фильтр наличия.</div>
+                <div class="empty-title">{% trans "Товары не найдены" %}</div>
+                <div class="empty-text">{% trans "Попробуйте изменить поиск или фильтр наличия." %}</div>
             </div>
         {% endif %}
     </div>

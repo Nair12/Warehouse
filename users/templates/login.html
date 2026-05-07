@@ -1,9 +1,9 @@
-{% load static %}
+{% load static i18n %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ LANGUAGE_CODE|default:'ru' }}">
 <head>
     <meta charset="UTF-8">
-    <title>Вход</title>
+    <title>{% trans "Login" %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}">
 
     <style>
@@ -26,6 +26,32 @@
                 transform: translateY(0) scale(1);
                 filter: blur(0);
             }
+        }
+
+        .language-switcher {
+            position: fixed;
+            top: 22px;
+            right: 22px;
+            z-index: 10;
+        }
+
+        .language-form {
+            margin: 0;
+        }
+
+        .language-select {
+            height: 40px;
+            min-width: 118px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            padding: 0 12px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: #172033;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
         }
 
         .wrapper {
@@ -116,20 +142,50 @@
             color: #7a7a7a;
         }
 
+        @media (max-width: 520px) {
+            .language-switcher {
+                top: 14px;
+                right: 14px;
+            }
+
+            .login-card {
+                width: calc(100% - 32px);
+                padding: 28px;
+            }
+        }
+
     </style>
 </head>
 
 <body>
 
+<div class="language-switcher">
+    <form action="{% url 'set_language' %}" method="post" class="language-form">
+        {% csrf_token %}
+        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+
+        {% get_current_language as CURRENT_LANGUAGE %}
+        {% get_available_languages as AVAILABLE_LANGUAGES %}
+
+        <select name="language" class="language-select" onchange="this.form.submit()">
+            {% for lang_code, lang_name in AVAILABLE_LANGUAGES %}
+                <option value="{{ lang_code }}" {% if lang_code == CURRENT_LANGUAGE %}selected{% endif %}>
+                    {{ lang_name }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
 <div class="wrapper">
     <div class="login-card">
 
         <div class="logo">WAREHOUSE</div>
-        <div class="title">Вход в систему</div>
+        <div class="title">{% trans "Login to system" %}</div>
 
         {% if form.errors %}
             <div class="error">
-                Неверный логин или пароль
+                {% trans "Invalid username or password" %}
             </div>
         {% endif %}
 
@@ -137,14 +193,14 @@
             {% csrf_token %}
 
             <div class="input-group">
-                <input type="text" name="username" placeholder="Логин" required>
+                <input type="text" name="username" placeholder="{% trans 'Username' %}" required>
             </div>
 
             <div class="input-group">
-                <input type="password" name="password" placeholder="Пароль" required>
+                <input type="password" name="password" placeholder="{% trans 'Password' %}" required>
             </div>
 
-            <button type="submit">Войти</button>
+            <button type="submit">{% trans "Sign in" %}</button>
         </form>
 
         <div class="footer">

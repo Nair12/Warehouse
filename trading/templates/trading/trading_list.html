@@ -1,6 +1,7 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
 
-{% block title %}{{ page_title }}{% endblock %}
+{% block title %}{% if page_title %}{% trans page_title %}{% else %}{% trans 'Сделки' %}{% endif %}{% endblock %}
 
 {% block manager_content %}
 <style>
@@ -876,16 +877,16 @@
 <section class="trading-hero">
     <div class="trading-hero-content">
         <div class="trading-title-block">
-            <div class="trading-eyebrow">📑 Операции склада</div>
-            <h1 class="trading-title">{{ page_title }}</h1>
+            <div class="trading-eyebrow">📑 {% trans "Операции склада" %}</div>
+            <h1 class="trading-title">{% trans "История сделок" %}</h1>
             <p class="trading-subtitle">
-                Просмотр покупок, продаж, статусов выполнения и позиций по сделкам.
+                {% trans "Просмотр покупок, продаж, статусов выполнения и позиций по сделкам." %}
             </p>
         </div>
 
         <a href="{% url 'trading_create' %}" class="trading-create-btn">
             <span>＋</span>
-            <span>Создать сделку</span>
+            <span>{% trans "Создать сделку" %}</span>
         </a>
     </div>
 </section>
@@ -912,12 +913,12 @@
             <input type="text"
                    name="q"
                    value="{{ search_query|default:'' }}"
-                   placeholder="Поиск по названию сделки, товару, складу или комментарию..."
+                   placeholder="{% trans 'Поиск по названию сделки, товару, складу или комментарию...' %}"
                    class="trading-search-input">
         </div>
 
         <button type="submit" class="trading-search-btn">
-            Найти
+            {% trans "Найти" %}
         </button>
     </form>
 </div>
@@ -926,17 +927,17 @@
     <div class="trading-filter-buttons">
         <a href="{% if is_orders_page %}{% url 'orders_list' %}{% else %}{% url 'trading_list' %}{% endif %}{% if search_query or date_from or date_to %}?{% if search_query %}q={{ search_query }}{% endif %}{% if search_query and date_from %}&{% endif %}{% if date_from %}date_from={{ date_from }}{% endif %}{% if search_query or date_from %}{% if date_to %}&{% endif %}{% endif %}{% if date_to %}date_to={{ date_to }}{% endif %}{% if sort_by %}{% if search_query or date_from or date_to %}&{% endif %}sort={{ sort_by }}{% endif %}{% endif %}"
            class="filter-pill {% if not current_type %}active-all{% endif %}">
-            Все
+            {% trans "Все" %}
         </a>
 
         <a href="?type=purchase{% if search_query %}&q={{ search_query }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
            class="filter-pill {% if current_type == 'purchase' %}active-purchase{% endif %}">
-            Покупки
+            {% trans "Покупки" %}
         </a>
 
         <a href="?type=sell{% if search_query %}&q={{ search_query }}{% endif %}{% if date_from %}&date_from={{ date_from }}{% endif %}{% if date_to %}&date_to={{ date_to }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}"
            class="filter-pill {% if current_type == 'sell' %}active-sell{% endif %}">
-            Продажи
+            {% trans "Продажи" %}
         </a>
     </div>
 
@@ -951,32 +952,32 @@
         {% endif %}
 
         <label class="date-filter-field">
-            <span>С даты</span>
+            <span>{% trans "С даты" %}</span>
             <input type="date" name="date_from" value="{{ date_from|default:'' }}">
         </label>
 
         <label class="date-filter-field">
-            <span>По дату</span>
+            <span>{% trans "По дату" %}</span>
             <input type="date" name="date_to" value="{{ date_to|default:'' }}">
         </label>
 
         <label class="sort-filter-field">
-            <span>Сортировка</span>
+            <span>{% trans "Сортировка" %}</span>
             <select name="sort">
-                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>Сначала новые</option>
-                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>Сначала старые</option>
-                <option value="name_az" {% if sort_by == 'name_az' %}selected{% endif %}>Название А-Я</option>
-                <option value="name_za" {% if sort_by == 'name_za' %}selected{% endif %}>Название Я-А</option>
+                <option value="newest" {% if sort_by == 'newest' %}selected{% endif %}>{% trans "Сначала новые" %}</option>
+                <option value="oldest" {% if sort_by == 'oldest' %}selected{% endif %}>{% trans "Сначала старые" %}</option>
+                <option value="name_az" {% if sort_by == 'name_az' %}selected{% endif %}>{% trans "Название А-Я" %}</option>
+                <option value="name_za" {% if sort_by == 'name_za' %}selected{% endif %}>{% trans "Название Я-А" %}</option>
             </select>
         </label>
 
         <button type="submit" class="date-filter-btn">
-            Найти
+            {% trans "Найти" %}
         </button>
 
         <a href="{% if is_orders_page %}{% url 'orders_list' %}{% else %}{% url 'trading_list' %}{% endif %}{% if current_type or search_query %}?{% if current_type %}type={{ current_type }}{% endif %}{% if current_type and search_query %}&{% endif %}{% if search_query %}q={{ search_query }}{% endif %}{% endif %}"
            class="date-reset-btn">
-            Сбросить
+            {% trans "Сбросить" %}
         </a>
     </form>
 </div>
@@ -989,7 +990,7 @@
                     data-url="{% url 'trading_detail' trading.id %}"
                     tabindex="0"
                     role="link"
-                    aria-label="Открыть сделку {{ trading.name|default:'без названия' }}">
+                    aria-label="{% trans 'Открыть сделку' %} {{ trading.name|default:_('без названия') }}">
                     <td class="date-cell">
                         <span class="date-day">
                             {{ trading.created_at|date:"d.m.Y" }}
@@ -1008,15 +1009,15 @@
                     <td>
                         <div class="trade-badge-group">
                             {% if trading.trade_type == "purchase" %}
-                                <span class="trade-badge badge-purchase">Покупка</span>
+                                <span class="trade-badge badge-purchase">{% trans "Покупка" %}</span>
                             {% else %}
-                                <span class="trade-badge badge-sell">Продажа</span>
+                                <span class="trade-badge badge-sell">{% trans "Продажа" %}</span>
                             {% endif %}
 
                             {% if is_orders_page %}
-                                <span class="trade-badge badge-process">В процессе</span>
+                                <span class="trade-badge badge-process">{% trans "В процессе" %}</span>
                             {% else %}
-                                <span class="trade-badge badge-done">Завершено</span>
+                                <span class="trade-badge badge-done">{% trans "Завершено" %}</span>
                             {% endif %}
                         </div>
                     </td>
@@ -1032,12 +1033,12 @@
 
                                         <div class="qty-block">
                                             <span class="qty-chip qty-requested">
-                                                <span class="qty-label">Заказано</span>
+                                                <span class="qty-label">{% trans "Заказано" %}</span>
                                                 {{ item.requested_quantity }}
                                             </span>
 
                                             <span class="qty-chip qty-fulfilled">
-                                                <span class="qty-label">Выполнено</span>
+                                                <span class="qty-label">{% trans "Выполнено" %}</span>
                                                 {{ item.fulfilled_quantity }}
                                             </span>
 
@@ -1055,17 +1056,17 @@
                                                 </div>
                                             </div>
                                             <div class="progress-text">
-                                                Выполнено {% widthratio trading.total_fulfilled trading.total_requested 100 %}%
+                                                {% trans "Выполнено" %} {% widthratio trading.total_fulfilled trading.total_requested 100 %}%
                                             </div>
                                         </div>
                                         {% else %}
                                         <div class="progress-text progress-done-text">
-                                            ✔ Завершено
+                                            ✔ {% trans "Завершено" %}
                                         </div>
                                         {% endif %}
                                         {% else %}
                                         <div class="progress-text" style="margin-top:8px;color:#27ae60;font-weight:900;">
-                                            ✔ Завершено
+                                            ✔ {% trans "Завершено" %}
                                         </div>
                                         {% endif %}
                                     </li>
@@ -1075,7 +1076,7 @@
                             {% with total=trading.grouped_items|length %}
                                 {% if total > 1 %}
                                     <div class="more-items">
-                                        + ещё {{ total|add:"-1" }} позиций
+                                        + {% trans "ещё" %} {{ total|add:"-1" }} {% trans "позиций" %}
                                     </div>
                                 {% endif %}
                             {% endwith %}
@@ -1087,7 +1088,7 @@
 
                     <td style="text-align:right;">
                         <a href="{% url 'trading_detail' trading.id %}" class="open-btn">
-                            Открыть
+                            {% trans "Открыть" %}
                         </a>
                     </td>
                 </tr>
@@ -1096,8 +1097,8 @@
                     <td colspan="5">
                         <div class="empty-state">
                             <div class="empty-icon">📑</div>
-                            <div class="empty-title">Нет записей</div>
-                            <div>Пока здесь нет сделок по выбранному фильтру.</div>
+                            <div class="empty-title">{% trans "Нет записей" %}</div>
+                            <div>{% trans "Пока здесь нет сделок по выбранному фильтру." %}</div>
                         </div>
                     </td>
                 </tr>
@@ -1111,25 +1112,25 @@
 {% if page_obj and page_obj.paginator.num_pages > 1 %}
 <div class="pagination-wrap">
     <div class="pagination-info">
-        <span>Страница</span>
+        <span>{% trans "Страница" %}</span>
         <span class="pagination-info-badge">{{ page_obj.number }}</span>
-        <span>из {{ page_obj.paginator.num_pages }}</span>
+        <span>{% trans "из" %} {{ page_obj.paginator.num_pages }}</span>
     </div>
 
     <div class="pagination-buttons">
         {% if page_obj.has_previous %}
             <a class="pagination-link"
                href="?{% if query_string %}{{ query_string }}&{% endif %}page=1"
-               title="Первая страница">
+               title="{% trans 'Первая страница' %}">
                 «
             </a>
             <a class="pagination-link"
                href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.previous_page_number }}">
-                Назад
+                {% trans "Назад" %}
             </a>
         {% else %}
             <span class="pagination-disabled">«</span>
-            <span class="pagination-disabled">Назад</span>
+            <span class="pagination-disabled">{% trans "Назад" %}</span>
         {% endif %}
 
         {% for num in page_obj.paginator.page_range %}
@@ -1146,15 +1147,15 @@
         {% if page_obj.has_next %}
             <a class="pagination-link"
                href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.next_page_number }}">
-                Вперёд
+                {% trans "Вперёд" %}
             </a>
             <a class="pagination-link"
                href="?{% if query_string %}{{ query_string }}&{% endif %}page={{ page_obj.paginator.num_pages }}"
-               title="Последняя страница">
+               title="{% trans 'Последняя страница' %}">
                 »
             </a>
         {% else %}
-            <span class="pagination-disabled">Вперёд</span>
+            <span class="pagination-disabled">{% trans "Вперёд" %}</span>
             <span class="pagination-disabled">»</span>
         {% endif %}
     </div>

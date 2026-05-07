@@ -1,83 +1,67 @@
-import csv
 from pathlib import Path
-from decimal import Decimal
-
 from django.core.management.base import BaseCommand, CommandError
-
 from products.models import Product
 
 
 class Command(BaseCommand):
-    help = "Import products from CSV file"
+    help = "Robust import from broken CSV"
 
     def add_arguments(self, parser):
         parser.add_argument("csv_path", type=str)
 
     def handle(self, *args, **options):
-        csv_path = Path(options["csv_path"])
+        path = Path(options["csv_path"])
 
-        if not csv_path.exists():
-            raise CommandError(f"CSV file not found: {csv_path}")
+        if not path.exists():
+            raise CommandError(f"File not found: {path}")
 
-        created_count = 0
-        updated_count = 0
-        skipped_count = 0
+        created = 0
+        skipped = 0
 
-        with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
-            reader = csv.DictReader(file)
+        with path.open("r", encoding="utf-8-sig") as f:
+            for line in f:
+                line = line.strip()
 
-            required_columns = {"name", "price", "description", "unit"}
-            if not required_columns.issubset(reader.fieldnames or []):
-                raise CommandError(
-                    "CSV must contain columns: name, price, description, unit"
-                )
+                if not line:
+                    skipped += 1
+                    continue
 
-            for row in reader:
-                name = (row.get("name") or "").strip()
-                price_raw = (row.get("price") or "").strip()
-                description = (row.get("description") or "").strip()
-                unit = (row.get("unit") or "").strip()
+                # разбиваем по ; или ,
+                raw_parts = []
+                for part in line.replace(";", ",").split(","):
+                    part = part.strip()
+                    if part:
+                        raw_parts.append(part)
+
+                if not raw_parts:
+                    skipped += 1
+                    continue
+
+                # ищем название (первое не число и не мусор)
+                name = None
+                for part in raw_parts:
+                    if part.lower() in ["наименование", "подшипники"]:
+                        name = None
+                        break
+
+                    # если не число → это товар
+                    if not part.isdigit():
+                        name = part
+                        break
 
                 if not name:
-                    skipped_count += 1
+                    skipped += 1
                     continue
 
-                if unit not in ["pcs", "kg"]:
-                    self.stdout.write(
-                        self.style.WARNING(
-                            f"Skipped {name}: unit must be pcs or kg"
-                        )
-                    )
-                    skipped_count += 1
+                if Product.objects.filter(name__iexact=name).exists():
+                    skipped += 1
                     continue
 
-                try:
-                    price = Decimal(price_raw)
-                except Exception:
-                    self.stdout.write(
-                        self.style.WARNING(
-                            f"Skipped {name}: invalid price {price_raw}"
-                        )
-                    )
-                    skipped_count += 1
-                    continue
-
-                product, created = Product.objects.update_or_create(
+                Product.objects.create(
                     name=name,
-                    defaults={
-                        "price": price,
-                        "description": description,
-                        "unit": unit,
-                    },
+                    description="",
+                    unit=Product.UNIT_PIECE,
                 )
+                created += 1
 
-                if created:
-                    created_count += 1
-                else:
-                    updated_count += 1
-
-        self.stdout.write(
-            self.style.SUCCESS(
-                f"Import completed. Created: {created_count}, updated: {updated_count}, skipped: {skipped_count}"
-            )
-        )
+        self.stdout.write(self.style.SUCCESS(f"Created: {created}, skipped: {skipped}"))

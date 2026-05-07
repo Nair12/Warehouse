@@ -1,4 +1,5 @@
 {% extends "products/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <style>
@@ -196,8 +197,8 @@
 
 <div class="container">
     <div class="card">
-        <div class="title">Перемещение товара между складами</div>
-        <div class="subtitle">Выберите товар, склад отправления, склад получения и количество.</div>
+        <div class="title">{% trans "Перемещение товара между складами" %}</div>
+        <div class="subtitle">{% trans "Выберите товар, склад отправления, склад получения и количество." %}</div>
 
         <form method="post" id="transfer-form">
             {% csrf_token %}
@@ -211,10 +212,10 @@
             {% endif %}
 
             <div class="form-group">
-                <label for="{{ form.product.id_for_label }}">Товар</label>
+                <label for="{{ form.product.id_for_label }}">{% trans "Товар" %}</label>
 
                 <div class="product-dropdown">
-                    <input type="text" id="product-search-input" class="product-search-input" placeholder="Нажмите и начните писать название товара..." autocomplete="off">
+                    <input type="text" id="product-search-input" class="product-search-input" placeholder="{% trans 'Нажмите и начните писать название товара...' %}" autocomplete="off">
                     <div id="product-options" class="product-options"></div>
                 </div>
 
@@ -228,7 +229,7 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.from_warehouse.id_for_label }}">Со склада</label>
+                <label for="{{ form.from_warehouse.id_for_label }}">{% trans "Со склада" %}</label>
                 {{ form.from_warehouse }}
                 <div id="stock-info" class="stock-info"></div>
                 {% for error in form.from_warehouse.errors %}
@@ -237,7 +238,7 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.to_warehouse.id_for_label }}">На склад</label>
+                <label for="{{ form.to_warehouse.id_for_label }}">{% trans "На склад" %}</label>
                 {{ form.to_warehouse }}
                 {% for error in form.to_warehouse.errors %}
                     <div class="field-error">{{ error }}</div>
@@ -245,17 +246,17 @@
             </div>
 
             <div class="form-group">
-                <label for="{{ form.quantity.id_for_label }}">Количество</label>
+                <label for="{{ form.quantity.id_for_label }}">{% trans "Количество" %}</label>
                 {{ form.quantity }}
-                <div id="quantity-error" class="field-error">Нельзя передать 0 или меньше. Укажите количество больше 0.</div>
+                <div id="quantity-error" class="field-error">{% trans "Нельзя передать 0 или меньше. Укажите количество больше 0." %}</div>
                 {% for error in form.quantity.errors %}
                     <div class="field-error">{{ error }}</div>
                 {% endfor %}
             </div>
 
             <div class="actions">
-                <button type="submit" id="submit-btn" class="submit-btn">Переместить товар</button>
-                <a href="javascript:history.back()" class="back-link">Назад</a>
+                <button type="submit" id="submit-btn" class="submit-btn">{% trans "Переместить товар" %}</button>
+                <a href="javascript:history.back()" class="back-link">{% trans "Назад" %}</a>
             </div>
         </form>
     </div>
@@ -314,7 +315,7 @@
         if (filteredOptions.length === 0) {
             const emptyItem = document.createElement("div");
             emptyItem.className = "product-option empty";
-            emptyItem.textContent = "Товар не найден";
+            emptyItem.textContent = "{% trans "Товар не найден" %}";
             productOptionsBox.appendChild(emptyItem);
             return;
         }
@@ -369,7 +370,7 @@
             })
             .catch(function() {
                 stockInfo.style.display = "block";
-                stockInfo.textContent = "Не удалось загрузить остаток товара";
+                stockInfo.textContent = "{% trans "Не удалось загрузить остаток товара" %}";
                 stockInfo.classList.add("warning");
             });
     }

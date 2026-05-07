@@ -1,0 +1,1124 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Warehouse Manager\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-07 14:40+0400\n"
+"PO-Revision-Date: 2026-05-07 11:20+0400\n"
+"Last-Translator: Warehouse Team\n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\Warehouse\settings.py:116
+
+msgid "Русский"
+msgstr "Russian"
+
+#: .\Warehouse\settings.py:117
+
+msgid "English"
+msgstr "English"
+
+#: .\Warehouse\settings.py:118
+
+msgid "Türkçe"
+msgstr "Turkish"
+
+#: .\products\models.py:11
+
+msgid "шт"
+msgstr "pcs"
+
+#: .\products\models.py:12
+
+msgid "кг"
+msgstr "kg"
+
+#: .\products\models.py:23
+#: .\products\templates\products\product_detail.html:591
+
+msgid "Единица измерения"
+msgstr "Unit of measurement"
+
+msgid "Изображение товара отсутствует"
+msgstr "Product image is not available"
+
+msgid "Карточка товара"
+msgstr "Product card"
+
+msgid "Описание товара"
+msgstr "Product description"
+
+msgid "Дата добавления"
+msgstr "Date added"
+
+msgid "Остатки по {%% trans "
+msgstr "Stock by warehouses"
+
+#: .\products\templates\products\product_detail.html:608
+
+msgid "Наличие товара на каждом складе"
+msgstr "Product availability in each warehouse"
+
+msgid "склада"
+msgstr "warehouses"
+
+msgid "Склад"
+msgstr "Warehouse"
+
+msgid "Количество"
+msgstr "Quantity"
+
+msgid "Действие"
+msgstr "Action"
+
+msgid "Изменить"
+msgstr "Edit"
+
+msgid "Добавить"
+msgstr "Add"
+
+msgid "Вернуться к списку товаров"
+msgstr "Back to product list"
+
+msgid "Добавить продукт"
+msgstr "Add product"
+
+#: .\products\templates\products\product_form.html:13
+#: .\trading\templates\trading\trading_add.html:599
+
+msgid "Сохранить"
+msgstr "Save"
+
+#: .\products\templates\products\product_list.html:519
+
+msgid "Складской каталог"
+msgstr "Warehouse catalog"
+
+#: .\products\templates\products\product_list.html:520
+#: .\users\templates\base_manager.html:645
+#: .\users\templates\users\manager_dashboard.html:560
+
+msgid "Товары"
+msgstr "Products"
+
+#: .\products\templates\products\product_list.html:522
+
+msgid ""
+"Быстрый просмотр товаров, описаний и остатков по всем продуктам в системе."
+msgstr "Quick overview of products, descriptions, and stock balances for all products in the system."
+
+#: .\products\templates\products\product_list.html:546
+
+msgid "Поиск по названию или описанию..."
+msgstr "Search by name or description..."
+
+#: .\products\templates\products\product_list.html:549
+#: .\trading\templates\trading\trading_list.html:921
+#: .\trading\templates\trading\trading_list.html:975
+#: .\warehouses\templates\warehouse_detail.html:266
+
+msgid "Найти"
+msgstr "Search"
+
+#: .\products\templates\products\product_list.html:556
+
+msgid "В наличии"
+msgstr "In stock"
+
+#: .\products\templates\products\product_list.html:560
+#: .\trading\templates\trading\trading_list.html:965
+
+msgid "Сортировка"
+msgstr "Sort"
+
+#: .\products\templates\products\product_list.html:561
+
+msgid "Кол-во ↑"
+msgstr "Qty ↑"
+
+#: .\products\templates\products\product_list.html:562
+
+msgid "Кол-во ↓"
+msgstr "Qty ↓"
+
+#: .\products\templates\products\product_list.html:573 .\trading\forms.py:65
+#: .\trading\templates\trading\admin_trading_history.html:23
+#: .\trading\templates\trading\trading_fulfill.html:32
+#: .\warehouses\templates\warehouse_transfer_form.html:215
+#: .\warehouses\templates\warehouse_transfer_history.html:384
+
+msgid "Товар"
+msgstr "Product"
+
+#: .\products\templates\products\product_list.html:574
+
+msgid "Описание"
+msgstr "Description"
+
+#: .\products\templates\products\product_list.html:575
+
+msgid "Кол-во"
+msgstr "Qty"
+
+#: .\products\templates\products\product_list.html:586
+
+msgid "Нет фото"
+msgstr "No photo"
+
+#: .\products\templates\products\product_list.html:591
+
+msgid "Нажмите, чтобы открыть карточку"
+msgstr "Click to open the product card"
+
+#: .\products\templates\products\product_list.html:597
+
+msgid "Без описания"
+msgstr "No description"
+
+#: .\products\templates\products\product_list.html:613
+
+msgid "Товары не найдены"
+msgstr "No products found"
+
+#: .\products\templates\products\product_list.html:614
+
+msgid "Попробуйте изменить поиск или фильтр наличия."
+msgstr "Try changing the search query or stock filter."
+
+#: .\trading\forms.py:18
+
+msgid "Введите название сделки"
+msgstr "Enter deal name"
+
+#: .\trading\forms.py:26
+
+msgid "Комментарий (необязательно)"
+msgstr "Comment (optional)"
+
+#: .\trading\forms.py:31
+
+msgid "Название сделки"
+msgstr "Deal name"
+
+#: .\trading\forms.py:32
+
+msgid "Тип операции"
+msgstr "Operation type"
+
+#: .\trading\forms.py:33 .\trading\forms.py:145
+#: .\trading\templates\trading\trading_detail.html:473
+
+msgid "Комментарий"
+msgstr "Comment"
+
+#: .\trading\forms.py:53
+
+msgid "Сколько заказано"
+msgstr "Requested quantity"
+
+#: .\trading\forms.py:59
+
+msgid "Сколько выполнено сейчас"
+msgstr "Fulfilled quantity now"
+
+#: .\trading\forms.py:67 .\trading\templates\trading\trading_detail.html:501
+#: .\trading\templates\trading\trading_fulfill.html:34
+#: .\trading\templates\trading\trading_list.html:1036
+
+msgid "Заказано"
+msgstr "Ordered"
+
+#: .\trading\forms.py:68 .\trading\templates\trading\trading_detail.html:506
+#: .\trading\templates\trading\trading_detail.html:524
+#: .\trading\templates\trading\trading_fulfill.html:35
+#: .\trading\templates\trading\trading_fulfill.html:105
+#: .\trading\templates\trading\trading_list.html:1041
+#: .\trading\templates\trading\trading_list.html:1059
+
+msgid "Выполнено"
+msgstr "Fulfilled"
+
+#: .\trading\forms.py:85 .\trading\forms.py:91
+
+msgid "Для товара в штуках нельзя вводить дробное количество."
+msgstr "Fractional quantity is not allowed for products measured in pieces."
+
+#: .\trading\forms.py:118
+
+msgid "Файл"
+msgstr "File"
+
+#: .\trading\forms.py:140
+
+msgid "Напишите комментарий..."
+msgstr "Write a comment..."
+
+#: .\trading\templates\trading\admin_trading_history.html:7
+
+msgid "История операций (Админ)"
+msgstr "Operations history (Admin)"
+
+#: .\trading\templates\trading\admin_trading_history.html:12
+
+msgid "Все действия менеджеров"
+msgstr "All manager actions"
+
+#: .\trading\templates\trading\admin_trading_history.html:20
+#: .\warehouses\templates\warehouse_transfer_history.html:424
+
+msgid "Дата"
+msgstr "Date"
+
+#: .\trading\templates\trading\admin_trading_history.html:21
+
+msgid "Кто сделал"
+msgstr "Performed by"
+
+#: .\trading\templates\trading\admin_trading_history.html:22
+#: .\trading\templates\trading\trading_detail.html:457
+#: .\trading\templates\trading\trading_fulfill.html:19
+
+msgid "Тип"
+msgstr "Type"
+
+#: .\trading\templates\trading\admin_trading_history.html:26
+
+msgid "Было"
+msgstr "Before"
+
+#: .\trading\templates\trading\admin_trading_history.html:27
+
+msgid "Стало"
+msgstr "After"
+
+#: .\trading\templates\trading\admin_trading_history.html:45
+#: .\trading\templates\trading\trading_detail.html:460
+#: .\trading\templates\trading\trading_list.html:1012
+
+msgid "Покупка"
+msgstr "Purchase"
+
+#: .\trading\templates\trading\admin_trading_history.html:49
+#: .\trading\templates\trading\trading_detail.html:462
+#: .\trading\templates\trading\trading_list.html:1014
+
+msgid "Продажа"
+msgstr "Sale"
+
+#: .\trading\templates\trading\admin_trading_history.html:71
+
+msgid "История пуста"
+msgstr "History is empty"
+
+#: .\trading\templates\trading\trading_add.html:5
+#: .\trading\templates\trading\trading_add.html:439
+
+msgid "Редактирование сделки"
+msgstr "Edit operation"
+
+#: .\trading\templates\trading\trading_add.html:5
+#: .\trading\templates\trading\trading_add.html:439
+
+msgid "Создание сделки"
+msgstr "Create operation"
+
+#: .\trading\templates\trading\trading_add.html:437
+#: .\trading\templates\trading\trading_detail.html:416
+#: .\trading\templates\trading\trading_list.html:880
+
+msgid "Операции склада"
+msgstr "Stock / Warehouses"
+
+#: .\trading\templates\trading\trading_add.html:442
+
+msgid ""
+"Заполните основные данные, добавьте товары, склад и количество выполнения."
+msgstr "Fill in the main information, add products, warehouse and fulfillment quantity."
+
+#: .\trading\templates\trading\trading_add.html:450
+
+msgid "Изменить данные"
+msgstr "Edit information"
+
+#: .\trading\templates\trading\trading_add.html:450
+
+msgid "Новая сделка"
+msgstr "New operation"
+
+#: .\trading\templates\trading\trading_add.html:452
+
+msgid "Основная информация по сделке"
+msgstr "Basic operation information"
+
+#: .\trading\templates\trading\trading_add.html:481
+
+msgid "Прикрепить файлы"
+msgstr "Attach files"
+
+#: .\trading\templates\trading\trading_add.html:482
+
+msgid "Добавьте документы, фото или накладные"
+msgstr "Add documents, photos, or delivery notes"
+
+#: .\trading\templates\trading\trading_add.html:508
+
+msgid "Товары в сделке"
+msgstr "Products in operation"
+
+#: .\trading\templates\trading\trading_add.html:509
+
+msgid "Выберите товар, склад и количество"
+msgstr "Select product, warehouse and quantity"
+
+#: .\trading\templates\trading\trading_add.html:521
+#: .\trading\templates\trading\trading_add.html:572
+#: .\trading\templates\trading\trading_detail.html:577
+#: .\trading\templates\trading\trading_detail.html:596
+
+msgid "Удалить"
+msgstr "Remove"
+
+#: .\trading\templates\trading\trading_add.html:550
+#: .\trading\templates\trading\trading_add.html:586
+#: .\warehouses\templates\warehouse_detail.html:286
+
+msgid "Остаток на складе"
+msgstr "Warehouse stock"
+
+#: .\trading\templates\trading\trading_add.html:552
+#: .\trading\templates\trading\trading_add.html:588
+#: .\trading\templates\trading\trading_add.html:914
+
+msgid "Выберите товар и склад"
+msgstr "Select product and warehouse"
+
+#: .\trading\templates\trading\trading_add.html:564
+
+msgid "Добавить товар"
+msgstr "Add product"
+
+#: .\trading\templates\trading\trading_add.html:600
+
+msgid "Назад к списку"
+msgstr "Back to list"
+
+#: .\trading\templates\trading\trading_add.html:625
+
+msgid "Позиция"
+msgstr "Item"
+
+#: .\trading\templates\trading\trading_add.html:672
+
+msgid "Начните писать для поиска..."
+msgstr "Start typing to search..."
+
+#: .\trading\templates\trading\trading_add.html:700
+
+msgid "Ничего не найдено"
+msgstr "Nothing found"
+
+#: .\trading\templates\trading\trading_add.html:764
+#: .\warehouses\templates\warehouse_transfer_form.html:218
+
+msgid "Нажмите и начните писать название товара..."
+msgstr "Click and start typing product name..."
+
+#: .\trading\templates\trading\trading_add.html:769
+
+msgid "Нажмите и начните писать склад..."
+msgstr "Click and start typing warehouse..."
+
+#: .\trading\templates\trading\trading_add.html:899
+
+msgid "кол-во"
+msgstr "quantity"
+
+#: .\trading\templates\trading\trading_add.html:918
+
+msgid "Загрузка..."
+msgstr "Loading..."
+
+#: .\trading\templates\trading\trading_add.html:935
+
+msgid "Ошибка загрузки"
+msgstr "Loading error"
+
+#: .\trading\templates\trading\trading_detail.html:4
+
+msgid "Сделка"
+msgstr "Deal"
+
+#: .\trading\templates\trading\trading_detail.html:435
+
+msgid "Детальный просмотр сделки, позиций, документов и комментариев."
+msgstr "Detailed view of the deal, items, documents, and comments."
+
+#: .\trading\templates\trading\trading_detail.html:441
+#: .\trading\templates\trading\trading_list.html:1020
+#: .\trading\templates\trading\trading_list.html:1064
+#: .\trading\templates\trading\trading_list.html:1069
+
+msgid "Завершено"
+msgstr "Completed"
+
+#: .\trading\templates\trading\trading_detail.html:443
+#: .\trading\templates\trading\trading_detail.html:522
+#: .\trading\templates\trading\trading_list.html:1018
+
+msgid "В процессе"
+msgstr "In progress"
+
+#: .\trading\templates\trading\trading_detail.html:452
+#: .\trading\templates\trading\trading_fulfill.html:14
+
+msgid "Название"
+msgstr "Name"
+
+#: .\trading\templates\trading\trading_detail.html:453
+
+msgid "Без названия"
+msgstr "Untitled"
+
+#: .\trading\templates\trading\trading_detail.html:468
+
+msgid "Пользователь"
+msgstr "User"
+
+#: .\trading\templates\trading\trading_detail.html:474
+
+msgid "—"
+msgstr "—"
+
+#: .\trading\templates\trading\trading_detail.html:478
+
+msgid "Создано"
+msgstr "Created"
+
+#: .\trading\templates\trading\trading_detail.html:483
+
+msgid "Обновлено"
+msgstr "Updated"
+
+#: .\trading\templates\trading\trading_detail.html:490
+#: .\trading\templates\trading\trading_fulfill.html:26
+
+msgid "Позиции"
+msgstr "Items"
+
+#: .\trading\templates\trading\trading_detail.html:512
+
+msgid "Остаток"
+msgstr "Remaining"
+
+#: .\trading\templates\trading\trading_detail.html:520
+
+msgid "Не выполнено"
+msgstr "Not fulfilled"
+
+#: .\trading\templates\trading\trading_detail.html:529
+
+msgid "Нет позиций сделки"
+msgstr "No deal items"
+
+#: .\trading\templates\trading\trading_detail.html:534
+
+msgid "Документы"
+msgstr "Documents"
+
+#: .\trading\templates\trading\trading_detail.html:545
+
+msgid "Нет документов"
+msgstr "No documents"
+
+#: .\trading\templates\trading\trading_detail.html:550
+
+msgid "Комментарии"
+msgstr "Comments"
+
+#: .\trading\templates\trading\trading_detail.html:558
+
+msgid "Добавить комментарий"
+msgstr "Add comment"
+
+#: .\trading\templates\trading\trading_detail.html:575
+
+msgid "Удалить комментарий?"
+msgstr "Delete comment?"
+
+#: .\trading\templates\trading\trading_detail.html:582
+
+msgid "Комментариев пока нет"
+msgstr "No comments yet"
+
+#: .\trading\templates\trading\trading_detail.html:589
+
+msgid "Редактировать"
+msgstr "Edit"
+
+#: .\trading\templates\trading\trading_detail.html:602
+#: .\trading\templates\trading\trading_fulfill.html:4
+#: .\trading\templates\trading\trading_fulfill.html:7
+
+msgid "Дополнить заказ"
+msgstr "Fulfill order"
+
+#: .\trading\templates\trading\trading_detail.html:607
+#: .\trading\templates\trading\trading_fulfill.html:117
+#: .\trading\templates\trading\trading_list.html:1129
+#: .\trading\templates\trading\trading_list.html:1133
+#: .\warehouses\templates\warehouse_transfer_form.html:259
+
+msgid "Назад"
+msgstr "Back"
+
+#: .\trading\templates\trading\trading_fulfill.html:10
+
+msgid "Информация"
+msgstr "Information"
+
+#: .\trading\templates\trading\trading_fulfill.html:36
+
+msgid "Осталось"
+msgstr "Left"
+
+#: .\trading\templates\trading\trading_fulfill.html:37
+#: .\trading\templates\trading\trading_fulfill.html:92
+
+msgid "Дополнить"
+msgstr "Fulfill"
+
+#: .\trading\templates\trading\trading_list.html:4
+#: .\users\templates\base_manager.html:627
+
+msgid "Сделки"
+msgstr "Deals"
+
+#: .\trading\templates\trading\trading_list.html:883
+
+msgid "Просмотр покупок, продаж, статусов выполнения и позиций по сделкам."
+msgstr "View purchases, sales, fulfillment statuses, and deal items."
+
+#: .\trading\templates\trading\trading_list.html:889
+
+msgid "Создать сделку"
+msgstr "Create deal"
+
+#: .\trading\templates\trading\trading_list.html:916
+
+msgid "Поиск по названию сделки, товару, складу или комментарию..."
+msgstr "Search by deal name, product, warehouse, or comment..."
+
+#: .\trading\templates\trading\trading_list.html:930
+#: .\users\templates\users\manager_dashboard.html:610
+
+msgid "Все"
+msgstr "All"
+
+#: .\trading\templates\trading\trading_list.html:935
+
+msgid "Покупки"
+msgstr "Purchases"
+
+#: .\trading\templates\trading\trading_list.html:940
+#: .\users\templates\users\manager_dashboard.html:619
+#: .\users\templates\users\manager_dashboard.html:720
+
+msgid "Продажи"
+msgstr "Sales"
+
+#: .\trading\templates\trading\trading_list.html:955
+
+msgid "С даты"
+msgstr "From date"
+
+#: .\trading\templates\trading\trading_list.html:960
+
+msgid "По дату"
+msgstr "To date"
+
+#: .\trading\templates\trading\trading_list.html:967
+
+msgid "Сначала новые"
+msgstr "Newest first"
+
+#: .\trading\templates\trading\trading_list.html:968
+
+msgid "Сначала старые"
+msgstr "Oldest first"
+
+#: .\trading\templates\trading\trading_list.html:969
+
+msgid "Название А-Я"
+msgstr "Name A-Z"
+
+#: .\trading\templates\trading\trading_list.html:970
+
+msgid "Название Я-А"
+msgstr "Name Z-A"
+
+#: .\trading\templates\trading\trading_list.html:980
+
+msgid "Сбросить"
+msgstr "Reset"
+
+#: .\trading\templates\trading\trading_list.html:993
+
+msgid "Открыть сделку"
+msgstr "Open deal"
+
+#: .\trading\templates\trading\trading_list.html:993
+
+msgid "без названия"
+msgstr "untitled"
+
+#: .\trading\templates\trading\trading_list.html:1079
+
+msgid "ещё"
+msgstr "more"
+
+#: .\trading\templates\trading\trading_list.html:1079
+
+msgid "позиций"
+msgstr "items"
+
+#: .\trading\templates\trading\trading_list.html:1091
+#: .\users\templates\warehouse_list.html:305
+
+msgid "Открыть"
+msgstr "Open"
+
+#: .\trading\templates\trading\trading_list.html:1100
+
+msgid "Нет записей"
+msgstr "No records"
+
+#: .\trading\templates\trading\trading_list.html:1101
+
+msgid "Пока здесь нет сделок по выбранному фильтру."
+msgstr "There are no deals for the selected filter yet."
+
+#: .\trading\templates\trading\trading_list.html:1115
+
+msgid "Страница"
+msgstr "Page"
+
+#: .\trading\templates\trading\trading_list.html:1117
+
+msgid "из"
+msgstr "of"
+
+#: .\trading\templates\trading\trading_list.html:1124
+
+msgid "Первая страница"
+msgstr "First page"
+
+#: .\trading\templates\trading\trading_list.html:1150
+#: .\trading\templates\trading\trading_list.html:1158
+
+msgid "Вперёд"
+msgstr "Next"
+
+#: .\trading\templates\trading\trading_list.html:1154
+
+msgid "Последняя страница"
+msgstr "Last page"
+
+#: .\users\templates\base_manager.html:7
+#: .\users\templates\users\manager_dashboard.html:4
+#: .\users\templates\users\manager_dashboard.html:549
+
+msgid "Панель менеджера"
+msgstr "Manager Dashboard"
+
+#: .\users\templates\base_manager.html:616
+
+msgid "Добро пожаловать"
+msgstr "Welcome"
+
+#: .\users\templates\base_manager.html:623
+
+msgid "Панель"
+msgstr "Dashboard"
+
+#: .\users\templates\base_manager.html:631
+
+msgid "Заказы"
+msgstr "Orders"
+
+#: .\users\templates\base_manager.html:636
+
+msgid "История"
+msgstr "History"
+
+#: .\users\templates\base_manager.html:641
+#: .\users\templates\users\manager_dashboard.html:569
+#: .\users\templates\warehouse_list.html:271
+
+msgid "Склады"
+msgstr "Warehouses"
+
+#: .\users\templates\base_manager.html:649
+#: .\warehouses\templates\warehouse_transfer_history.html:357
+
+msgid "Перемещения"
+msgstr "Transfers"
+
+#: .\users\templates\base_manager.html:654
+
+msgid "Выбор языка"
+msgstr "Language selector"
+
+#: .\users\templates\base_manager.html:687
+
+msgid "Поиск по системе..."
+msgstr "Search in system..."
+
+#: .\users\templates\base_manager.html:688
+
+msgid "Поиск"
+msgstr "Search"
+
+#: .\users\templates\base_manager.html:693
+
+msgid "Выход"
+msgstr "Logout"
+
+# Login page compatibility
+#: .\users\templates\login.html:6
+
+msgid "Login"
+msgstr "Login"
+
+#: .\users\templates\login.html:184
+
+msgid "Login to system"
+msgstr "Login to system"
+
+#: .\users\templates\login.html:188
+
+msgid "Invalid username or password"
+msgstr "Invalid username or password"
+
+#: .\users\templates\login.html:196
+
+msgid "Username"
+msgstr "Username"
+
+#: .\users\templates\login.html:200
+
+msgid "Password"
+msgstr "Password"
+
+#: .\users\templates\login.html:203
+
+msgid "Sign in"
+msgstr "Sign in"
+
+#: .\users\templates\users\manager_dashboard.html:553
+
+msgid "Сегодня"
+msgstr "Today"
+
+#: .\users\templates\users\manager_dashboard.html:564
+
+msgid "Всего товаров в системе"
+msgstr "Total products in the system"
+
+#: .\users\templates\users\manager_dashboard.html:573
+
+msgid "Зарегистрированные локации"
+msgstr "Registered locations"
+
+#: .\users\templates\users\manager_dashboard.html:578
+
+msgid "Остатки"
+msgstr "Stock"
+
+#: .\users\templates\users\manager_dashboard.html:582
+
+msgid "Общее количество на складах"
+msgstr "Total quantity in warehouses"
+
+#: .\users\templates\users\manager_dashboard.html:587
+
+msgid "Период"
+msgstr "Period"
+
+#: .\users\templates\users\manager_dashboard.html:593
+
+msgid "Дней в текущем отчёте"
+msgstr "Days in current report"
+
+#: .\users\templates\users\manager_dashboard.html:601
+
+msgid "Движение товаров"
+msgstr "Product movement"
+
+#: .\users\templates\users\manager_dashboard.html:602
+
+msgid "Продажи и закупки за выбранный период"
+msgstr "Sales and purchases for the selected period"
+
+#: .\users\templates\users\manager_dashboard.html:606
+
+msgid "7 дней"
+msgstr "7 days"
+
+#: .\users\templates\users\manager_dashboard.html:607
+
+msgid "30 дней"
+msgstr "30 days"
+
+#: .\users\templates\users\manager_dashboard.html:608
+
+msgid "90 дней"
+msgstr "90 days"
+
+#: .\users\templates\users\manager_dashboard.html:609
+
+msgid "Год"
+msgstr "Year"
+
+#: .\users\templates\users\manager_dashboard.html:623
+#: .\users\templates\users\manager_dashboard.html:721
+
+msgid "Закупки"
+msgstr "Purchases"
+
+#: .\users\templates\users\manager_dashboard.html:635
+
+msgid "Продажи за период"
+msgstr "Sales for period"
+
+#: .\users\templates\users\manager_dashboard.html:640
+
+msgid "Закупки за период"
+msgstr "Purchases for period"
+
+#: .\users\templates\users\manager_dashboard.html:645
+
+msgid "Общее движение"
+msgstr "Total movement"
+
+#: .\users\templates\users\manager_dashboard.html:656
+
+msgid "Топ товаров"
+msgstr "Top products"
+
+#: .\users\templates\users\manager_dashboard.html:657
+
+msgid "Самые продаваемые позиции"
+msgstr "Best-selling items"
+
+#: .\users\templates\users\manager_dashboard.html:671
+
+msgid "продажи"
+msgstr "sales"
+
+#: .\users\templates\users\manager_dashboard.html:682
+
+msgid "Пока нет данных по продажам."
+msgstr "No sales data yet."
+
+#: .\users\templates\users\manager_dashboard.html:689
+
+msgid "Сводка"
+msgstr "Summary"
+
+#: .\users\templates\users\manager_dashboard.html:690
+
+msgid "Ключевые показатели системы"
+msgstr "Key system indicators"
+
+#: .\users\templates\users\manager_dashboard.html:696
+
+msgid "Общий складской объём"
+msgstr "Total warehouse volume"
+
+#: .\users\templates\users\manager_dashboard.html:698
+
+msgid "сумма всех остатков"
+msgstr "sum of all stock balances"
+
+#: .\users\templates\users\manager_dashboard.html:702
+
+msgid "Средняя загрузка склада"
+msgstr "Average warehouse load"
+
+#: .\users\templates\users\manager_dashboard.html:704
+
+msgid "остатки / склады"
+msgstr "stock / warehouses"
+
+#: .\users\templates\users\manager_dashboard.html:708
+
+msgid "Активность графика"
+msgstr "Chart activity"
+
+#: .\users\templates\users\manager_dashboard.html:710
+
+msgid "продажи + закупки"
+msgstr "sales + purchases"
+
+#: .\users\templates\warehouse_list.html:267
+
+msgid "Управление складами"
+msgstr "Warehouse management"
+
+#: .\users\templates\warehouse_list.html:275
+
+msgid "Список всех зарегистрированных складов и базовая информация по ним."
+msgstr "List of all registered warehouses and basic information about them."
+
+#: .\users\templates\warehouse_list.html:281
+
+msgid "Создать склад"
+msgstr "Create warehouse"
+
+#: .\users\templates\warehouse_list.html:299
+
+msgid "Складская локация"
+msgstr "Warehouse location"
+
+#: .\users\templates\warehouse_list.html:312
+
+msgid "Количество всех товаров"
+msgstr "Total products"
+
+#: .\users\templates\warehouse_list.html:322
+
+msgid "Создан"
+msgstr "Created"
+
+#: .\users\templates\warehouse_list.html:337
+
+msgid "Склады еще не созданы"
+msgstr "Warehouses have not been created yet"
+
+#: .\users\templates\warehouse_list.html:341
+
+msgid "Добавьте первый склад, чтобы начать вести остатки товаров."
+msgstr "Add your first warehouse to start inventory management."
+
+#: .\users\templates\warehouse_list.html:348
+
+msgid "Создать первый склад"
+msgstr "Create first warehouse"
+
+#: .\warehouses\templates\warehouse_detail.html:248
+
+msgid "Остатки товаров на выбранном складе"
+msgstr "Product stock in the selected warehouse"
+
+#: .\warehouses\templates\warehouse_detail.html:253
+#: .\warehouses\templates\warehouse_transfer_form.html:258
+
+msgid "Переместить товар"
+msgstr "Transfer product"
+
+#: .\warehouses\templates\warehouse_detail.html:257
+#: .\warehouses\templates\warehouse_transfer_history.html:374
+
+msgid "История перемещений"
+msgstr "Transfer history"
+
+#: .\warehouses\templates\warehouse_detail.html:265
+
+msgid "Поиск товара..."
+msgstr "Search product..."
+
+#: .\warehouses\templates\warehouse_detail.html:309
+
+msgid "На складе нет товаров"
+msgstr "There are no products in this warehouse"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:200
+
+msgid "Перемещение товара между складами"
+msgstr "Product transfer between warehouses"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:201
+
+msgid "Выберите товар, склад отправления, склад получения и количество."
+msgstr "Select product, source warehouse, destination warehouse, and quantity."
+
+#: .\warehouses\templates\warehouse_transfer_form.html:232
+
+msgid "Со склада"
+msgstr "From warehouse"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:241
+
+msgid "На склад"
+msgstr "To warehouse"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:251
+
+msgid "Нельзя передать 0 или меньше. Укажите количество больше 0."
+msgstr "You cannot transfer 0 or less. Enter a quantity greater than 0."
+
+#: .\warehouses\templates\warehouse_transfer_form.html:318
+
+msgid "Товар не найден"
+msgstr "Product not found"
+
+#: .\warehouses\templates\warehouse_transfer_form.html:373
+
+msgid "Не удалось загрузить остаток товара"
+msgstr "Could not load product stock"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:356
+
+msgid "Перемещения склада"
+msgstr "Warehouse transfers"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:359
+
+msgid "История перемещений товаров между складами."
+msgstr "History of product transfers between warehouses."
+
+#: .\warehouses\templates\warehouse_transfer_history.html:366
+
+msgid "Создать перемещение"
+msgstr "Create transfer"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:375
+
+msgid "Товар, маршрут, количество и дата операции"
+msgstr "Product, route, quantity, and operation date"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:392
+
+msgid "Откуда"
+msgstr "From"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:399
+
+msgid "Куда"
+msgstr "To"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:413
+
+msgid "Кто"
+msgstr "Who"
+
+#: .\warehouses\templates\warehouse_transfer_history.html:433
+
+msgid "Пока нет перемещений"
+msgstr "No transfers yet"
+
+msgid "История сделок"
+msgstr "Deal history"
+
+msgid "Описание для этого товара пока не добавлено."
+msgstr "No description has been added for this product yet."
+
+msgid "Остатки по складам"
+msgstr "Warehouse stock"
+
+msgid "Нет данных по остаткам на складах."
+msgstr "No warehouse stock data available."

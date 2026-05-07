@@ -1,32 +1,39 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
 
 {% block manager_content %}
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h1 style="margin:0;">История операций (Админ)</h1>
+        <h1 style="margin:0;">
+            {% trans "История операций (Админ)" %}
+        </h1>
     </div>
 
     <div class="module">
-        <h2>Все действия менеджеров</h2>
+        <h2>{% trans "Все действия менеджеров" %}</h2>
+
         <div class="module-content">
 
             {% if tradings %}
                 <table>
                     <thead>
                         <tr>
-                            <th>Дата</th>
-                            <th>Кто сделал</th>
-                            <th>Тип</th>
-                            <th>Товар</th>
-                            <th>Склад</th>
-                            <th>Количество</th>
-                            <th>Было</th>
-                            <th>Стало</th>
+                            <th>{% trans "Дата" %}</th>
+                            <th>{% trans "Кто сделал" %}</th>
+                            <th>{% trans "Тип" %}</th>
+                            <th>{% trans "Товар" %}</th>
+                            <th>{% trans "Склад" %}</th>
+                            <th>{% trans "Количество" %}</th>
+                            <th>{% trans "Было" %}</th>
+                            <th>{% trans "Стало" %}</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         {% for trading in tradings %}
                             <tr>
-                                <td>{{ trading.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    {{ trading.created_at|date:"d.m.Y H:i" }}
+                                </td>
 
                                 <td>
                                     {{ trading.user.username }}
@@ -35,11 +42,11 @@
                                 <td>
                                     {% if trading.trade_type == "purchase" %}
                                         <span style="color:green; font-weight:bold;">
-                                            Покупка
+                                            {% trans "Покупка" %}
                                         </span>
                                     {% else %}
                                         <span style="color:#b94a48; font-weight:bold;">
-                                            Продажа
+                                            {% trans "Продажа" %}
                                         </span>
                                     {% endif %}
                                 </td>
@@ -61,7 +68,7 @@
                 </table>
 
             {% else %}
-                <p>История пуста</p>
+                <p>{% trans "История пуста" %}</p>
             {% endif %}
 
         </div>

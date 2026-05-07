@@ -1,5 +1,6 @@
 import uuid
 from django.db import models
+from django.utils.translation import gettext_lazy as _
 
 
 class Product(models.Model):
@@ -7,8 +8,8 @@ class Product(models.Model):
     UNIT_KG = "kg"
 
     UNIT_CHOICES = (
-        (UNIT_PIECE, "шт"),
-        (UNIT_KG, "кг"),
+        (UNIT_PIECE, _("шт")),
+        (UNIT_KG, _("кг")),
     )
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -19,7 +20,7 @@ class Product(models.Model):
         max_length=10,
         choices=UNIT_CHOICES,
         default=UNIT_PIECE,
-        verbose_name="Единица измерения",
+        verbose_name=_("Единица измерения"),
     )
     user_id = models.UUIDField(blank=True, null=True)
 

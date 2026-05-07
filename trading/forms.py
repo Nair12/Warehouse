@@ -2,6 +2,7 @@
 
 from django import forms
 from django.forms import inlineformset_factory
+from django.utils.translation import gettext_lazy as _
 
 from .models import Trading, TradingItem, TradingAttachment, TradingComment
 
@@ -14,22 +15,22 @@ class TradingForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'form-control',
-                'placeholder': 'Введите название сделки'
+                'placeholder': _('Введите название сделки'),
             }),
             'trade_type': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
             }),
             'comment': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Комментарий (необязательно)'
-            })
+                'placeholder': _('Комментарий (необязательно)'),
+            }),
         }
 
         labels = {
-            'name': 'Название сделки',
-            'trade_type': 'Тип операции',
-            'comment': 'Комментарий',
+            'name': _('Название сделки'),
+            'trade_type': _('Тип операции'),
+            'comment': _('Комментарий'),
         }
 
 
@@ -40,31 +41,31 @@ class TradingItemForm(forms.ModelForm):
 
         widgets = {
             'product': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
             }),
             'warehouse': forms.Select(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
             }),
             'requested_quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': 1,
-                'step': '0.01',
-                'placeholder': 'Сколько заказано'
+                'step': '1',
+                'placeholder': _('Сколько заказано'),
             }),
             'fulfilled_quantity': forms.NumberInput(attrs={
                 'class': 'form-control',
                 'min': 0,
-                'step': '0.01',
-                'placeholder': 'Сколько выполнено сейчас',
-                'value': 0
+                'step': '1',
+                'placeholder': _('Сколько выполнено сейчас'),
+                'value': 0,
             }),
         }
 
         labels = {
-            'product': 'Товар',
-            'warehouse': 'Склад',
-            'requested_quantity': 'Заказано',
-            'fulfilled_quantity': 'Выполнено',
+            'product': _('Товар'),
+            'warehouse': _('Склад'),
+            'requested_quantity': _('Заказано'),
+            'fulfilled_quantity': _('Выполнено'),
         }
 
     def clean(self):
@@ -81,13 +82,13 @@ class TradingItemForm(forms.ModelForm):
             if requested_quantity is not None and requested_quantity != int(requested_quantity):
                 self.add_error(
                     'requested_quantity',
-                    'Для товара в штуках нельзя вводить дробное количество.'
+                    _('Для товара в штуках нельзя вводить дробное количество.'),
                 )
 
             if fulfilled_quantity is not None and fulfilled_quantity != int(fulfilled_quantity):
                 self.add_error(
                     'fulfilled_quantity',
-                    'Для товара в штуках нельзя вводить дробное количество.'
+                    _('Для товара в штуках нельзя вводить дробное количество.'),
                 )
 
         return cleaned_data
@@ -98,7 +99,7 @@ TradingItemFormSet = inlineformset_factory(
     TradingItem,
     form=TradingItemForm,
     extra=1,
-    can_delete=True
+    can_delete=True,
 )
 
 
@@ -109,12 +110,12 @@ class TradingAttachmentForm(forms.ModelForm):
 
         widgets = {
             'file': forms.ClearableFileInput(attrs={
-                'class': 'form-control'
+                'class': 'form-control',
             }),
         }
 
         labels = {
-            'file': 'Файл',
+            'file': _('Файл'),
         }
 
 
@@ -123,7 +124,7 @@ AttachmentFormSet = inlineformset_factory(
     TradingAttachment,
     form=TradingAttachmentForm,
     extra=3,
-    can_delete=True
+    can_delete=True,
 )
 
 
@@ -136,10 +137,10 @@ class TradingCommentForm(forms.ModelForm):
             'text': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
-                'placeholder': 'Напишите комментарий...'
-            })
+                'placeholder': _('Напишите комментарий...'),
+            }),
         }
 
         labels = {
-            'text': 'Комментарий',
+            'text': _('Комментарий'),
         }

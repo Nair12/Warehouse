@@ -1,6 +1,7 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
 
-{% block title %}Сделка #{{ trading.id }}{% endblock %}
+{% block title %}{% trans "Сделка" %} #{{ trading.id }}{% endblock %}
 
 {% block manager_content %}
 
@@ -412,7 +413,7 @@
 <section class="detail-hero {% if trading.trade_type == 'purchase' %}purchase{% else %}sell{% endif %}">
     <div class="detail-hero-content">
         <div class="detail-title-block">
-            <div class="detail-eyebrow">📑 Операции склада</div>
+            <div class="detail-eyebrow">📑 {% trans "Операции склада" %}</div>
             <h1 class="title">
                 {{ trading.name|default:"Без названия" }}
                 <span style="
@@ -431,15 +432,15 @@
                 </span>
             </h1>
             <p class="detail-subtitle">
-                Детальный просмотр сделки, позиций, документов и комментариев.
+                {% trans "Детальный просмотр сделки, позиций, документов и комментариев." %}
             </p>
         </div>
 
         <div class="detail-status-block">
             {% if trading.status == "completed" %}
-                <span class="detail-status-chip done">✔ Завершено</span>
+                <span class="detail-status-chip done">✔ {% trans "Завершено" %}</span>
             {% else %}
-                <span class="detail-status-chip pending">В процессе</span>
+                <span class="detail-status-chip pending">{% trans "В процессе" %}</span>
             {% endif %}
         </div>
     </div>
@@ -448,45 +449,45 @@
 <div class="card">
     <div class="grid">
         <div class="info-cell">
-            <div class="label">Название</div>
-            <div class="value">{{ trading.name|default:"Без названия" }}</div>
+            <div class="label">{% trans "Название" %}</div>
+            <div class="value">{{ trading.name|default:_("Без названия") }}</div>
         </div>
 
         <div class="info-cell">
-            <div class="label">Тип</div>
+            <div class="label">{% trans "Тип" %}</div>
             <div class="value">
                 {% if trading.trade_type == "purchase" %}
-                    <span class="trade-type-chip purchase">Покупка</span>
+                    <span class="trade-type-chip purchase">{% trans "Покупка" %}</span>
                 {% else %}
-                    <span class="trade-type-chip sell">Продажа</span>
+                    <span class="trade-type-chip sell">{% trans "Продажа" %}</span>
                 {% endif %}
             </div>
         </div>
 
         <div class="info-cell">
-            <div class="label">Пользователь</div>
+            <div class="label">{% trans "Пользователь" %}</div>
             <div class="value">{{ trading.user.username }}</div>
         </div>
 
         <div class="info-cell">
-            <div class="label">Комментарий</div>
-            <div class="value comment-value">{{ trading.comment|default:"—" }}</div>
+            <div class="label">{% trans "Комментарий" %}</div>
+            <div class="value comment-value">{{ trading.comment|default:_("—") }}</div>
         </div>
 
         <div class="info-cell">
-            <div class="label">Создано</div>
+            <div class="label">{% trans "Создано" %}</div>
             <div class="value">{{ trading.created_at|date:"d.m.Y H:i" }}</div>
         </div>
 
         <div class="info-cell">
-            <div class="label">Обновлено</div>
+            <div class="label">{% trans "Обновлено" %}</div>
             <div class="value">{{ trading.updated_at|date:"d.m.Y H:i" }}</div>
         </div>
     </div>
 </div>
 
 <div class="card">
-    <div class="section-title">Позиции</div>
+    <div class="section-title">{% trans "Позиции" %}</div>
 
     {% for item in grouped_items %}
     <div class="item-card">
@@ -497,18 +498,18 @@
 
         <div class="qty-block">
             <span class="qty-chip qty-requested">
-                <span class="qty-label">Заказано</span>
+                <span class="qty-label">{% trans "Заказано" %}</span>
                 {{ item.requested_quantity }} {{ item.product.get_unit_display }}
             </span>
 
             <span class="qty-chip qty-fulfilled">
-                <span class="qty-label">Выполнено</span>
+                <span class="qty-label">{% trans "Выполнено" %}</span>
                 {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}
             </span>
 
             {% if item.remaining_quantity > 0 %}
                 <span class="qty-chip qty-remaining">
-                    <span class="qty-label">Остаток</span>
+                    <span class="qty-label">{% trans "Остаток" %}</span>
                     {{ item.remaining_quantity }} {{ item.product.get_unit_display }}
                 </span>
             {% endif %}
@@ -516,21 +517,21 @@
 
         <div>
             {% if item.remaining_quantity == item.requested_quantity %}
-                <span class="badge fail">Не выполнено</span>
+                <span class="badge fail">{% trans "Не выполнено" %}</span>
             {% elif item.remaining_quantity > 0 %}
-                <span class="badge pending">В процессе</span>
+                <span class="badge pending">{% trans "В процессе" %}</span>
             {% else %}
-                <span class="badge done">Выполнено</span>
+                <span class="badge done">{% trans "Выполнено" %}</span>
             {% endif %}
         </div>
     </div>
     {% empty %}
-        <p>Нет позиций сделки</p>
+        <p>{% trans "Нет позиций сделки" %}</p>
     {% endfor %}
 </div>
 
 <div class="card">
-    <div class="section-title">Документы</div>
+    <div class="section-title">{% trans "Документы" %}</div>
 
     {% if trading.attachments.all %}
         {% for attachment in trading.attachments.all %}
@@ -541,12 +542,12 @@
             </div>
         {% endfor %}
     {% else %}
-        <p>Нет документов</p>
+        <p>{% trans "Нет документов" %}</p>
     {% endif %}
 </div>
 
 <div class="card">
-    <div class="section-title">Комментарии</div>
+    <div class="section-title">{% trans "Комментарии" %}</div>
 
     <div class="comments-box">
         <form method="post" class="comment-form">
@@ -554,7 +555,7 @@
             {{ comment_form.text }}
 
             <div class="comment-form-footer">
-                <button type="submit" class="btn btn-green">💬 Добавить комментарий</button>
+                <button type="submit" class="btn btn-green">💬 {% trans "Добавить комментарий" %}</button>
             </div>
         </form>
     </div>
@@ -571,39 +572,39 @@
                 <form method="post"
                       action="{% url 'trading_comment_delete' trading.id c.id %}"
                       class="comment-delete-form"
-                      onsubmit="return confirm('Удалить комментарий?');">
+                      onsubmit="return confirm('{% trans 'Удалить комментарий?' %}');">
                     {% csrf_token %}
-                    <button type="submit" class="comment-delete-btn">Удалить</button>
+                    <button type="submit" class="comment-delete-btn">{% trans "Удалить" %}</button>
                 </form>
             {% endif %}
         </div>
     {% empty %}
-        <p>Комментариев пока нет</p>
+        <p>{% trans "Комментариев пока нет" %}</p>
     {% endfor %}
 </div>
 
 <div class="actions">
 
     {% if trading.status == "pending" %}
-        <a href="{% url 'trading_update' trading.id %}" class="btn btn-blue">Редактировать</a>
+        <a href="{% url 'trading_update' trading.id %}" class="btn btn-blue">{% trans "Редактировать" %}</a>
     {% endif %}
 
     {% if request.user.role == "manager" and not trading.can_be_modified %}
         {# менеджер после 24 часов не видит удаление #}
     {% else %}
         <a href="{% url 'trading_delete' trading.id %}" class="btn btn-red">
-            Удалить
+            {% trans "Удалить" %}
         </a>
     {% endif %}
 
     {% if has_remaining %}
         <a href="{% url 'trading_fulfill' trading.id %}" class="btn btn-orange">
-            Дополнить заказ
+            {% trans "Дополнить заказ" %}
         </a>
     {% endif %}
 
     <a href="{% url 'trading_list' %}" class="btn btn-blue">
-        Назад
+        {% trans "Назад" %}
     </a>
 </div>
 

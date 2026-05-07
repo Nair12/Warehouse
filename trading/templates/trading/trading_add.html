@@ -1,7 +1,8 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
 
 {% block title %}
-    {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
+    {% if form.instance.pk %}{% trans "Редактирование сделки" %}{% else %}{% trans "Создание сделки" %}{% endif %}
 {% endblock %}
 
 {% block manager_content %}
@@ -433,12 +434,12 @@
 
 <div class="trade-form-page">
     <section class="trade-form-hero">
-        <div class="trade-form-eyebrow">📑 Операции склада</div>
+        <div class="trade-form-eyebrow">📑 {% trans "Операции склада" %}</div>
         <h1 class="trade-form-title">
-            {% if form.instance.pk %}Редактирование сделки{% else %}Создание сделки{% endif %}
+            {% if form.instance.pk %}{% trans "Редактирование сделки" %}{% else %}{% trans "Создание сделки" %}{% endif %}
         </h1>
         <p class="trade-form-subtitle">
-            Заполните основные данные, добавьте товары, склад и количество выполнения.
+            {% trans "Заполните основные данные, добавьте товары, склад и количество выполнения." %}
         </p>
     </section>
 
@@ -446,9 +447,9 @@
         <div class="trade-section-head">
             <div>
                 <h2 class="trade-section-title">
-                    {% if form.instance.pk %}Изменить данные{% else %}Новая сделка{% endif %}
+                    {% if form.instance.pk %}{% trans "Изменить данные" %}{% else %}{% trans "Новая сделка" %}{% endif %}
                 </h2>
-                <div class="trade-section-note">Основная информация по сделке</div>
+                <div class="trade-section-note">{% trans "Основная информация по сделке" %}</div>
             </div>
         </div>
 
@@ -477,8 +478,8 @@
                 <div class="trade-form-card" style="margin-top:20px; box-shadow:none;">
                     <div class="trade-section-head">
                         <div>
-                            <h2 class="trade-section-title">Прикрепить файлы</h2>
-                            <div class="trade-section-note">Добавьте документы, фото или накладные</div>
+                            <h2 class="trade-section-title">{% trans "Прикрепить файлы" %}</h2>
+                            <div class="trade-section-note">{% trans "Добавьте документы, фото или накладные" %}</div>
                         </div>
                     </div>
 
@@ -488,7 +489,7 @@
                         {% for attachment_form in formset %}
                             <div class="attachment-item">
                                 {{ attachment_form.id }}
-                                <label>Файл {{ forloop.counter }}:</label>
+                                <label>File {{ forloop.counter }}:</label>
                                 {{ attachment_form.file }}
 
                                 {% if attachment_form.file.errors %}
@@ -504,8 +505,8 @@
 
             <div class="items-header">
                 <div>
-                    <h3 class="items-title">Товары в сделке</h3>
-                    <div class="trade-section-note">Выберите товар, склад и количество</div>
+                    <h3 class="items-title">{% trans "Товары в сделке" %}</h3>
+                    <div class="trade-section-note">{% trans "Выберите товар, склад и количество" %}</div>
                 </div>
             </div>
 
@@ -515,9 +516,9 @@
                 {% for item_form in item_formset %}
                     <div class="item-block">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                            <h4 class="item-title" style="margin:0;">Позиция {{ forloop.counter }}</h4>
+                            <h4 class="item-title" style="margin:0;">Item {{ forloop.counter }}</h4>
                             {% if not form.instance.pk %}
-                                <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                                <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">{% trans "Удалить" %}</button>
                             {% endif %}
                         </div>
 
@@ -546,9 +547,9 @@
                         {% endif %}
 
                         <div class="form-row">
-                            <label>Остаток на складе</label>
+                            <label>{% trans "Остаток на складе" %}</label>
                             <div class="stock-info">
-                                Выберите товар и склад
+                                {% trans "Выберите товар и склад" %}
                             </div>
                         </div>
 
@@ -560,15 +561,15 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <button type="button" id="add-item-btn" class="btn-save">+ Добавить товар</button>
+                <button type="button" id="add-item-btn" class="btn-save">+ {% trans "Добавить товар" %}</button>
             </div>
 
             <template id="empty-item-template">
                 <div class="item-block">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <h4 class="item-title" style="margin:0;">Позиция __number__</h4>
+                        <h4 class="item-title" style="margin:0;">Item __number__</h4>
                         {% if not form.instance.pk %}
-                            <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">Удалить</button>
+                            <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">{% trans "Удалить" %}</button>
                         {% endif %}
                     </div>
 
@@ -582,9 +583,9 @@
                     {% endfor %}
 
                     <div class="form-row">
-                        <label>Остаток на складе</label>
+                        <label>{% trans "Остаток на складе" %}</label>
                         <div class="stock-info">
-                            Выберите товар и склад
+                            {% trans "Выберите товар и склад" %}
                         </div>
                     </div>
 
@@ -595,8 +596,8 @@
             </template>
 
             <div class="form-actions">
-                <button type="submit" id="save-btn" class="btn-save">Сохранить</button>
-                <a href="{% url 'trading_list' %}" class="action-link">Назад к списку</a>
+                <button type="submit" id="save-btn" class="btn-save">{% trans "Сохранить" %}</button>
+                <a href="{% url 'trading_list' %}" class="action-link">{% trans "Назад к списку" %}</a>
             </div>
         </form>
     </div>
@@ -621,7 +622,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const title = block.querySelector(".item-title");
             if (title) {
-                title.innerText = `Позиция ${visibleIndex}`;
+                title.innerText = `{% trans 'Позиция' %} ${visibleIndex}`;
             }
 
             visibleIndex++;
@@ -668,7 +669,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const input = document.createElement("input");
         input.type = "text";
         input.className = "custom-searchable-input";
-        input.placeholder = placeholderText || "Начните писать для поиска...";
+        input.placeholder = placeholderText || "{% trans "Начните писать для поиска..." %}";
         input.autocomplete = "off";
         input.value = getSelectedText(selectElement, options);
 
@@ -696,7 +697,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (filteredOptions.length === 0) {
                 const emptyItem = document.createElement("div");
                 emptyItem.className = "custom-searchable-option empty";
-                emptyItem.textContent = "Ничего не найдено";
+                emptyItem.textContent = "{% trans "Ничего не найдено" %}";
                 optionsBox.appendChild(emptyItem);
                 return;
             }
@@ -760,12 +761,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
 
-        createSearchableDropdown(productSelect, "Нажмите и начните писать название товара...", function() {
+        createSearchableDropdown(productSelect, "{% trans "Нажмите и начните писать название товара..." %}", function() {
             updateStock(block);
             updateUnit(block);
         });
 
-        createSearchableDropdown(warehouseSelect, "Нажмите и начните писать склад...", function() {
+        createSearchableDropdown(warehouseSelect, "{% trans "Нажмите и начните писать склад..." %}", function() {
             updateStock(block);
         });
 
@@ -891,11 +892,11 @@ document.addEventListener("DOMContentLoaded", function () {
         quantityInput.min = "1";
 
         if (unit === "кг") {
-            quantityInput.placeholder = "кг";
+            quantityInput.placeholder = "kg";
         } else if (unit === "шт") {
-            quantityInput.placeholder = "шт";
+            quantityInput.placeholder = "pcs";
         } else {
-            quantityInput.placeholder = "кол-во";
+            quantityInput.placeholder = "{% trans "кол-во" %}";
         }
     }
 
@@ -910,11 +911,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const warehouseId = warehouseSelect.value;
 
         if (!productId || !warehouseId) {
-            stockInfo.innerText = "Выберите товар и склад";
+            stockInfo.innerText = "{% trans "Выберите товар и склад" %}";
             return;
         }
 
-        stockInfo.innerText = "Загрузка...";
+        stockInfo.innerText = "{% trans "Загрузка..." %}";
 
         fetch(getStockUrl(productId, warehouseId), {
             headers: {
@@ -928,10 +929,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(function (data) {
-                stockInfo.innerText = `Остаток: ${data.quantity} ${data.unit}`;
+                stockInfo.innerText = `Stock: ${data.quantity} ${data.unit}`;
             })
             .catch(function () {
-                stockInfo.innerText = "Ошибка загрузки";
+                stockInfo.innerText = "{% trans "Ошибка загрузки" %}";
             });
     }
 

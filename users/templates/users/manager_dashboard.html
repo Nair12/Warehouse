@@ -1,4 +1,7 @@
 {% extends "base_manager.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Панель менеджера" %}{% endblock %}
 
 {% block manager_content %}
 <style>
@@ -543,51 +546,51 @@
 
     <div class="dashboard-head">
         <div>
-            <h1 class="dashboard-title">Дашборд менеджера</h1>
+            <h1 class="dashboard-title">{% trans "Панель менеджера" %}</h1>
         </div>
 
         <div class="dashboard-date">
-            Сегодня: {% now "d.m.Y H:i" %}
+            {% trans "Сегодня" %}: {% now "d.m.Y H:i" %}
         </div>
     </div>
 
     <section class="kpi-grid">
         <div class="kpi-card">
             <div class="kpi-top">
-                <div class="kpi-label">Товары</div>
+                <div class="kpi-label">{% trans "Товары" %}</div>
                 <div class="kpi-icon">📦</div>
             </div>
             <div class="kpi-value">{{ products_count|default:"0" }}</div>
-            <div class="kpi-note">Всего товаров в системе</div>
+            <div class="kpi-note">{% trans "Всего товаров в системе" %}</div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-top">
-                <div class="kpi-label">Склады</div>
+                <div class="kpi-label">{% trans "Склады" %}</div>
                 <div class="kpi-icon">🏬</div>
             </div>
             <div class="kpi-value">{{ warehouses_count|default:"0" }}</div>
-            <div class="kpi-note">Зарегистрированные локации</div>
+            <div class="kpi-note">{% trans "Зарегистрированные локации" %}</div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-top">
-                <div class="kpi-label">Остатки</div>
+                <div class="kpi-label">{% trans "Остатки" %}</div>
                 <div class="kpi-icon">🧮</div>
             </div>
             <div class="kpi-value">{{ total_inventory|default:"0" }}</div>
-            <div class="kpi-note">Общее количество на складах</div>
+            <div class="kpi-note">{% trans "Общее количество на складах" %}</div>
         </div>
 
         <div class="kpi-card">
             <div class="kpi-top">
-                <div class="kpi-label">Период</div>
+                <div class="kpi-label">{% trans "Период" %}</div>
                 <div class="kpi-icon">🗓️</div>
             </div>
             <div class="kpi-value">
                 {% if period == "7d" %}7{% elif period == "30d" %}30{% elif period == "90d" %}90{% elif period == "year" %}365{% else %}∞{% endif %}
             </div>
-            <div class="kpi-note">Дней в текущем отчёте</div>
+            <div class="kpi-note">{% trans "Дней в текущем отчёте" %}</div>
         </div>
     </section>
 
@@ -595,16 +598,16 @@
         <div class="panel">
             <div class="panel-header">
                 <div>
-                    <h2 class="panel-title">Движение товаров</h2>
-                    <div class="panel-subtitle">Продажи и закупки за выбранный период</div>
+                    <h2 class="panel-title">{% trans "Движение товаров" %}</h2>
+                    <div class="panel-subtitle">{% trans "Продажи и закупки за выбранный период" %}</div>
                 </div>
 
                 <div class="period-filter">
-                    <a href="?period=7d" class="{% if period == '7d' %}active{% endif %}">7 дней</a>
-                    <a href="?period=30d" class="{% if period == '30d' %}active{% endif %}">30 дней</a>
-                    <a href="?period=90d" class="{% if period == '90d' %}active{% endif %}">90 дней</a>
-                    <a href="?period=year" class="{% if period == 'year' %}active{% endif %}">Год</a>
-                    <a href="?period=all" class="{% if period == 'all' %}active{% endif %}">Все</a>
+                    <a href="?period=7d" class="{% if period == '7d' %}active{% endif %}">{% trans "7 дней" %}</a>
+                    <a href="?period=30d" class="{% if period == '30d' %}active{% endif %}">{% trans "30 дней" %}</a>
+                    <a href="?period=90d" class="{% if period == '90d' %}active{% endif %}">{% trans "90 дней" %}</a>
+                    <a href="?period=year" class="{% if period == 'year' %}active{% endif %}">{% trans "Год" %}</a>
+                    <a href="?period=all" class="{% if period == 'all' %}active{% endif %}">{% trans "Все" %}</a>
                 </div>
             </div>
 
@@ -613,11 +616,11 @@
                     <div class="chart-hover-card" id="chartHoverCard">
                         <div class="hover-date" id="hoverDate">—</div>
                         <div class="hover-row">
-                            <span class="hover-sale">Продажи</span>
+                            <span class="hover-sale">{% trans "Продажи" %}</span>
                             <strong id="hoverSales">0</strong>
                         </div>
                         <div class="hover-row">
-                            <span class="hover-purchase">Покупки</span>
+                            <span class="hover-purchase">{% trans "Закупки" %}</span>
                             <strong id="hoverPurchase">0</strong>
                         </div>
                     </div>
@@ -629,17 +632,17 @@
 
                 <div class="chart-summary">
                     <div class="chart-mini">
-                        <div class="chart-mini-label">Продажи за период</div>
+                        <div class="chart-mini-label">{% trans "Продажи за период" %}</div>
                         <div class="chart-mini-value" id="salesTotalBox">0</div>
                     </div>
 
                     <div class="chart-mini">
-                        <div class="chart-mini-label">Закупки за период</div>
+                        <div class="chart-mini-label">{% trans "Закупки за период" %}</div>
                         <div class="chart-mini-value" id="purchaseTotalBox">0</div>
                     </div>
 
                     <div class="chart-mini">
-                        <div class="chart-mini-label">Общее движение</div>
+                        <div class="chart-mini-label">{% trans "Общее движение" %}</div>
                         <div class="chart-mini-value" id="chartTotalBox">0</div>
                     </div>
                 </div>
@@ -650,8 +653,8 @@
             <div class="panel">
                 <div class="panel-header">
                     <div>
-                        <h2 class="panel-title">Топ товаров</h2>
-                        <div class="panel-subtitle">Самые продаваемые позиции</div>
+                        <h2 class="panel-title">{% trans "Топ товаров" %}</h2>
+                        <div class="panel-subtitle">{% trans "Самые продаваемые позиции" %}</div>
                     </div>
                 </div>
 
@@ -665,7 +668,7 @@
                                         <a href="{% url 'products:product_detail' product.product__id %}" class="popular-name">
                                             {{ product.product__name }}
                                         </a>
-                                        <div class="popular-caption">продажи</div>
+                                        <div class="popular-caption">{% trans "продажи" %}</div>
                                     </div>
                                 </div>
 
@@ -676,35 +679,35 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="empty-state">Пока нет данных по продажам.</div>
+                    <div class="empty-state">{% trans "Пока нет данных по продажам." %}</div>
                 {% endif %}
             </div>
 
             <div class="panel">
                 <div class="panel-header">
                     <div>
-                        <h2 class="panel-title">Сводка</h2>
-                        <div class="panel-subtitle">Ключевые показатели системы</div>
+                        <h2 class="panel-title">{% trans "Сводка" %}</h2>
+                        <div class="panel-subtitle">{% trans "Ключевые показатели системы" %}</div>
                     </div>
                 </div>
 
                 <div class="insight-grid">
                     <div class="insight">
-                        <div class="insight-label">Общий складской объём</div>
+                        <div class="insight-label">{% trans "Общий складской объём" %}</div>
                         <div class="insight-value">{{ total_inventory|default:"0" }}</div>
-                        <div class="insight-note">сумма всех остатков</div>
+                        <div class="insight-note">{% trans "сумма всех остатков" %}</div>
                     </div>
 
                     <div class="insight">
-                        <div class="insight-label">Средняя загрузка склада</div>
+                        <div class="insight-label">{% trans "Средняя загрузка склада" %}</div>
                         <div class="insight-value" id="avgStock">0</div>
-                        <div class="insight-note">остатки / склады</div>
+                        <div class="insight-note">{% trans "остатки / склады" %}</div>
                     </div>
 
                     <div class="insight">
-                        <div class="insight-label">Активность графика</div>
+                        <div class="insight-label">{% trans "Активность графика" %}</div>
                         <div class="insight-value" id="chartTotalSide">0</div>
-                        <div class="insight-note">продажи + закупки</div>
+                        <div class="insight-note">{% trans "продажи + закупки" %}</div>
                     </div>
                 </div>
             </div>
@@ -714,6 +717,9 @@
 </div>
 
 <script>
+    const chartTextSales = "{% trans 'Продажи' %}";
+    const chartTextPurchases = "{% trans 'Закупки' %}";
+
     const salesLabels = {{ sales_labels|default:"[]"|safe }};
     const salesValues = {{ sales_values|default:"[]"|safe }};
     const purchaseValues = {{ purchase_values|default:"[]"|safe }};
@@ -791,7 +797,7 @@
             labels: salesLabels,
             datasets: [
                 {
-                    label: "Продажи",
+                    label: chartTextSales,
                     data: salesValues,
                     borderColor: "rgba(239, 68, 68, 1)",
                     backgroundColor: salesGradient,
@@ -806,7 +812,7 @@
                     pointBorderWidth: 3
                 },
                 {
-                    label: "Покупки",
+                    label: chartTextPurchases,
                     data: purchaseValues,
                     borderColor: "rgba(34, 197, 94, 1)",
                     backgroundColor: purchaseGradient,

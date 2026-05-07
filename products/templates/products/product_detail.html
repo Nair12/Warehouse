@@ -1,4 +1,5 @@
 {% extends "products/base.html" %}
+{% load i18n %}
 
 {% block content %}
 <style>
@@ -569,30 +570,34 @@
                 {% else %}
                     <div class="product-placeholder">
                         <div class="product-placeholder-icon">🖼️</div>
-                        <div>Изображение товара отсутствует</div>
+                        <div>{% trans "Изображение товара отсутствует" %}</div>
                     </div>
                 {% endif %}
             </div>
 
             <div class="product-info">
-                <div class="product-badge">📦 Карточка товара</div>
+                <div class="product-badge">📦 {% trans "Карточка товара" %}</div>
                 <h1 class="product-title">{{ product.name }}</h1>
 
                 <div class="product-description-box">
-                    <div class="product-description-title">Описание товара</div>
+                    <div class="product-description-title">{% trans "Описание товара" %}</div>
                     <div class="product-description-text">
-                        {{ product.description|default:"Описание для этого товара пока не добавлено." }}
+                        {% if product.description %}
+                            {{ product.description }}
+                        {% else %}
+                            {% trans "Описание для этого товара пока не добавлено." %}
+                        {% endif %}
                     </div>
                 </div>
 
                 <div class="product-meta">
                     <div class="meta-box">
-                        <span class="meta-label">Единица измерения</span>
+                        <span class="meta-label">{% trans "Единица измерения" %}</span>
                         <span class="meta-value">{{ product.get_unit_display }}</span>
                     </div>
 
                     <div class="meta-box">
-                        <span class="meta-label">Дата добавления</span>
+                        <span class="meta-label">{% trans "Дата добавления" %}</span>
                         <span class="meta-value">{{ product.created_at|date:"d.m.Y H:i" }}</span>
                     </div>
                 </div>
@@ -603,12 +608,12 @@
     <div class="stock-card">
         <div class="stock-header">
             <div>
-                <h2 class="stock-title">Остатки по складам</h2>
-                <p class="stock-subtitle">Наличие товара на каждом складе</p>
+                <h2 class="stock-title">{% trans "Остатки по складам" %}</h2>
+                <p class="stock-subtitle">{% trans "Наличие товара на каждом складе" %}</p>
             </div>
 
             <div class="stock-count">
-                🏬 {{ warehouse_rows|length }} склада
+                🏬 {{ warehouse_rows|length }} {% trans "склада" %}
             </div>
         </div>
 
@@ -616,10 +621,10 @@
             <table class="stock-table">
                 <thead>
                     <tr>
-                        <th>Склад</th>
-                        <th>Количество</th>
+                        <th>{% trans "Склад" %}</th>
+                        <th>{% trans "Количество" %}</th>
                         {% if request.user.role == "admin" or request.user.role == "manager" %}
-                            <th>Действие</th>
+                            <th>{% trans "Действие" %}</th>
                         {% endif %}
                     </tr>
                 </thead>
@@ -642,11 +647,11 @@
                                 <td>
                                     {% if row.inventory %}
                                         <a href="{% url 'products:inventory_edit' row.inventory.id %}" class="action-btn edit">
-                                            ✏️ Изменить
+                                            ✏️ {% trans "Изменить" %}
                                         </a>
                                     {% else %}
                                         <a href="{% url 'products:inventory_create' product.id row.warehouse.id %}" class="action-btn add">
-                                            ＋ Добавить
+                                            ＋ {% trans "Добавить" %}
                                         </a>
                                     {% endif %}
                                 </td>
@@ -655,7 +660,7 @@
                     {% empty %}
                         <tr>
                             <td colspan="{% if request.user.role == 'admin' or request.user.role == 'manager' %}3{% else %}2{% endif %}" class="empty-row">
-                                Нет данных по остаткам на складах.
+                                {% trans "Нет данных по остаткам на складах." %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -666,7 +671,7 @@
 
     <div class="footer-actions">
         <a href="{% url 'products:product_list' %}" class="back-link">
-            ← Вернуться к списку товаров
+            ← {% trans "Вернуться к списку товаров" %}
         </a>
     </div>
 </div>
