@@ -1,19 +1,26 @@
+from django.core.paginator import Paginator
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
-
 from .models import Product, Inventory
 from warehouses.models import Warehouse
 from .forms import ProductForm, InventoryQuantityForm
 from users.decorators import role_required
 
-
 @role_required(["admin", "manager", "reader", "senior_manager"])
 def product_list_view(request):
     query = request.GET.get("q", "").strip()
+
+
     in_stock = request.GET.get("in_stock")
+    if in_stock in ["None", ""]: in_stock = None
+
     sort = request.GET.get("sort")
+    if sort in ["None", ""]: sort = None
+
     warehouse_id = request.GET.get("warehouse")
+    if warehouse_id in ["None", ""]: warehouse_id = None
+
 
     products = Product.objects.all()
 
@@ -35,30 +42,33 @@ def product_list_view(request):
             )
         )
 
-    products = list(products)
 
     if query:
-        query_lower = query.casefold()
-        products = [
-            product for product in products
-            if query_lower in (product.name or "").casefold()
-            or query_lower in (product.description or "").casefold()
-        ]
+        products = products.filter(
+            Q(name__icontains=query) | Q(description__icontains=query)
+        )
+
 
     if in_stock == "1":
-        products = [product for product in products if product.total_quantity > 0]
+        products = products.filter(total_quantity__gt=0)
+
 
     if sort == "qty_asc":
-        products = sorted(products, key=lambda x: x.total_quantity)
+        products = products.order_by("total_quantity")
     elif sort == "qty_desc":
-        products = sorted(products, key=lambda x: x.total_quantity, reverse=True)
+        products = products.order_by("-total_quantity")
     else:
-        products = sorted(products, key=lambda x: x.created_at, reverse=True)
+        products = products.order_by("-created_at")
+
+
+    paginator = Paginator(products, 30)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     warehouses = Warehouse.objects.all().order_by("city")
 
     return render(request, "products/product_list.html", {
-        "products": products,
+        "page_obj": page_obj,          # Передаем объект страницы вместо списка products
         "query": query,
         "in_stock": in_stock,
         "sort": sort,

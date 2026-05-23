@@ -454,6 +454,63 @@
             font-size: 15px;
         }
 
+        /* Стили для пагинации */
+        .pagination-wrapper {
+            margin-top: 32px;
+            display: flex;
+            justify-content: center;
+            animation: pageFadeUp 0.55s ease both;
+            animation-delay: 0.2s;
+        }
+
+        .pagination-card {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border-radius: 20px;
+            background: #ffffff;
+            border: 1px solid #d4e3eb;
+            box-shadow: 0 10px 24px rgba(31, 59, 74, 0.05);
+        }
+
+        .pagination-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #5f6b7a;
+            text-decoration: none;
+            transition: 0.2s ease;
+            border: 1px solid transparent;
+        }
+
+        .pagination-link:hover {
+            background: #e8f3f8;
+            color: #417690;
+            border-color: #c7dfeb;
+        }
+
+        .pagination-current {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 950;
+            background: #417690;
+            color: #ffffff;
+            box-shadow: 0 6px 14px rgba(65, 118, 144, 0.2);
+        }
+
         @media (max-width: 980px) {
             .hero-content {
                 align-items: flex-start;
@@ -507,6 +564,12 @@
 
             .search-form {
                 gap: 10px;
+            }
+
+            .pagination-card {
+                width: 100%;
+                justify-content: space-between;
+                padding: 8px;
             }
         }
     </style>
@@ -565,7 +628,7 @@
             </form>
         </div>
 
-        {% if products %}
+        {% if page_obj %}
             <div class="table-shell">
                 <table class="table">
                     <thead>
@@ -576,7 +639,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for product in products %}
+                    {# Цикл теперь идет по page_obj вместо products #}
+                    {% for product in page_obj %}
                         <tr onclick="window.location.href='{% url 'products:product_detail' product.pk %}'">
                             <td>
                                 <div class="product-cell">
@@ -607,6 +671,30 @@
                     </tbody>
                 </table>
             </div>
+
+           {# Блок пагинации с безопасным выводом параметров #}
+{% if page_obj.has_other_pages %}
+    <div class="pagination-wrapper">
+        <div class="pagination-card">
+
+            {% if page_obj.has_previous %}
+                <a class="pagination-link" href="?page=1&q={{ query }}&in_stock={{ in_stock|default:'' }}&sort={{ sort|default:'' }}&warehouse={{ selected_warehouse|default:'' }}">&laquo;</a>
+                <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}&in_stock={{ in_stock|default:'' }}&sort={{ sort|default:'' }}&warehouse={{ selected_warehouse|default:'' }}">{% trans "Назад" %}</a>
+            {% endif %}
+
+            <span class="pagination-current">
+                {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a class="pagination-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}&in_stock={{ in_stock|default:'' }}&sort={{ sort|default:'' }}&warehouse={{ selected_warehouse|default:'' }}">{% trans "Вперед" %}</a>
+                <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}&in_stock={{ in_stock|default:'' }}&sort={{ sort|default:'' }}&warehouse={{ selected_warehouse|default:'' }}">&raquo;</a>
+            {% endif %}
+
+        </div>
+    </div>
+{% endif %}
+
         {% else %}
             <div class="empty">
                 <div class="empty-icon">📦</div>
