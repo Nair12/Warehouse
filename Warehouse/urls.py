@@ -5,6 +5,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect
+
+from users.decorators import role_required
 from users.views import role_redirect_view
 
 
@@ -23,7 +25,7 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     path('', home_redirect),
 
-    path('admin/', admin.site.urls),
+    path('admin/', role_required(["admin"])(admin.site.urls)),
 
     path('users/', include('users.urls')),
 
