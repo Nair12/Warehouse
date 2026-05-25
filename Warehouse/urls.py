@@ -25,7 +25,7 @@ urlpatterns = [
 urlpatterns += i18n_patterns(
     path('', home_redirect),
 
-    path('admin/', role_required(["admin"])(admin.site.urls)),
+    path('admin/', admin.site.urls),
 
     path('users/', include('users.urls')),
 
