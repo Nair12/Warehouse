@@ -1,6 +1,8 @@
 {% extends "products/base.html" %}
+{% load i18n %}
 
 {% block content %}
+
 <style>
     .container {
         max-width: 1300px;
@@ -89,6 +91,58 @@
         font-size: 18px;
         color: #777;
     }
+
+    /* Легкие и плавные стили для пагинации */
+    .pagination-wrapper {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 14px;
+        background: #ffffff;
+        border: 1px solid #dde4ec;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+    }
+
+    .pagination-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        color: #417690;
+        text-decoration: none;
+        transition: background 0.2s, color 0.2s;
+    }
+
+    .pagination-link:hover {
+        background: #e8f3f8;
+        color: #2b5063;
+    }
+
+    .pagination-current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 10px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        background: #417690;
+        color: #ffffff;
+    }
 </style>
 
 <div class="container">
@@ -96,46 +150,46 @@
     <div class="title">
         Склад: {{ warehouse.city }}
     </div>
+
     <form method="get" style="display:flex; gap:12px; align-items:center; margin-bottom:30px;">
-    <div style="
-        display:flex;
-        align-items:center;
-        background:white;
-        border-radius:14px;
-        border:1px solid #ddd;
-        padding:6px 10px;
-        min-width:320px;
-    ">
-        <span style="margin-right:8px; color:#888;">🔍</span>
+        <div style="
+            display:flex;
+            align-items:center;
+            background:white;
+            border-radius:14px;
+            border:1px solid #ddd;
+            padding:6px 10px;
+            min-width:320px;
+        ">
+            <span style="margin-right:8px; color:#888;">🔍</span>
+            <input type="text"
+                   name="q"
+                   value="{{ query }}"
+                   placeholder="Поиск товаров на складе..."
+                   style="border:none; outline:none; font-size:15px; width:100%;">
+        </div>
 
-        <input type="text"
-               name="q"
-               value="{{ query }}"
-               placeholder="Поиск товаров на складе..."
-               style="border:none; outline:none; font-size:15px; width:100%;">
-    </div>
+        <button type="submit" style="
+            background:#417690;
+            color:white;
+            border:none;
+            padding:12px 18px;
+            border-radius:10px;
+            cursor:pointer;
+            font-weight:600;
+        ">
+            Найти
+        </button>
 
-    <button type="submit" style="
-        background:#417690;
-        color:white;
-        border:none;
-        padding:12px 18px;
-        border-radius:10px;
-        cursor:pointer;
-        font-weight:600;
-    ">
-        Найти
-    </button>
+        {% if query %}
+            <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}"
+               style="color:#417690; font-weight:600; text-decoration:none;">
+                Сбросить
+            </a>
+        {% endif %}
+    </form>
 
-    {% if query %}
-        <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}"
-           style="color:#417690; font-weight:600; text-decoration:none;">
-            Сбросить
-        </a>
-    {% endif %}
-</form>
-
-    {% if inventory_items %}
+    {% if page_obj %}
         <table class="table">
             <thead>
             <tr>
@@ -145,13 +199,12 @@
             </thead>
 
             <tbody>
-            {% for item in inventory_items %}
+            {% for item in page_obj %}
                 <tr onclick="window.location.href='{% url 'products:product_detail' item.product.id %}'"
                     style="cursor:pointer;">
 
                     <td>
                         <div class="product-cell">
-
                             {% if item.product.picture %}
                                 <img src="{{ item.product.picture.url }}" class="product-img">
                             {% else %}
@@ -161,7 +214,6 @@
                             <div class="product-name">
                                 {{ item.product.name }}
                             </div>
-
                         </div>
                     </td>
 
@@ -174,11 +226,33 @@
                             {{ item.quantity }} {{ item.product.get_unit_display }}
                         </span>
                     </td>
-
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
+        {% if page_obj.has_other_pages %}
+            <div class="pagination-wrapper">
+                <div class="pagination-card">
+
+                    {% if page_obj.has_previous %}
+                        <a class="pagination-link" href="?page=1&q={{ query }}">&laquo;</a>
+                        <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Назад</a>
+                    {% endif %}
+
+                    <span class="pagination-current">
+                        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a class="pagination-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Вперед</a>
+                        <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">&raquo;</a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+
     {% else %}
         <div class="empty">На этом складе нет товаров</div>
     {% endif %}

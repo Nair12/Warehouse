@@ -1,6 +1,7 @@
-{% load static %}
+{% load static i18n %}
+{% get_current_language as CURRENT_LANGUAGE %}
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="{{ CURRENT_LANGUAGE|default:'ru' }}">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}Мой Склад{% endblock %}</title>
@@ -42,14 +43,14 @@
             color: #e0e0e0;
             text-decoration: none;
             font-size: 14px;
-            transition: color 0.2s;
+            transition: color 0.2s ease;
         }
 
         .nav-menu a:hover {
             color: white;
         }
 
-        /* Блок пользователя */
+        /* Блок пользователя и экшенов */
         .user-block {
             display: flex;
             align-items: center;
@@ -62,6 +63,8 @@
             padding: 5px 12px;
             border-radius: 4px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
         }
 
         .logout-btn {
@@ -81,31 +84,80 @@
             padding: 0 20px;
         }
 
-        /* бренд-блок */
+        /* Облегченный селектор языка под стиль этого хедера */
+        .language-switcher {
+            display: flex;
+            align-items: center;
+        }
+
+        .language-select-form {
+            margin: 0;
+        }
+
+        .language-select-wrap {
+            position: relative;
+        }
+
+        .language-select-wrap::after {
+            content: "⌄";
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-60%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            pointer-events: none;
+        }
+
+        .language-select {
+            height: 32px;
+            padding: 0 24px 0 10px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .language-select:hover {
+            background: rgba(255, 255, 255, 0.18);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .language-select option {
+            color: #333333;
+            background: #ffffff;
+        }
+
+        /* Облегченные бренд-блок эффекты (без прыжков геометрии) */
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
         }
 
-        /* логотип */
         .logo-img {
             width: 36px;
             height: 36px;
             object-fit: cover;
             border-radius: 8px;
-
             padding: 4px;
             box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            transition: 0.3s;
+            transition: opacity 0.2s ease;
         }
 
-        /* эффект при наведении */
         .logo-img:hover {
-            transform: scale(1.1) rotate(5deg);
+            opacity: 0.85;
         }
 
-        /* текст */
         .logo-text {
             font-size: 22px;
             font-weight: 700;
@@ -114,12 +166,11 @@
             background: linear-gradient(45deg, #ffffff, #dceeff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            transition: 0.3s;
+            transition: opacity 0.2s ease;
         }
 
-
         .logo-text:hover {
-            letter-spacing: 2px;
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -130,12 +181,26 @@
         Warehouse
     </div>
 
-   <nav class="nav-menu">
-    <a href="{% url 'products:product_list' %}">Товары</a>
-    <a href="{% url 'products:warehouse_reader_list'%}">Склады</a>
-</nav>
+    <nav class="nav-menu">
+        <a href="{% url 'products:product_list' %}">Товары</a>
+        <a href="{% url 'products:warehouse_reader_list'%}">Склады</a>
+    </nav>
 
     <div class="user-block">
+        <div class="language-switcher">
+            <form action="{% url 'set_language' %}" method="post" class="language-select-form">
+                {% csrf_token %}
+                <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <div class="language-select-wrap">
+                    <select name="language" class="language-select" onchange="this.form.submit()">
+                        <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
+                        <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
+                        <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
         {% if user.is_authenticated %}
         <a href="/redirect-by-role/" class="user-name">
             👤 {{ user.username }}

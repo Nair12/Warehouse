@@ -3,6 +3,8 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from django.db.models import Q  # Импортируем Q для эффективного поиска в БД
+from django.core.paginator import Paginator  # Импортируем пагинатор
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
@@ -16,28 +18,33 @@ def warehouse_detail_view(request, pk):
     warehouse = get_object_or_404(Warehouse, id=pk)
     query = request.GET.get("q", "").strip()
 
-    inventory = list(
-        Inventory.objects.filter(
-            warehouse=warehouse,
-            quantity__gt=0
-        ).select_related("product")
-    )
+    # 1. Формируем базовый запрос
+    inventory_queryset = Inventory.objects.filter(
+        warehouse=warehouse,
+        quantity__gt=0
+    ).select_related("product")
 
+    # 2. Фильтруем по поиску
     if query:
-        query_lower = query.casefold()
+        inventory_queryset = inventory_queryset.filter(
+            Q(product__name__icontains=query) |
+            Q(product__description__icontains=query)
+        )
 
-        inventory = [
-            item for item in inventory
-            if query_lower in (item.product.name or "").casefold()
-            or query_lower in (item.product.description or "").casefold()
-        ]
+    # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Добавляем явную сортировку (например, по ID или по имени товара)
+    # Без .order_by() пагинатор в Django может вести себя непредсказуемо и вываливать всё сразу
+    inventory_queryset = inventory_queryset.order_by("product__name")
+
+    # 3. Настраиваем пагинацию (по 20 товаров)
+    paginator = Paginator(inventory_queryset, 20)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
 
     return render(request, "warehouse_detail.html", {
         "warehouse": warehouse,
-        "inventory": inventory,
+        "page_obj": page_obj,
         "query": query,
     })
-
 
 @login_required
 @role_required(["admin", "manager", "senior_manager"])

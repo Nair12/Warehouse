@@ -24,40 +24,33 @@
             color: #172033;
         }
 
+        /* Облегченная анимация контента: только мягкое появление (opacity) */
         @keyframes pageFadeUp {
             from {
                 opacity: 0;
-                transform: translateY(18px);
-                filter: blur(3px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
-                filter: blur(0);
             }
         }
 
+        /* Убраны тяжелые blur, scale и смещения для карточек */
         @keyframes cardFadeUp {
             from {
                 opacity: 0;
-                transform: translateY(20px) scale(0.98);
-                filter: blur(3px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
             }
         }
 
+        /* Убрано смещение по вертикали для шапки */
         @keyframes headerDrop {
             from {
                 opacity: 0;
-                transform: translateY(-18px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
             }
         }
 
@@ -69,7 +62,7 @@
                 radial-gradient(circle at 15% 0%, rgba(121, 174, 200, 0.35), transparent 34%),
                 linear-gradient(135deg, #2b5063 0%, #417690 55%, #2f667e 100%);
             box-shadow: 0 16px 34px rgba(31, 59, 74, 0.18);
-            animation: headerDrop 0.45s ease both;
+            animation: headerDrop 0.15s ease-out both; /* Снижено время анимации */
         }
 
         .header-top {
@@ -131,13 +124,12 @@
             text-decoration: none;
             font-size: 14px;
             font-weight: 900;
-            transition: 0.2s;
+            transition: background 0.2s, color 0.2s; /* Убрано дергание translateY на hover */
         }
 
         .nav-links a:hover {
             color: #ffffff;
             background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
         }
 
         .nav-links a.active {
@@ -202,13 +194,12 @@
                 inset 0 1px 0 rgba(255,255,255,0.14),
                 0 10px 24px rgba(31, 59, 74, 0.13);
             backdrop-filter: blur(12px);
-            transition: 0.22s ease;
+            transition: background 0.2s, box-shadow 0.2s; /* Убрано изменение геометрии (translateY) */
         }
 
         .language-select:hover {
             background:
                 linear-gradient(135deg, rgba(255,255,255,0.30), rgba(255,255,255,0.14));
-            transform: translateY(-1px);
             box-shadow:
                 inset 0 1px 0 rgba(255,255,255,0.18),
                 0 12px 26px rgba(31, 59, 74, 0.16);
@@ -246,7 +237,7 @@
             font-size: 14px;
             font-weight: 700;
             box-shadow: 0 10px 24px rgba(31, 59, 74, 0.12);
-            transition: 0.22s;
+            transition: width 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
 
         .search-input::placeholder {
@@ -276,12 +267,11 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: 0.2s;
+            transition: background 0.2s; /* Убран тяжелый scale() наведение */
             box-shadow: 0 8px 18px rgba(31, 59, 74, 0.20);
         }
 
         .search-btn:hover {
-            transform: scale(1.06);
             background: linear-gradient(135deg, #1f3b4a, #172033);
         }
 
@@ -301,12 +291,11 @@
             font: inherit;
             font-size: 14px;
             font-weight: 900;
-            transition: 0.2s;
+            transition: background 0.2s; /* Убран translateY */
         }
 
         .logout-btn:hover {
             background: rgba(255, 255, 255, 0.22);
-            transform: translateY(-1px);
         }
 
         .container {
@@ -314,68 +303,9 @@
             max-width: 1600px;
             margin: 42px auto 70px;
             padding: 0 32px;
-            animation: pageFadeUp 0.55s ease both;
+            animation: pageFadeUp 0.3s ease-out both; /* Быстрое и легкое появление */
         }
 
-        .container > * {
-            animation: cardFadeUp 0.55s ease both;
-        }
-
-        .container > *:nth-child(1) { animation-delay: 0.04s; }
-        .container > *:nth-child(2) { animation-delay: 0.10s; }
-        .container > *:nth-child(3) { animation-delay: 0.16s; }
-        .container > *:nth-child(4) { animation-delay: 0.22s; }
-        .container > *:nth-child(5) { animation-delay: 0.28s; }
-
-        .dashboard-card,
-        .kpi-card,
-        .panel,
-        .module,
-        .warehouse-card,
-        .trade-card,
-        .order-card,
-        .product-card,
-        .item-block,
-        .card,
-        table {
-            animation: cardFadeUp 0.55s ease both;
-        }
-
-        .dashboard-card:nth-child(1),
-        .kpi-card:nth-child(1),
-        .warehouse-card:nth-child(1),
-        .trade-card:nth-child(1),
-        .order-card:nth-child(1),
-        .product-card:nth-child(1),
-        .item-block:nth-child(1),
-        .card:nth-child(1) { animation-delay: 0.05s; }
-
-        .dashboard-card:nth-child(2),
-        .kpi-card:nth-child(2),
-        .warehouse-card:nth-child(2),
-        .trade-card:nth-child(2),
-        .order-card:nth-child(2),
-        .product-card:nth-child(2),
-        .item-block:nth-child(2),
-        .card:nth-child(2) { animation-delay: 0.10s; }
-
-        .dashboard-card:nth-child(3),
-        .kpi-card:nth-child(3),
-        .warehouse-card:nth-child(3),
-        .trade-card:nth-child(3),
-        .order-card:nth-child(3),
-        .product-card:nth-child(3),
-        .item-block:nth-child(3),
-        .card:nth-child(3) { animation-delay: 0.15s; }
-
-        .dashboard-card:nth-child(4),
-        .kpi-card:nth-child(4),
-        .warehouse-card:nth-child(4),
-        .trade-card:nth-child(4),
-        .order-card:nth-child(4),
-        .product-card:nth-child(4),
-        .item-block:nth-child(4),
-        .card:nth-child(4) { animation-delay: 0.20s; }
 
         h1 {
             margin: 0 0 24px;
@@ -477,13 +407,12 @@
             cursor: pointer;
             font-weight: 800;
             border-radius: 14px;
-            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            transition: background 0.2s, box-shadow 0.2s; /* Убран трансформ */
         }
 
         .btn-save:hover,
         .btn-add:hover {
             background: #2b5063;
-            transform: translateY(-2px);
             box-shadow: 0 10px 22px rgba(43, 80, 99, 0.18);
         }
 

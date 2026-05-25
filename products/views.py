@@ -179,21 +179,25 @@ def warehouse_reader_list_view(request):
 
 def warehouse_reader_detail_view(request, pk):
     warehouse = get_object_or_404(Warehouse, pk=pk)
-
-    query = request.GET.get("q", "")
+    query = request.GET.get("q", "").strip() # Добавили .strip() для чистоты ввода
 
     inventory_items = (
         Inventory.objects
         .filter(warehouse=warehouse)
         .select_related("product")
-        .order_by("product__name")
+        .order_by("product__name") # Сортировка здесь уже есть, отлично!
     )
 
     if query:
         inventory_items = inventory_items.filter(product__name__icontains=query)
 
+    # ---- ДОБАВЛЯЕМ ПАГИНАЦИЮ ----
+    paginator = Paginator(inventory_items, 20) # По 20 товаров на страницу
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "products/warehouses/detail.html", {
         "warehouse": warehouse,
-        "inventory_items": inventory_items,
+        "page_obj": page_obj,  # Передаем page_obj вместо бесконечного inventory_items
         "query": query,
     })

@@ -7,29 +7,13 @@
             background: #f4f7f9;
         }
 
+        /* Облегченная анимация для всей страницы: только быстрое появление */
         @keyframes pageFadeUp {
             from {
                 opacity: 0;
-                transform: translateY(22px);
-                filter: blur(4px);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
-                filter: blur(0);
-            }
-        }
-
-        @keyframes rowFadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(16px) scale(0.985);
-                filter: blur(3px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-                filter: blur(0);
             }
         }
 
@@ -37,7 +21,7 @@
             max-width: 1320px;
             margin: 42px auto 70px;
             padding: 0 24px;
-            animation: pageFadeUp 0.55s ease both;
+            animation: pageFadeUp 0.25s ease-out both; /* Быстрое и легкое появление за 0.25с */
         }
 
         .products-hero {
@@ -51,7 +35,7 @@
                 linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
             border: 1px solid #d4e3eb;
             box-shadow: 0 16px 38px rgba(31, 59, 74, 0.10);
-            animation: pageFadeUp 0.55s ease both;
+            /* Убрана дублирующая тяжелая анимация */
         }
 
         .products-hero::before {
@@ -131,14 +115,13 @@
             border-radius: 16px;
             font-weight: 900;
             font-size: 14px;
-            transition: 0.22s ease;
+            transition: background 0.2s ease, box-shadow 0.2s ease; /* Убран трансформ прыжка */
             white-space: nowrap;
             box-shadow: 0 10px 22px rgba(65, 118, 144, 0.18);
         }
 
         .btn-add:hover {
             background: #2b5063;
-            transform: translateY(-2px);
             box-shadow: 0 14px 28px rgba(43, 80, 99, 0.24);
         }
 
@@ -149,8 +132,7 @@
             background: rgba(255,255,255,0.96);
             border: 1px solid #d4e3eb;
             box-shadow: 0 12px 28px rgba(31, 59, 74, 0.07);
-            animation: pageFadeUp 0.55s ease both;
-            animation-delay: 0.08s;
+            /* Убрана задержка и анимация для тулбара */
         }
 
         .search-form {
@@ -170,13 +152,12 @@
             border-radius: 18px;
             border: 1px solid #dce5eb;
             padding: 8px 8px 8px 14px;
-            transition: 0.22s ease;
+            transition: border-color 0.22s ease, box-shadow 0.22s ease; /* Убран translateY */
         }
 
         .search-box:focus-within {
             border-color: #417690;
             box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
-            transform: translateY(-1px);
         }
 
         .search-icon {
@@ -215,13 +196,12 @@
             border-radius: 14px;
             cursor: pointer;
             font-weight: 900;
-            transition: 0.2s ease;
+            transition: background 0.2s ease, box-shadow 0.2s ease; /* Убран translateY */
             box-shadow: 0 8px 18px rgba(65, 118, 144, 0.14);
         }
 
         .search-btn:hover {
             background: #2b5063;
-            transform: translateY(-1px);
             box-shadow: 0 10px 22px rgba(43, 80, 99, 0.22);
         }
 
@@ -236,14 +216,13 @@
             cursor: pointer;
             font-size: 14px;
             color: #172033;
-            transition: 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Убран translateY */
             white-space: nowrap;
             font-weight: 800;
         }
 
         .filter-check:hover {
             border-color: #417690;
-            transform: translateY(-1px);
             box-shadow: 0 10px 18px rgba(31, 59, 74, 0.06);
         }
 
@@ -260,7 +239,7 @@
             cursor: pointer;
             font-size: 14px;
             color: #172033;
-            transition: 0.2s ease;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease; /* Убран translateY */
             font-weight: 800;
         }
 
@@ -269,7 +248,6 @@
             outline: none;
             border-color: #417690;
             box-shadow: 0 0 0 3px rgba(65, 118, 144, 0.10);
-            transform: translateY(-1px);
         }
 
         .table-shell {
@@ -278,8 +256,7 @@
             background: #ffffff;
             border: 1px solid #d4e3eb;
             box-shadow: 0 16px 36px rgba(31, 59, 74, 0.10);
-            animation: pageFadeUp 0.55s ease both;
-            animation-delay: 0.16s;
+            /* Убрана задержка загрузки таблицы */
         }
 
         .table {
@@ -311,23 +288,14 @@
 
         .table tbody tr {
             cursor: pointer;
-            transition: 0.22s ease;
-            animation: rowFadeUp 0.46s ease both;
+            transition: background 0.2s ease; /* Оставили только легкий фон при наведении */
         }
 
-        .table tbody tr:nth-child(1) { animation-delay: 0.05s; }
-        .table tbody tr:nth-child(2) { animation-delay: 0.09s; }
-        .table tbody tr:nth-child(3) { animation-delay: 0.13s; }
-        .table tbody tr:nth-child(4) { animation-delay: 0.17s; }
-        .table tbody tr:nth-child(5) { animation-delay: 0.21s; }
-        .table tbody tr:nth-child(6) { animation-delay: 0.25s; }
-        .table tbody tr:nth-child(7) { animation-delay: 0.29s; }
-        .table tbody tr:nth-child(8) { animation-delay: 0.33s; }
+        /* ПОЛНОСТЬЮ УДАЛЕНЫ ТЯЖЕЛЫЕ СТУПЕНЧАТЫЕ АНИМАЦИИ (tr:nth-child...) */
 
+        /* Теперь строки при наведении подсвечиваются без изменения своего масштаба (scale) */
         .table tbody tr:hover {
-            background: linear-gradient(90deg, #f8fbfd 0%, #ffffff 100%);
-            transform: scale(1.008);
-            box-shadow: 0 12px 24px rgba(31, 59, 74, 0.07);
+            background: #f8fbfd;
         }
 
         .table tbody tr:last-child td {
@@ -346,7 +314,7 @@
             height: 82px;
             border-radius: 22px;
             flex: 0 0 auto;
-            transition: 0.22s ease;
+            transition: opacity 0.2s ease; /* Убрали трансформацию разворота картинок */
         }
 
         .product-img {
@@ -365,9 +333,10 @@
             border: 1px solid #e1e7eb;
         }
 
+        /* При наведении на строку картинка просто аккуратно и легко подсвечивается */
         .table tbody tr:hover .product-img,
         .table tbody tr:hover .placeholder {
-            transform: scale(1.05) rotate(-1deg);
+            opacity: 0.85;
         }
 
         .product-name {
@@ -402,12 +371,9 @@
             font-weight: 950;
             font-size: 14px;
             white-space: nowrap;
-            transition: 0.2s ease;
         }
 
-        .table tbody tr:hover .qty-badge {
-            transform: scale(1.06);
-        }
+        /* Убран scale с бейджа количества при ховере на всю строку */
 
         .qty-badge.empty-stock {
             background: #fff0f0;
@@ -428,7 +394,6 @@
             border: 1px solid #e8eef2;
             box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
             color: #6f7a89;
-            animation: pageFadeUp 0.55s ease both;
         }
 
         .empty-icon {
@@ -459,8 +424,7 @@
             margin-top: 32px;
             display: flex;
             justify-content: center;
-            animation: pageFadeUp 0.55s ease both;
-            animation-delay: 0.2s;
+            /* Убраны задержки */
         }
 
         .pagination-card {
@@ -486,7 +450,7 @@
             font-weight: 800;
             color: #5f6b7a;
             text-decoration: none;
-            transition: 0.2s ease;
+            transition: background 0.2s ease, color 0.2s ease;
             border: 1px solid transparent;
         }
 
@@ -606,7 +570,7 @@
                     <input type="text"
                            name="q"
                            value="{{ query }}"
-                           placeholder="{% trans 'Поиск по названию или описанию...' %}"
+                           placeholder="{% trans 'Поиск по названием или описанию...' %}"
                            class="search-input">
 
                     <button type="submit" class="search-btn">{% trans "Найти" %}</button>
@@ -639,7 +603,6 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {# Цикл теперь идет по page_obj вместо products #}
                     {% for product in page_obj %}
                         <tr onclick="window.location.href='{% url 'products:product_detail' product.pk %}'">
                             <td>
@@ -672,7 +635,6 @@
                 </table>
             </div>
 
-           {# Блок пагинации с безопасным выводом параметров #}
 {% if page_obj.has_other_pages %}
     <div class="pagination-wrapper">
         <div class="pagination-card">

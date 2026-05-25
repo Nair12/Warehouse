@@ -53,7 +53,7 @@
         border-radius: 12px;
         text-decoration: none;
         font-weight: 700;
-        transition: 0.2s;
+        transition: background 0.2s ease, box-shadow 0.2s ease; /* Убран трансформ */
         color: white;
         font-size: 14px;
         border: none;
@@ -67,7 +67,6 @@
 
     .transfer-btn:hover {
         background: #1b5e20;
-        transform: translateY(-1px);
     }
 
     .history-btn {
@@ -76,7 +75,6 @@
 
     .history-btn:hover {
         background: #2b5063;
-        transform: translateY(-1px);
     }
 
     .toolbar {
@@ -100,7 +98,7 @@
         border: 1px solid #dde4ec;
         overflow: hidden;
         max-width: 470px;
-        transition: 0.2s;
+        transition: border-color 0.2s, box-shadow 0.2s;
     }
 
     .search-box:focus-within {
@@ -127,7 +125,7 @@
         cursor: pointer;
         font-size: 14px;
         font-weight: 700;
-        transition: 0.2s;
+        transition: background 0.2s;
     }
 
     .search-btn:hover {
@@ -146,7 +144,7 @@
         border-radius: 18px;
         padding: 18px 20px;
         border: 1px solid #e9edf2;
-        transition: 0.2s;
+        transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; /* Убран трансформ */
         text-decoration: none;
         color: inherit;
         box-shadow: 0 8px 22px rgba(0, 0, 0, 0.045);
@@ -154,8 +152,8 @@
 
     .card:hover {
         box-shadow: 0 12px 30px rgba(0, 0, 0, 0.09);
-        transform: translateY(-2px);
         border-color: #d9e4ec;
+        background: #fdfefe;
     }
 
     .row {
@@ -238,6 +236,58 @@
         padding: 34px 20px;
         font-size: 16px;
     }
+
+    /* Стили для пагинации */
+    .pagination-wrapper {
+        margin-top: 24px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination-card {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        border-radius: 16px;
+        background: #ffffff;
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+    }
+
+    .pagination-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 800;
+        color: #5f6b7a;
+        text-decoration: none;
+        transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .pagination-link:hover {
+        background: #e8f3f8;
+        color: #417690;
+    }
+
+    .pagination-current {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 34px;
+        padding: 0 10px;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 950;
+        background: #417690;
+        color: #ffffff;
+    }
 </style>
 
 <div class="container">
@@ -262,15 +312,16 @@
     <div class="toolbar">
         <form method="get" class="search-form">
             <div class="search-box">
-                <input type="text" name="q" value="{{ request.GET.q }}" placeholder="{% trans 'Поиск товара...' %}" class="search-input">
+                <input type="text" name="q" value="{{ query }}" placeholder="{% trans 'Поиск товара...' %}" class="search-input">
                 <button type="submit" class="search-btn">{% trans "Найти" %}</button>
             </div>
         </form>
     </div>
 
-    {% if inventory %}
+    {% if page_obj %}
         <div class="products-list">
-            {% for item in inventory %}
+            {# Заменили inventory на page_obj #}
+            {% for item in page_obj %}
                 <a href="{% url 'products:product_detail' item.product.pk %}" class="card">
                     <div class="row">
 
@@ -304,6 +355,30 @@
                 </a>
             {% endfor %}
         </div>
+
+        {# Блок переключения страниц каталога склада #}
+        {% if page_obj.has_other_pages %}
+            <div class="pagination-wrapper">
+                <div class="pagination-card">
+
+                    {% if page_obj.has_previous %}
+                        <a class="pagination-link" href="?page=1&q={{ query }}">&laquo;</a>
+                        <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">{% trans "Назад" %}</a>
+                    {% endif %}
+
+                    <span class="pagination-current">
+                        {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+
+                    {% if page_obj.has_next %}
+                        <a class="pagination-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">{% trans "Вперед" %}</a>
+                        <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">&raquo;</a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+
     {% else %}
         <div class="empty">
             {% trans "На складе нет товаров" %}
