@@ -28,10 +28,10 @@ jobs:
           tenant-id: ${{ secrets.WAREHOUSE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WAREHOUSE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and deploy Container App
-        uses: azure/container-apps-deploy-action@v2
-        with:
-          appSourcePath: ${{ github.workspace }}
-          containerAppName: warehouse
-          resourceGroup: Warehouse
-          dockerfilePath: ./Dockerfile
+      - name: Build and Deploy using Azure CLI
+        run: |
+          az extension add --name containerapp --upgrade
+          az containerapp up \
+            --name warehouse \
+            --resource-group Warehouse \
+            --source .
