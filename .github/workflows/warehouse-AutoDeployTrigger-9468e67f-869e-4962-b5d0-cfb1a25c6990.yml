@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '**'
 
   workflow_dispatch:
 
@@ -28,10 +26,17 @@ jobs:
           tenant-id: ${{ secrets.WAREHOUSE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WAREHOUSE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and deploy to Azure Container Apps
+      - name: Build and Deploy
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
           dockerfilePath: Dockerfile
+
+          imageToBuild: warehouseacr2026.azurecr.io/warehouse:${{ github.sha }}
+
           containerAppName: warehouse
           resourceGroup: Warehouse
+
+          registryUrl: warehouseacr2026.azurecr.io
+          registryUsername: ${{ secrets.WAREHOUSE_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.WAREHOUSE_REGISTRY_PASSWORD }}
