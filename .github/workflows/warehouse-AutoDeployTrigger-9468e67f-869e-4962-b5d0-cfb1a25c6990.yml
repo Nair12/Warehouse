@@ -1,25 +1,28 @@
 name: Trigger auto deployment for warehouse
 
+# When this action will be executed
 on:
+  # Automatically trigger it when detected changes in repo
   push:
     branches: 
-      - main
       - master
     paths:
-      - '**'
+    - '**'
+    - '.github/workflows/warehouse-AutoDeployTrigger-9468e67f-869e-4962-b5d0-cfb1a25c6990.yml'
 
+  # Allow manual trigger 
   workflow_dispatch:      
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions: 
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
 
     steps:
       - name: Checkout to the branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v2
 
       - name: Azure Login
         uses: azure/login@v2
@@ -28,15 +31,13 @@ jobs:
           tenant-id: ${{ secrets.WAREHOUSE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WAREHOUSE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and Deploy using Azure CLI
-        run: |
-          az extension add --name containerapp --upgrade
-          
-          # Включаем провайдер реестра контейнеров для твоей подписки Azure
-          az provider register --namespace Microsoft.ContainerRegistry
-          
-          # Запускаем автоматическую сборку и деплой project
-          az containerapp up \
-            --name warehouse \
-            --resource-group Warehouse \
-            --source .
+      - name: Build and push container image to registry
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          dockerfilePath: ./Dockerfile
+          containerAppName: warehouse
+          resourceGroup: Warehouse
+          registryUrl: 
+          registryUsername: ${{ secrets.WAREHOUSE_REGISTRY_USERNAME }}
+          registryPassword: ${{ secrets.WAREHOUSE_REGISTRY_PASSWORD }}
