@@ -7,8 +7,12 @@ os.environ['PGCLIENTENCODING'] = 'utf8'
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-SECRET_KEY = 'django-insecure-jv!8x+vx78217(v3#69m3ckaus2kr5)j$@sub!ysc+3_hltg=e'
-DEBUG = True
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-jv!8x+vx78217(v3#69m3ckaus2kr5)j$@sub!ysc+3_hltg=e')
+
+# 2. Безопасное переключение DEBUG.
+# В Azure мы передадим строку 'False'. Проверка '== "True"' превратит её в булево False.
+# По умолчанию (если переменная не задана локально) — True для удобства разработки.
+DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 
