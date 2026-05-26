@@ -35,7 +35,7 @@ jobs:
           # Включаем провайдер реестра контейнеров для твоей подписки Azure
           az provider register --namespace Microsoft.ContainerRegistry
           
-          # Запускаем автоматическую сборку и деплой проекта
+          # Запускаем автоматическую сборку и деплой project
           az containerapp up \
             --name warehouse \
             --resource-group Warehouse \
