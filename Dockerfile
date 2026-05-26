@@ -1,5 +1,5 @@
 # 1. Берем легкий официальный образ Python
-FROM python:3.11-slim
+FROM python:3.12-slim
 
 # 2. Устанавливаем системные зависимости для работы с PostgreSQL
 RUN apt-get update && apt-get install -y \
