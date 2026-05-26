@@ -4,16 +4,11 @@ on:
   push:
     branches:
       - master
-    paths:
-      - '**'
-      - '.github/workflows/warehouse-AutoDeployTrigger-9468e67f-869e-4962-b5d0-cfb1a25c6990.yml'
-
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     permissions:
       id-token: write
       contents: read
@@ -39,4 +34,5 @@ jobs:
           registryUrl: warehouseacr2026.azurecr.io
           registryUsername: ${{ secrets.WAREHOUSE_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.WAREHOUSE_REGISTRY_PASSWORD }}
-          imageToBuild: warehouseacr2026.azurecr.io/warehouse:${{ github.sha }}
+          # ЗАМЕНИЛИ НА LATEST:
+          imageToBuild: warehouseacr2026.azurecr.io/warehouse:latest
