@@ -1,28 +1,25 @@
 name: Trigger auto deployment for warehouse
 
-# When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
   push:
-    branches: 
-      [ master ]
+    branches:
+      - master
     paths:
-    - '**'
-    - '.github/workflows/warehouse-AutoDeployTrigger-636c54e8-9b48-414e-af3f-dafe321f8df2.yml'
+      - '**'
+      - '.github/workflows/warehouse-AutoDeployTrigger-*.yml'
 
-  # Allow manual trigger 
-  workflow_dispatch:      
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+    permissions:
+      id-token: write  # Нужно для авторизации через OIDC
+      contents: read   # Нужно для чтения кода из репозитория
 
     steps:
       - name: Checkout to the branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -31,19 +28,10 @@ jobs:
           tenant-id: ${{ secrets.WAREHOUSE_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.WAREHOUSE_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Build and deploy to Container App
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
-          registryUrl: 
-          registryUsername: ${{ secrets.WAREHOUSE_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.WAREHOUSE_REGISTRY_PASSWORD }}
           containerAppName: warehouse
           resourceGroup: Warehouse
-          imageToBuild: default/[parameters('containerAppName')]:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          dockerfilePath: Dockerfile  # Убедись, что файл называется именно Dockerfile и лежит в корне проекта
