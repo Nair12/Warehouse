@@ -12,10 +12,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout to the branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -34,5 +33,5 @@ jobs:
           registryUrl: warehouseacr2026.azurecr.io
           registryUsername: ${{ secrets.WAREHOUSE_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.WAREHOUSE_REGISTRY_PASSWORD }}
-          # ЗАМЕНИЛИ НА LATEST:
-          imageToBuild: warehouseacr2026.azurecr.io/warehouse:latest
+          # Теперь тег будет динамическим (например: warehouse:a1b2c3d)
+          imageToBuild: warehouseacr2026.azurecr.io/warehouse:${{ github.sha }}
