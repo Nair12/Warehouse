@@ -14,12 +14,11 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-jv!8x+vx78217(v3#69
 # По умолчанию (если переменная не задана локально) — True для удобства разработки.
 DEBUG = os.getenv('DJANGO_DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://*.ngrok-free.dev",
-    "https://*.ngrok-free.app",
-]
+ALLOWED_HOSTS = [os.getenv('ALLOWED_HOSTS', '*')]
+
+
+CSRF_TRUSTED_ORIGINS = [os.getenv('CSRF_TRUSTED_ORIGINS', 'http://localhost:8000')]
 
 
 # Application definition
