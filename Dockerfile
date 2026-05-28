@@ -25,4 +25,6 @@ EXPOSE 8000
 
 # 8. Команда для запуска Django через production-сервер Gunicorn
 # Замените 'myproject' на название папки, где лежит ваш файл wsgi.py
+RUN python manage.py collectstatic --noinput
+
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "Warehouse.wsgi:application"]
