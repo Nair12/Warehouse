@@ -149,15 +149,21 @@ def warehouse_create_view(request):
     return render(request, 'warehouse_add.html', {'form': form})
 
 
-@role_required(["admin", "manager", "reader","senior_manager"])
+@role_required(["admin", "manager", "reader", "senior_manager"])
 def warehouse_list_view(request):
-    warehouses = (
-        Warehouse.objects
-        .annotate(
-            total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
-        )
-        .order_by("-created_at")
+    user = request.user
+
+
+    warehouses = Warehouse.objects.annotate(
+        total_quantity=Coalesce(Sum("inventory_items__quantity"), 0)
     )
+
+
+    if user.is_authenticated and user.warehouse_id:
+        warehouses = warehouses.filter(id=user.warehouse_id)
+
+    # В конце применяем сортировку
+    warehouses = warehouses.order_by("-created_at")
 
     return render(request, 'warehouse_list.html', {'warehouses': warehouses})
 
