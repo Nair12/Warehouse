@@ -58,6 +58,20 @@
             font-size: 14px;
         }
 
+        /* Новая стильная плашка для склада */
+        .warehouse-badge {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            color: #ffe082;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .user-name {
             background: rgba(255, 255, 255, 0.1);
             padding: 5px 12px;
@@ -182,8 +196,8 @@
     </div>
 
     <nav class="nav-menu">
-        <a href="{% url 'products:product_list' %}">Товары</a>
-        <a href="{% url 'products:warehouse_reader_list'%}">Склады</a>
+        <a href="{% url 'products:product_list' %}">{% translate "Товары" %}</a>
+        <a href="{% url 'products:warehouse_reader_list' %}">{% translate "Склады" %}</a>
     </nav>
 
     <div class="user-block">
@@ -202,19 +216,26 @@
         </div>
 
         {% if user.is_authenticated %}
-        <a href="/redirect-by-role/" class="user-name">
-            👤 {{ user.username }}
-        </a>
+            {# ПРОВЕРКА: Если у пользователя привязан склад, выводим красивую плашку #}
+            {% if user.warehouse %}
+                <div class="warehouse-badge">
+                    📍 {% translate "Склад" %}: {{ user.warehouse.city }}
+                </div>
+            {% endif %}
 
-        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn"
-                    style="background:none; border:none; cursor:pointer; font-family: inherit;">
-                Выйти
-            </button>
-        </form>
+            <a href="/redirect-by-role/" class="user-name">
+                👤 {{ user.username }}
+            </a>
+
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="logout-btn"
+                        style="background:none; border:none; cursor:pointer; font-family: inherit;">
+                    {% translate "Выйти" %}
+                </button>
+            </form>
         {% else %}
-        <a href="{% url 'login' %}" style="color: white; text-decoration: none;">Войти</a>
+            <a href="{% url 'login' %}" style="color: white; text-decoration: none;">{% translate "Войти" %}</a>
         {% endif %}
     </div>
 </header>
