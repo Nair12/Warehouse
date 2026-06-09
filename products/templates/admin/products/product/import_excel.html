@@ -1,0 +1,24 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>Импорт товаров из Excel</h1>
+
+    <p>
+        Excel файл обязательно должен содержать колонки:
+    </p>
+
+    <ul>
+        <li><strong>name</strong> — название товара</li>
+        <li><strong>description</strong> — описание товара</li>
+        <li><strong>unit</strong> — pcs или kg</li>
+    </ul>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="default">
+            Загрузить
+        </button>
+    </form>
+{% endblock %}
