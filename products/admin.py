@@ -1,9 +1,10 @@
 from django.contrib import admin, messages
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.urls import path
 from django import forms
 
-from openpyxl import load_workbook
+from openpyxl import Workbook, load_workbook
 
 from .models import Product, Inventory
 
@@ -29,8 +30,37 @@ class ProductAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.import_excel),
                 name="products_product_import_excel",
             ),
+            path(
+                "export-excel/",
+                self.admin_site.admin_view(self.export_excel),
+                name="products_product_export_excel",
+            ),
         ]
         return custom_urls + urls
+
+    def export_excel(self, request):
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "Products"
+
+        sheet.append(["name", "description", "unit"])
+
+        products = Product.objects.all().order_by("name")
+
+        for product in products:
+            sheet.append([
+                product.name,
+                product.description or "",
+                product.unit,
+            ])
+
+        response = HttpResponse(
+            content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response["Content-Disposition"] = 'attachment; filename="products_export.xlsx"'
+
+        workbook.save(response)
+        return response
 
     def import_excel(self, request):
         if request.method == "POST":
@@ -88,6 +118,11 @@ class ProductAdmin(admin.ModelAdmin):
                         name = str(name).strip()
                         description = str(description).strip()
                         unit = str(unit).strip().lower()
+
+                        if unit in ["шт", "штук", "pcs", "pc"]:
+                            unit = Product.UNIT_PIECE
+                        elif unit in ["кг", "kg"]:
+                            unit = Product.UNIT_KG
 
                         if unit not in allowed_units:
                             skipped_invalid_unit_count += 1
