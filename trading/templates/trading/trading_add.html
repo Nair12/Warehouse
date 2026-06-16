@@ -730,18 +730,15 @@ document.addEventListener("DOMContentLoaded", function () {
             optionsBox.classList.add("show");
         });
 
-        input.addEventListener("input", function() {
-            selectElement.value = "";
-            renderOptions();
-            optionsBox.classList.add("show");
+     input.addEventListener("input", function() {
+    if (input.value === "") {
+        selectElement.value = "";
+        selectElement.dispatchEvent(new Event("change", { bubbles: true }));
+    }
 
-            selectElement.dispatchEvent(new Event("change", { bubbles: true }));
-
-            if (typeof onChangeCallback === "function") {
-                onChangeCallback();
-            }
-        });
-
+    renderOptions();
+    optionsBox.classList.add("show");
+     });
         document.addEventListener("mousedown", function(event) {
             if (!wrapper.contains(event.target)) {
                 optionsBox.classList.remove("show");
