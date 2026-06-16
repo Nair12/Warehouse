@@ -15,6 +15,14 @@ class CustomUser(AbstractUser):
         default=Roles.READER,
         verbose_name="Роль"
     )
+    warehouse = models.ForeignKey(
+        "warehouses.Warehouse",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="users",
+        verbose_name="Привязанный склад",
+    )
 
     timezone = models.CharField(
         max_length=50,
