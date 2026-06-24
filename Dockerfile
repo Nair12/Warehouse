@@ -20,6 +20,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 # 6. Копируем весь остальной код проекта в контейнер
 COPY . /app/
 
+RUN python manage.py compilemessages
+
 # 7. Открываем порт (в ACA встроенный прокси сам перенаправит трафик сюда)
 EXPOSE 8000
 
