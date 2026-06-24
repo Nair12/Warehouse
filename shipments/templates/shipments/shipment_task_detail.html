@@ -1,0 +1,535 @@
+{% extends "base_manager.html" %}
+{% load i18n %}
+
+{% block title %}Задание на отправку{% endblock %}
+
+{% block manager_content %}
+<style>
+    @keyframes pageFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes cardFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+            filter: blur(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    .shipment-detail-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .shipment-hero {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+        margin-bottom: 24px;
+        padding: 32px;
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(121, 174, 200, 0.20), transparent 36%),
+            linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 38px rgba(31, 59, 74, 0.10);
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .shipment-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    }
+
+    .hero-left,
+    .hero-right {
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
+    }
+
+    .shipment-title {
+        margin: 0;
+        color: #07172f;
+        font-size: 44px;
+        line-height: 1.05;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+    }
+
+    .shipment-subtitle {
+        margin: 12px 0 0;
+        color: #6f7a89;
+        font-size: 16px;
+        line-height: 1.55;
+        font-weight: 650;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 0 13px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        white-space: nowrap;
+        border: 1px solid transparent;
+    }
+
+    .status-new {
+        background: #fff0f0;
+        color: #c0392b;
+        border-color: #f2c1bc;
+    }
+
+    .status-seen {
+        background: #fff8e1;
+        color: #a66a00;
+        border-color: #f1d48a;
+    }
+
+    .status-shipped {
+        background: #e9f8ef;
+        color: #2e7d32;
+        border-color: #bde4c9;
+    }
+
+    .status-problem {
+        background: #eef2f5;
+        color: #455a64;
+        border-color: #d7e0e6;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        margin-bottom: 22px;
+    }
+
+    .detail-card {
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.07);
+        animation: cardFadeUp 0.45s ease both;
+    }
+
+    .detail-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18px;
+        bottom: 18px;
+        width: 5px;
+        border-radius: 0 999px 999px 0;
+        background: #417690;
+    }
+
+    .detail-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 18px;
+    }
+
+    .detail-icon {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        background: #e8f3f8;
+        color: #417690;
+        border: 1px solid #c7dfeb;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .detail-card h2 {
+        margin: 0;
+        color: #07172f;
+        font-size: 24px;
+        font-weight: 950;
+        letter-spacing: -0.25px;
+    }
+
+    .info-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .info-row {
+        padding: 14px 16px;
+        border-radius: 16px;
+        background: #f3f8fb;
+        border: 1px solid #d4e3eb;
+    }
+
+    .info-label {
+        margin-bottom: 5px;
+        color: #6f7a89;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .info-value {
+        color: #172033;
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+
+    .items-card {
+        margin-bottom: 22px;
+    }
+
+    .item-line {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 0;
+        border-bottom: 1px solid #e8eef2;
+        color: #172033;
+        font-size: 16px;
+        font-weight: 900;
+    }
+
+    .item-line:last-child {
+        border-bottom: none;
+    }
+
+    .item-icon {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 13px;
+        background: #e8f3f8;
+        color: #417690;
+        border: 1px solid #c7dfeb;
+        flex-shrink: 0;
+    }
+
+    .comment-card {
+        margin-bottom: 22px;
+        background: linear-gradient(135deg, #fffdf2 0%, #ffffff 100%);
+        border-color: #f0dfaa;
+    }
+
+    .comment-card::before {
+        background: #d9a928;
+    }
+
+    .comment-text {
+        color: #4d4d4d;
+        font-size: 15px;
+        line-height: 1.65;
+        font-weight: 700;
+    }
+
+    .actions-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: #ffffff;
+        border: 1px solid #d4e3eb;
+        border-radius: 24px;
+        padding: 18px;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.05);
+        animation: cardFadeUp 0.45s ease both;
+        animation-delay: 0.12s;
+    }
+
+    .shipment-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 14px;
+        background: #417690;
+        color: #ffffff;
+        border: none;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.18);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        white-space: nowrap;
+    }
+
+    .shipment-btn:hover {
+        background: #2b5063;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(43, 80, 99, 0.22);
+    }
+
+    .shipment-btn.green {
+        background: #2e7d32;
+        box-shadow: 0 8px 18px rgba(46, 125, 50, 0.18);
+    }
+
+    .shipment-btn.green:hover {
+        background: #1b5e20;
+        box-shadow: 0 12px 24px rgba(27, 94, 32, 0.22);
+    }
+
+    .shipment-btn.red {
+        background: #c62828;
+        box-shadow: 0 8px 18px rgba(198, 40, 40, 0.16);
+    }
+
+    .shipment-btn.red:hover {
+        background: #a91f1f;
+        box-shadow: 0 12px 24px rgba(169, 31, 31, 0.22);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 14px;
+        color: #2b5063;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 900;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .back-link:hover {
+        background: #d8ebf3;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(31, 59, 74, 0.09);
+    }
+
+    .inline-form {
+        display: inline-flex;
+        margin: 0;
+    }
+
+    @media (max-width: 900px) {
+        .shipment-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-card {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .inline-form,
+        .shipment-btn,
+        .back-link {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .shipment-hero {
+            padding: 24px;
+            border-radius: 22px;
+        }
+
+        .shipment-title {
+            font-size: 34px;
+        }
+
+        .detail-card {
+            border-radius: 22px;
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="shipment-detail-page">
+
+    <section class="shipment-hero">
+        <div class="hero-left">
+            <div class="page-eyebrow">🚚 {% trans "Задание на отправку" %}</div>
+
+            <h1 class="shipment-title">
+                {% trans "Отправить в" %} {{ task.destination }}
+            </h1>
+
+            <p class="shipment-subtitle">
+                {% trans "Детальный просмотр задания, товаров, исполнителя и текущего статуса." %}
+            </p>
+        </div>
+
+        <div class="hero-right">
+            <span class="status-badge status-{{ task.status }}">
+                {{ task.get_status_display }}
+            </span>
+        </div>
+    </section>
+
+    <div class="detail-grid">
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <div class="detail-icon">👤</div>
+                <h2>{% trans "Получатель" %}</h2>
+            </div>
+
+            <div class="info-list">
+                <div class="info-row">
+                    <div class="info-label">{% trans "Кому" %}</div>
+                    <div class="info-value">{{ task.recipient_name }}</div>
+                </div>
+
+                {% if task.recipient_contact %}
+                    <div class="info-row">
+                        <div class="info-label">{% trans "Контакт" %}</div>
+                        <div class="info-value">{{ task.recipient_contact }}</div>
+                    </div>
+                {% endif %}
+
+                <div class="info-row">
+                    <div class="info-value">{{ task.destination }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-card">
+            <div class="detail-card-title">
+                <div class="detail-icon">🧾</div>
+                <h2>{% trans "Информация" %}</h2>
+            </div>
+
+            <div class="info-list">
+                <div class="info-row">
+                    <div class="info-label">{% trans "Исполнитель" %}</div>
+                    <div class="info-value">{{ task.assigned_to.username }}</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">{% trans "Создал" %}</div>
+                    <div class="info-value">{{ task.created_by.username }}</div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">{% trans "Дата создания" %}</div>
+                    <div class="info-value">{{ task.created_at|date:"d.m.Y H:i" }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="detail-card items-card">
+        <div class="detail-card-title">
+            <div class="detail-icon">📦</div>
+            <h2>{% trans "Что отправить" %}</h2>
+        </div>
+
+        {% for item in task.items.all %}
+            <div class="item-line">
+                <span class="item-icon">×</span>
+                <span>{{ item.quantity }} × {{ item.product.name }}</span>
+            </div>
+        {% empty %}
+            <div class="item-line">
+                <span class="item-icon">—</span>
+                <span>{% trans "Товары не указаны" %}</span>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if task.comment %}
+        <div class="detail-card comment-card">
+            <div class="detail-card-title">
+                <div class="detail-icon">💬</div>
+                <h2>{% trans "Комментарий" %}</h2>
+            </div>
+
+            <div class="comment-text">
+                {{ task.comment|linebreaksbr }}
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="actions-card">
+        {% if task.status != task.STATUS_SHIPPED %}
+            <form method="post" action="{% url 'shipments:shipment_task_mark_shipped' task.pk %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="shipment-btn green">
+                    {% trans "Отправлено" %}
+                </button>
+            </form>
+
+            <form method="post" action="{% url 'shipments:shipment_task_mark_problem' task.pk %}" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="shipment-btn red">
+                    {% trans "Проблема" %}
+                </button>
+            </form>
+        {% endif %}
+
+        <a href="{% url 'shipments:shipment_task_list' %}" class="back-link">
+            ← {% trans "Назад" %}
+        </a>
+    </div>
+
+</div>
+{% endblock %}

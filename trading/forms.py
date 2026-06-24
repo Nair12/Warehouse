@@ -33,6 +33,21 @@ class TradingForm(forms.ModelForm):
             'comment': _('Комментарий'),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            self.fields['trade_type'].disabled = True
+            self.fields['trade_type'].help_text = _(
+                'Тип операции нельзя менять после создания сделки, чтобы не нарушить складские остатки.'
+            )
+
+    def clean_trade_type(self):
+        if self.instance and self.instance.pk:
+            return self.instance.trade_type
+
+        return self.cleaned_data.get('trade_type')
+
 
 class TradingItemForm(forms.ModelForm):
     class Meta:

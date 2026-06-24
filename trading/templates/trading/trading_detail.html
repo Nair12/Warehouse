@@ -256,6 +256,118 @@
 .badge.done { background:#e6f7ec; color:#2e7d32; }
 .badge.fail { background:#ffecec; color:#c0392b; }
 
+.fulfillment-history {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fulfillment-log-card {
+    width: 100%;
+    padding: 16px 18px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #f8fbfd 0%, #f3f8fb 100%);
+    border: 3px solid #8ea5b3;
+    border-left: 4px solid #f0ad4e;
+    box-shadow: 0 6px 18px rgba(31, 59, 74, 0.06);
+}
+
+.fulfillment-log-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dce8ef;
+}
+
+.fulfillment-log-date {
+    color: #172033;
+    font-size: 14px;
+    font-weight: 950;
+}
+
+.fulfillment-log-user {
+    color: #6f7a89;
+    font-size: 13px;
+    font-weight: 850;
+    text-align: right;
+}
+
+.fulfillment-items {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.fulfillment-line-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding: 8px 0;
+    color: #4e5f6d;
+    font-size: 14px;
+    font-weight: 850;
+    line-height: 1.35;
+    border-bottom: 1px dashed #dce8ef;
+}
+
+.fulfillment-line-row:last-child {
+    border-bottom: none;
+}
+
+.fulfillment-product {
+    min-width: 170px;
+    color: #172033;
+    font-weight: 950;
+}
+
+.fulfillment-warehouse {
+    min-width: 90px;
+    color: #4e5f6d;
+    font-weight: 900;
+}
+
+.fulfillment-added {
+    color: #1f7a3a;
+    background: #e6f7ec;
+    border: 1px solid #a9dbba;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.fulfillment-progress {
+    color: #2b5063;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.fulfillment-remaining {
+    color: #856404;
+    background: #fff7df;
+    border: 1px solid #f3d57c;
+    padding: 4px 9px;
+    border-radius: 999px;
+    font-weight: 950;
+    white-space: nowrap;
+}
+
+.fulfillment-separator {
+    color: #b4c1cb;
+    font-weight: 900;
+}
+
+.fulfillment-fallback {
+    color: #4e5f6d;
+    font-size: 14px;
+    line-height: 1.55;
+    font-weight: 850;
+}
+
 .comments-box {
     background: #f8fafc;
     border: 1px solid #d0d7de; box-shadow: 0 4px 12px rgba(0,0,0,0.06);
@@ -543,6 +655,52 @@
         {% endfor %}
     {% else %}
         <p>{% trans "Нет документов" %}</p>
+    {% endif %}
+</div>
+
+<div class="card">
+    <div class="section-title">{% trans "История доотправок" %}</div>
+
+    {% if fulfillment_logs %}
+        <div class="fulfillment-history">
+            {% for log in fulfillment_logs %}
+                <div class="fulfillment-log-card">
+                    <div class="fulfillment-log-header">
+                        <div class="fulfillment-log-date">
+                            {{ log.created_at|date:"d.m.Y H:i" }}
+                        </div>
+
+                        <div class="fulfillment-log-user">
+                            {% if log.user %}
+                                {{ log.user.username }}
+                            {% else %}
+                                —
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if log.display_items %}
+                        <div class="fulfillment-items">
+                            {% for item in log.display_items %}
+                                <div class="fulfillment-line-row">
+                                    <span class="fulfillment-product">{{ item.product }}</span>
+                                    <span class="fulfillment-warehouse">{{ item.warehouse }}</span>
+                                    <span class="fulfillment-added">+{{ item.added_quantity }}</span>
+                                    <span class="fulfillment-progress">{{ item.fulfilled_before }} → {{ item.fulfilled_after }}</span>
+                                    <span class="fulfillment-remaining">{% trans "Осталось" %}: {{ item.remaining_after }}</span>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="fulfillment-fallback">
+                            {{ log.description|linebreaksbr }}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>{% trans "Доотправок пока нет" %}</p>
     {% endif %}
 </div>
 

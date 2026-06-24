@@ -6,15 +6,197 @@
     <meta charset="UTF-8">
     <title>{% block title %}Мой Склад{% endblock %}</title>
     <link rel="icon" href="{% static 'images/favicon.ico' %}">
+
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f7f9;
-            color: #333;
+        * {
+            box-sizing: border-box;
         }
 
-        /* Главный хедер */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f7f9;
+            color: #172033;
+        }
+
+        /* ===== MANAGER HEADER ===== */
+
+        .manager-header-shell {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background:
+                radial-gradient(circle at 15% 0%, rgba(121, 174, 200, 0.35), transparent 34%),
+                linear-gradient(135deg, #2b5063 0%, #417690 55%, #2f667e 100%);
+            box-shadow: 0 16px 34px rgba(31, 59, 74, 0.18);
+        }
+
+        .manager-header-top {
+            padding: 18px 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .manager-logo-text {
+            font-size: 24px;
+            font-weight: 950;
+            letter-spacing: 1.2px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+            white-space: nowrap;
+        }
+
+        .manager-header-user {
+            color: rgba(255, 255, 255, 0.92);
+            font-size: 14px;
+            font-weight: 750;
+            white-space: nowrap;
+        }
+
+        .manager-header-user strong {
+            color: #ffffff;
+            font-weight: 950;
+        }
+
+        .manager-header-nav {
+            padding: 12px 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            background: rgba(121, 174, 200, 0.42);
+            backdrop-filter: blur(12px);
+        }
+
+        .manager-nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .manager-nav-links a {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            min-height: 38px;
+            padding: 0 12px;
+            border-radius: 12px;
+            color: rgba(255, 255, 255, 0.92);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 900;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .manager-nav-links a:hover {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .manager-nav-links a.active {
+            background: rgba(255, 255, 255, 0.22);
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+        }
+
+        .manager-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+
+        .manager-search-form {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin: 0;
+        }
+
+        .manager-search-input {
+            width: 260px;
+            height: 44px;
+            padding: 0 52px 0 16px;
+            border: 1px solid rgba(255, 255, 255, 0.30);
+            border-radius: 16px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.96);
+            color: #172033;
+            font-size: 14px;
+            font-weight: 700;
+            box-shadow: 0 10px 24px rgba(31, 59, 74, 0.12);
+            transition: width 0.2s, border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .manager-search-input::placeholder {
+            color: #7c8797;
+            font-weight: 650;
+        }
+
+        .manager-search-input:focus {
+            width: 320px;
+            border-color: rgba(255, 255, 255, 0.85);
+            box-shadow:
+                0 12px 28px rgba(31, 59, 74, 0.18),
+                0 0 0 4px rgba(255, 255, 255, 0.18);
+        }
+
+        .manager-search-btn {
+            position: absolute;
+            right: 5px;
+            width: 34px;
+            height: 34px;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2b5063, #1f3b4a);
+            color: #ffffff;
+            cursor: pointer;
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 8px 18px rgba(31, 59, 74, 0.20);
+        }
+
+        .manager-search-btn:hover {
+            background: linear-gradient(135deg, #1f3b4a, #172033);
+        }
+
+        .manager-logout-form {
+            display: inline-flex;
+            margin: 0;
+        }
+
+        .manager-logout-btn {
+            min-height: 40px;
+            padding: 0 13px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+            cursor: pointer;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 900;
+            transition: background 0.2s;
+        }
+
+        .manager-logout-btn:hover {
+            background: rgba(255, 255, 255, 0.22);
+        }
+
+        /* ===== READER HEADER ===== */
+
         .main-header {
             background: #417690;
             color: white;
@@ -33,7 +215,6 @@
             text-transform: uppercase;
         }
 
-        /* Навигация */
         .nav-menu {
             display: flex;
             gap: 20px;
@@ -50,7 +231,6 @@
             color: white;
         }
 
-        /* Блок пользователя и экшенов */
         .user-block {
             display: flex;
             align-items: center;
@@ -58,7 +238,6 @@
             font-size: 14px;
         }
 
-        /* Новая стильная плашка для склада */
         .warehouse-badge {
             background: rgba(255, 193, 7, 0.2);
             border: 1px solid rgba(255, 193, 7, 0.4);
@@ -91,14 +270,6 @@
             text-decoration: underline;
         }
 
-        /* Контейнер для контента */
-        .main-container {
-            max-width: 1200px;
-            margin: 30px auto;
-            padding: 0 20px;
-        }
-
-        /* Облегченный селектор языка под стиль этого хедера */
         .language-switcher {
             display: flex;
             align-items: center;
@@ -151,94 +322,232 @@
             background: #ffffff;
         }
 
-        /* Облегченные бренд-блок эффекты (без прыжков геометрии) */
-        .brand {
-            display: flex;
+        .main-container {
+            width: 100%;
+        }
+
+
+        .shipment-badge {
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
+            justify-content: center;
+            min-width: 18px;
+            height: 18px;
+            padding: 0 5px;
+            margin-left: 6px;
+            background: #ef4444;
+            color: #fff;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1;
+            animation: shipmentPulse 2s infinite;
         }
 
-        .logo-img {
-            width: 36px;
-            height: 36px;
-            object-fit: cover;
-            border-radius: 8px;
-            padding: 4px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-            transition: opacity 0.2s ease;
+        @keyframes shipmentPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
         }
 
-        .logo-img:hover {
-            opacity: 0.85;
+
+        @media (max-width: 1100px) {
+            .manager-header-nav {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .manager-header-actions {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .manager-search-form {
+                width: 100%;
+            }
+
+            .manager-search-input,
+            .manager-search-input:focus {
+                width: 100%;
+            }
         }
 
-        .logo-text {
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background: linear-gradient(45deg, #ffffff, #dceeff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            transition: opacity 0.2s ease;
-        }
+        @media (max-width: 900px) {
+            .manager-header-top {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 16px;
+            }
 
-        .logo-text:hover {
-            opacity: 0.9;
+            .manager-header-nav {
+                padding: 12px 16px;
+            }
+
+            .manager-nav-links {
+                gap: 6px;
+            }
+
+            .manager-nav-links a {
+                min-height: 34px;
+                padding: 0 10px;
+                font-size: 13px;
+            }
+
+            .manager-header-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .manager-logout-btn {
+                width: 100%;
+            }
+
+            .main-header {
+                height: auto;
+                min-height: 60px;
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
-<header class="main-header">
-    <div class="logo">
-        Warehouse
-    </div>
+{% if user.is_authenticated and user.role == "manager" or user.is_authenticated and user.role == "senior_manager" or user.is_authenticated and user.role == "admin" %}
+    <div class="manager-header-shell">
+        <div class="manager-header-top">
+            <div class="manager-logo-text">Warehouse Manager</div>
 
-    <nav class="nav-menu">
-        <a href="{% url 'products:product_list' %}">{% translate "Товары" %}</a>
-        <a href="{% url 'products:warehouse_reader_list' %}">{% translate "Склады" %}</a>
-    </nav>
-
-    <div class="user-block">
-        <div class="language-switcher">
-            <form action="{% url 'set_language' %}" method="post" class="language-select-form">
-                {% csrf_token %}
-                <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                <div class="language-select-wrap">
-                    <select name="language" class="language-select" onchange="this.form.submit()">
-                        <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
-                        <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
-                        <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
-                    </select>
-                </div>
-            </form>
+            <div class="manager-header-user">
+                {% trans "Добро пожаловать" %}, <strong>{{ request.user.username }}</strong>
+            </div>
         </div>
 
-        {% if user.is_authenticated %}
-            {# ПРОВЕРКА: Если у пользователя привязан склад, выводим красивую плашку #}
-            {% if user.warehouse %}
-                <div class="warehouse-badge">
-                    📍 {% translate "Склад" %}: {{ user.warehouse.city }}
+        <div class="manager-header-nav">
+            <nav class="manager-nav-links">
+                <a href="{% url 'manager_dashboard' %}" class="{% if request.resolver_match.url_name == 'manager_dashboard' %}active{% endif %}">
+                    {% trans "Панель" %}
+                </a>
+
+                <a href="{% url 'trading_list' %}" class="{% if request.resolver_match.url_name == 'trading_list' %}active{% endif %}">
+                    {% trans "Сделки" %}
+                </a>
+
+                <a href="{% url 'orders_list' %}" class="{% if request.resolver_match.url_name == 'orders_list' %}active{% endif %}">
+                    {% trans "Заказы" %}
+                </a>
+
+                {% if request.user.role == "admin" %}
+                    <a href="{% url 'admin_trading_history' %}" class="{% if request.resolver_match.url_name == 'admin_trading_history' %}active{% endif %}">
+                        {% trans "История" %}
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'warehouse_list' %}" class="{% if request.resolver_match.url_name == 'warehouse_list' %}active{% endif %}">
+                    {% trans "Склады" %}
+                </a>
+
+                <a href="{% url 'products:product_list' %}" class="{% if request.resolver_match.namespace == 'products' %}active{% endif %}">
+                    {% trans "Товары" %}
+                </a>
+
+                <a href="{% url 'warehouses:warehouse_transfer_history' %}" class="{% if request.resolver_match.namespace == 'warehouses' %}active{% endif %}">
+                    {% trans "Перемещения" %}
+                </a>
+
+                <a href="{% url 'shipments:shipment_task_list' %}" class="{% if request.resolver_match.namespace == 'shipments' %}active{% endif %}">
+                    {% trans "Отправки" %}
+
+                    {% if shipment_pending_count > 0 %}
+                        <span class="shipment-badge">
+                            {% if shipment_pending_count > 99 %}
+                                99+
+                            {% else %}
+                                {{ shipment_pending_count }}
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                </a>
+            </nav>
+
+            <div class="manager-header-actions">
+                <div class="language-switcher">
+                    <form action="{% url 'set_language' %}" method="post" class="language-select-form">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <div class="language-select-wrap">
+                            <select name="language" class="language-select" onchange="this.form.submit()">
+                                <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
+                                <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
+                                <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
+                            </select>
+                        </div>
+                    </form>
                 </div>
-            {% endif %}
 
-            <a href="/redirect-by-role/" class="user-name">
-                👤 {{ user.username }}
-            </a>
+                <form method="get" action="{% url 'global_search' %}" class="manager-search-form">
+                    <input type="text" name="q" placeholder="{% trans 'Поиск по системе...' %}" class="manager-search-input">
+                    <button type="submit" class="manager-search-btn" title="{% trans 'Поиск' %}">🔍</button>
+                </form>
 
-            <form action="{% url 'logout' %}" method="post" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="logout-btn"
-                        style="background:none; border:none; cursor:pointer; font-family: inherit;">
-                    {% translate "Выйти" %}
-                </button>
-            </form>
-        {% else %}
-            <a href="{% url 'login' %}" style="color: white; text-decoration: none;">{% translate "Войти" %}</a>
-        {% endif %}
+                <form method="post" action="{% url 'logout' %}" class="manager-logout-form">
+                    {% csrf_token %}
+                    <button type="submit" class="manager-logout-btn">{% trans "Выход" %}</button>
+                </form>
+            </div>
+        </div>
     </div>
-</header>
+{% else %}
+    <header class="main-header">
+        <div class="logo">
+            Warehouse
+        </div>
+
+        <nav class="nav-menu">
+            <a href="{% url 'products:product_list' %}">{% translate "Товары" %}</a>
+            <a href="{% url 'products:warehouse_reader_list' %}">{% translate "Склады" %}</a>
+        </nav>
+
+        <div class="user-block">
+            <div class="language-switcher">
+                <form action="{% url 'set_language' %}" method="post" class="language-select-form">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                    <div class="language-select-wrap">
+                        <select name="language" class="language-select" onchange="this.form.submit()">
+                            <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
+                            <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
+                            <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+
+            {% if user.is_authenticated %}
+                {% if user.warehouse %}
+                    <div class="warehouse-badge">
+                        📍 {% translate "Склад" %}: {{ user.warehouse.city }}
+                    </div>
+                {% endif %}
+
+                <a href="/redirect-by-role/" class="user-name">
+                    👤 {{ user.username }}
+                </a>
+
+                <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="logout-btn"
+                            style="background:none; border:none; cursor:pointer; font-family: inherit;">
+                        {% translate "Выйти" %}
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}" style="color: white; text-decoration: none;">{% translate "Войти" %}</a>
+            {% endif %}
+        </div>
+    </header>
+{% endif %}
 
 <main class="main-container">
     {% block content %}{% endblock %}

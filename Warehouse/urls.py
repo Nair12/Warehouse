@@ -58,6 +58,11 @@ urlpatterns += i18n_patterns(
         'warehouses/',
         include(('warehouses.urls', 'warehouses'), namespace='warehouses')
     ),
+
+    path(
+        'shipments/',
+        include(('shipments.urls', 'shipments'), namespace='shipments')
+    ),
 )
 
 

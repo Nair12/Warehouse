@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Warehouse Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 14:05+0200\n"
+"POT-Creation-Date: 2026-06-24 15:18+0400\n"
 "PO-Revision-Date: 2026-05-07 11:20+0400\n"
 "Last-Translator: Warehouse Team\n"
 "Language-Team: English\n"
@@ -12,15 +12,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: .\Warehouse\settings.py:120
+#: .\Warehouse\settings.py:122
 msgid "Русский"
 msgstr "Russian"
 
-#: .\Warehouse\settings.py:121
+#: .\Warehouse\settings.py:123
 msgid "English"
 msgstr "English"
 
-#: .\Warehouse\settings.py:122
+#: .\Warehouse\settings.py:124
 msgid "Türkçe"
 msgstr "Turkish"
 
@@ -37,33 +37,89 @@ msgstr "kg"
 msgid "Единица измерения"
 msgstr "Unit of measurement"
 
-#: .\products\templates\products\base.html:199
-#: .\products\templates\products\product_list.html:547
-#: .\users\templates\base_manager.html:594
-#: .\users\templates\users\manager_dashboard.html:560
-msgid "Товары"
-msgstr "Products"
+#: .\products\templates\products\base.html:423
+#: .\users\templates\base_manager.html:589
+msgid "Добро пожаловать"
+msgstr "Welcome"
 
-#: .\products\templates\products\base.html:200
-#: .\users\templates\base_manager.html:590
+#: .\products\templates\products\base.html:430
+#: .\users\templates\base_manager.html:596
+msgid "Панель"
+msgstr "Dashboard"
+
+#: .\products\templates\products\base.html:434
+#: .\trading\templates\trading\trading_list.html:4
+#: .\users\templates\base_manager.html:600
+msgid "Сделки"
+msgstr "Deals"
+
+#: .\products\templates\products\base.html:438 .\trading\views.py:270
+#: .\users\templates\base_manager.html:604
+msgid "Заказы"
+msgstr "Orders"
+
+#: .\products\templates\products\base.html:443
+#: .\users\templates\base_manager.html:609
+msgid "История"
+msgstr "History"
+
+#: .\products\templates\products\base.html:448
+#: .\products\templates\products\base.html:509
+#: .\users\templates\base_manager.html:614
 #: .\users\templates\users\manager_dashboard.html:569
 #: .\users\templates\warehouse_list.html:271
 msgid "Склады"
 msgstr "Warehouses"
 
-#: .\products\templates\products\base.html:222
-#: .\products\templates\products\product_detail.html:624 .\trading\forms.py:66
+#: .\products\templates\products\base.html:452
+#: .\products\templates\products\base.html:508
+#: .\products\templates\products\product_list.html:547
+#: .\users\templates\base_manager.html:618
+#: .\users\templates\users\manager_dashboard.html:560
+msgid "Товары"
+msgstr "Products"
+
+#: .\products\templates\products\base.html:456
+#: .\users\templates\base_manager.html:622
+#: .\warehouses\templates\warehouse_transfer_history.html:357
+msgid "Перемещения"
+msgstr "Transfers"
+
+#: .\products\templates\products\base.html:460
+#: .\shipments\templates\shipments\shipment_task_list.html:505
+#: .\users\templates\base_manager.html:626
+msgid "Отправки"
+msgstr ""
+
+#: .\products\templates\products\base.html:490
+#: .\users\templates\base_manager.html:657
+msgid "Поиск по системе..."
+msgstr "Search in system..."
+
+#: .\products\templates\products\base.html:491
+#: .\users\templates\base_manager.html:658
+msgid "Поиск"
+msgstr "Search"
+
+#: .\products\templates\products\base.html:496
+#: .\users\templates\base_manager.html:663
+msgid "Выход"
+msgstr "Logout"
+
+#: .\products\templates\products\base.html:530
+#: .\products\templates\products\product_detail.html:624 .\trading\forms.py:81
+#: .\trading\models.py:60 .\trading\models.py:177
 #: .\trading\templates\trading\admin_trading_history.html:24
-#: .\trading\templates\trading\trading_fulfill.html:33
+#: .\trading\templates\trading\trading_fulfill.html:128
 #: .\warehouses\templates\warehouse_detail.html:297
 msgid "Склад"
 msgstr "Warehouse"
 
-#: .\products\templates\products\base.html:234
+#: .\products\templates\products\base.html:542
 msgid "Выйти"
 msgstr ""
 
-#: .\products\templates\products\base.html:238
+#: .\products\templates\products\base.html:546
 msgid "Войти"
 msgstr ""
 
@@ -100,6 +156,7 @@ msgid "склада"
 msgstr "warehouses"
 
 #: .\products\templates\products\product_detail.html:625
+#: .\shipments\models.py:109 .\trading\models.py:75 .\trading\models.py:184
 #: .\trading\templates\trading\admin_trading_history.html:25
 #: .\warehouses\templates\warehouse_transfer_form.html:249
 #: .\warehouses\templates\warehouse_transfer_history.html:406
@@ -107,6 +164,7 @@ msgid "Количество"
 msgstr "Quantity"
 
 #: .\products\templates\products\product_detail.html:627
+#: .\trading\models.py:312
 msgid "Действие"
 msgstr "Action"
 
@@ -132,7 +190,7 @@ msgid "Добавить продукт"
 msgstr "Add product"
 
 #: .\products\templates\products\product_form.html:13
-#: .\trading\templates\trading\trading_add.html:599
+#: .\trading\templates\trading\trading_add.html:636
 msgid "Сохранить"
 msgstr "Save"
 
@@ -154,6 +212,7 @@ msgid "Поиск по названием или описанию..."
 msgstr "Search by name or description..."
 
 #: .\products\templates\products\product_list.html:576
+#: .\shipments\templates\shipments\shipment_task_list.html:549
 #: .\trading\templates\trading\trading_list.html:921
 #: .\trading\templates\trading\trading_list.html:975
 #: .\warehouses\templates\warehouse_detail.html:316
@@ -177,15 +236,17 @@ msgstr "Qty ↑"
 msgid "Кол-во ↓"
 msgstr "Qty ↓"
 
-#: .\products\templates\products\product_list.html:600 .\trading\forms.py:65
+#: .\products\templates\products\product_list.html:600
+#: .\shipments\models.py:106 .\trading\forms.py:80 .\trading\models.py:49
+#: .\trading\models.py:170
 #: .\trading\templates\trading\admin_trading_history.html:23
-#: .\trading\templates\trading\trading_fulfill.html:32
+#: .\trading\templates\trading\trading_fulfill.html:127
 #: .\warehouses\templates\warehouse_transfer_form.html:215
 #: .\warehouses\templates\warehouse_transfer_history.html:384
 msgid "Товар"
 msgstr "Product"
 
-#: .\products\templates\products\product_list.html:601
+#: .\products\templates\products\product_list.html:601 .\trading\models.py:316
 msgid "Описание"
 msgstr "Description"
 
@@ -206,8 +267,10 @@ msgid "Без описания"
 msgstr "No description"
 
 #: .\products\templates\products\product_list.html:644
-#: .\trading\templates\trading\trading_detail.html:607
-#: .\trading\templates\trading\trading_fulfill.html:117
+#: .\shipments\templates\shipments\shipment_task_create.html:589
+#: .\shipments\templates\shipments\shipment_task_detail.html:530
+#: .\trading\templates\trading\trading_detail.html:765
+#: .\trading\templates\trading\trading_fulfill.html:180
 #: .\trading\templates\trading\trading_list.html:1129
 #: .\trading\templates\trading\trading_list.html:1133
 #: .\warehouses\templates\warehouse_detail.html:366
@@ -230,6 +293,285 @@ msgstr "No products found"
 msgid "Попробуйте изменить поиск или фильтр наличия."
 msgstr "Try changing the search query or stock filter."
 
+#: .\products\views.py:147 .\products\views.py:175 .\products\views.py:198
+#, fuzzy
+#| msgid "Выберите товар и склад"
+msgid "Вы не имеете доступа к этому складу."
+msgstr "Select product and warehouse"
+
+#: .\products\views.py:230
+msgid "Вы не имеете доступа к просмотру этого склада."
+msgstr ""
+
+#: .\shipments\admin.py:46
+msgid "Основное"
+msgstr ""
+
+#: .\shipments\admin.py:53 .\shipments\models.py:100
+#, fuzzy
+#| msgid "Название"
+msgid "Задание"
+msgstr "Name"
+
+#: .\shipments\admin.py:59
+msgid "Даты"
+msgstr ""
+
+#: .\shipments\models.py:16
+msgid "Новое"
+msgstr ""
+
+#: .\shipments\models.py:17
+msgid "Увидел"
+msgstr ""
+
+#: .\shipments\models.py:18
+#: .\shipments\templates\shipments\shipment_task_detail.html:517
+#: .\shipments\templates\shipments\shipment_task_list.html:539
+#, fuzzy
+#| msgid "Обновлено"
+msgid "Отправлено"
+msgstr "Updated"
+
+#: .\shipments\models.py:19
+#: .\shipments\templates\shipments\shipment_task_detail.html:524
+msgid "Проблема"
+msgstr ""
+
+#: .\shipments\models.py:26
+#, fuzzy
+#| msgid "Кто сделал"
+msgid "Кто создал"
+msgstr "Performed by"
+
+#: .\shipments\models.py:32
+msgid "Кому поручено"
+msgstr ""
+
+#: .\shipments\models.py:37
+#, fuzzy
+#| msgid "Добавить"
+msgid "Кому отправить"
+msgstr "Add"
+
+#: .\shipments\models.py:41
+#: .\shipments\templates\shipments\shipment_task_create.html:513
+#: .\shipments\templates\shipments\shipment_task_detail.html:503
+#: .\trading\forms.py:33 .\trading\forms.py:160 .\trading\models.py:26
+#: .\trading\models.py:364 .\trading\models.py:379
+#: .\trading\templates\trading\trading_detail.html:585
+msgid "Комментарий"
+msgstr "Comment"
+
+#: .\shipments\models.py:48 .\trading\models.py:39
+msgid "Статус"
+msgstr ""
+
+#: .\shipments\models.py:54
+msgid "Когда увидел"
+msgstr ""
+
+#: .\shipments\models.py:59
+#, fuzzy
+#| msgid "Дата добавления"
+msgid "Когда отправлено"
+msgstr "Date added"
+
+#: .\shipments\models.py:64
+#: .\shipments\templates\shipments\shipment_task_detail.html:473
+#, fuzzy
+#| msgid "Дата добавления"
+msgid "Дата создания"
+msgstr "Date added"
+
+#: .\shipments\models.py:68
+#, fuzzy
+#| msgid "Дата добавления"
+msgid "Дата обновления"
+msgstr "Date added"
+
+#: .\shipments\models.py:73
+#: .\shipments\templates\shipments\shipment_task_detail.html:411
+msgid "Задание на отправку"
+msgstr ""
+
+#: .\shipments\models.py:74
+#: .\shipments\templates\shipments\shipment_task_list.html:503
+msgid "Задания на отправку"
+msgstr ""
+
+#: .\shipments\models.py:113
+msgid "Товар в задании на отправку"
+msgstr ""
+
+#: .\shipments\models.py:114
+#, fuzzy
+#| msgid "Товары не найдены"
+msgid "Товары в задании на отправку"
+msgstr "No products found"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:473
+#: .\shipments\templates\shipments\shipment_task_list.html:515
+#, fuzzy
+#| msgid "Название"
+msgid "Новое задание"
+msgstr "Name"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:476
+#, fuzzy
+#| msgid "Создать сделку"
+msgid "Создать отправку"
+msgstr "Create deal"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:480
+msgid "Укажите исполнителя, получателя и список товаров для отправки."
+msgstr ""
+
+#: .\shipments\templates\shipments\shipment_task_create.html:492
+#, fuzzy
+#| msgid "Пользователь"
+msgid "Получатель и исполнитель"
+msgstr "User"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:526
+#: .\shipments\templates\shipments\shipment_task_detail.html:483
+#, fuzzy
+#| msgid "Добавить"
+msgid "Что отправить"
+msgstr "Add"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:540
+#, fuzzy
+#| msgid "Выберите товар, склад и количество"
+msgid "Выберите товар или начните поиск..."
+msgstr "Select product, warehouse and quantity"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:566
+#: .\trading\templates\trading\trading_add.html:558
+#: .\trading\templates\trading\trading_add.html:609
+#: .\trading\templates\trading\trading_detail.html:735
+#: .\trading\templates\trading\trading_detail.html:754
+msgid "Удалить"
+msgstr "Remove"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:575
+#, fuzzy
+#| msgid "Добавить товар"
+msgid "Добавить ещё товар"
+msgstr "Add product"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:585
+#, fuzzy
+#| msgid "Создать перемещение"
+msgid "Создать задание"
+msgstr "Create transfer"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:414
+#: .\shipments\templates\shipments\shipment_task_list.html:562
+#, fuzzy
+#| msgid "Добавить"
+msgid "Отправить в"
+msgstr "Add"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:418
+#, fuzzy
+#| msgid "Детальный просмотр сделки, позиций, документов и комментариев."
+msgid "Детальный просмотр задания, товаров, исполнителя и текущего статуса."
+msgstr "Detailed view of the deal, items, documents, and comments."
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:433
+#, fuzzy
+#| msgid "Пользователь"
+msgid "Получатель"
+msgstr "User"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:438
+#: .\shipments\templates\shipments\shipment_task_list.html:566
+msgid "Кому"
+msgstr ""
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:444
+msgid "Контакт"
+msgstr ""
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:458
+#: .\trading\templates\trading\trading_fulfill.html:100
+msgid "Информация"
+msgstr "Information"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:463
+#: .\shipments\templates\shipments\shipment_task_list.html:567
+#, fuzzy
+#| msgid "Дополнить"
+msgid "Исполнитель"
+msgstr "Fulfill"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:468
+#: .\shipments\templates\shipments\shipment_task_list.html:568
+#, fuzzy
+#| msgid "Создан"
+msgid "Создал"
+msgstr "Created"
+
+#: .\shipments\templates\shipments\shipment_task_detail.html:494
+#: .\shipments\templates\shipments\shipment_task_list.html:588
+#, fuzzy
+#| msgid "Товары не найдены"
+msgid "Товары не указаны"
+msgstr "No products found"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:508
+msgid ""
+"Кому, куда и какие товары нужно отправить. Быстрый контроль статусов и "
+"исполнителей."
+msgstr ""
+
+#: .\shipments\templates\shipments\shipment_task_list.html:523
+#: .\trading\templates\trading\trading_list.html:930
+#: .\users\templates\users\manager_dashboard.html:610
+msgid "Все"
+msgstr "All"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:527
+#, fuzzy
+#| msgid "7 дней"
+msgid "Мне"
+msgstr "7 days"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:531
+#, fuzzy
+#| msgid "Создание сделки"
+msgid "Созданные мной"
+msgstr "Create operation"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:535
+msgid "Новые"
+msgstr ""
+
+#: .\shipments\templates\shipments\shipment_task_list.html:546
+#, fuzzy
+#| msgid "Поиск по названию сделки, товару, складу или комментарию..."
+msgid "Поиск по получателю, городу или товару"
+msgstr "Search by deal name, product, warehouse, or comment..."
+
+#: .\shipments\templates\shipments\shipment_task_list.html:595
+#: .\trading\templates\trading\trading_list.html:1091
+#: .\users\templates\warehouse_list.html:305
+msgid "Открыть"
+msgstr "Open"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:604
+#, fuzzy
+#| msgid "Комментариев пока нет"
+msgid "Заданий пока нет"
+msgstr "No comments yet"
+
+#: .\shipments\templates\shipments\shipment_task_list.html:605
+#, fuzzy
+#| msgid "Поиск по названию или описанию..."
+msgid "Создайте первое задание на отправку."
+msgstr "Search by name or description..."
+
 #: .\trading\forms.py:18
 msgid "Введите название сделки"
 msgstr "Enter deal name"
@@ -238,83 +580,246 @@ msgstr "Enter deal name"
 msgid "Комментарий (необязательно)"
 msgstr "Comment (optional)"
 
-#: .\trading\forms.py:31 .\trading\models.py:22
+#: .\trading\forms.py:31 .\trading\models.py:20
 msgid "Название сделки"
 msgstr "Deal name"
 
-#: .\trading\forms.py:32 .\trading\models.py:33
+#: .\trading\forms.py:32 .\trading\models.py:32
 msgid "Тип операции"
 msgstr "Operation type"
 
-#: .\trading\forms.py:33 .\trading\forms.py:145 .\trading\models.py:28
-#: .\trading\templates\trading\trading_detail.html:473
-msgid "Комментарий"
-msgstr "Comment"
+#: .\trading\forms.py:42
+msgid ""
+"Тип операции нельзя менять после создания сделки, чтобы не нарушить "
+"складские остатки."
+msgstr ""
 
-#: .\trading\forms.py:53
+#: .\trading\forms.py:68
 msgid "Сколько заказано"
 msgstr "Requested quantity"
 
-#: .\trading\forms.py:59
+#: .\trading\forms.py:74
 msgid "Сколько выполнено сейчас"
 msgstr "Fulfilled quantity now"
 
-#: .\trading\forms.py:67 .\trading\templates\trading\trading_detail.html:501
-#: .\trading\templates\trading\trading_fulfill.html:34
+#: .\trading\forms.py:82 .\trading\templates\trading\trading_detail.html:613
+#: .\trading\templates\trading\trading_fulfill.html:129
 #: .\trading\templates\trading\trading_list.html:1036
 msgid "Заказано"
 msgstr "Ordered"
 
-#: .\trading\forms.py:68 .\trading\templates\trading\trading_detail.html:506
-#: .\trading\templates\trading\trading_detail.html:524
-#: .\trading\templates\trading\trading_fulfill.html:35
-#: .\trading\templates\trading\trading_fulfill.html:105
+#: .\trading\forms.py:83 .\trading\models.py:240
+#: .\trading\templates\trading\trading_detail.html:618
+#: .\trading\templates\trading\trading_detail.html:636
+#: .\trading\templates\trading\trading_fulfill.html:130
+#: .\trading\templates\trading\trading_fulfill.html:169
 #: .\trading\templates\trading\trading_list.html:1041
-#: .\trading\templates\trading\trading_list.html:1059
+#: .\trading\templates\trading\trading_list.html:1059 .\trading\views.py:344
 msgid "Выполнено"
 msgstr "Fulfilled"
 
-#: .\trading\forms.py:85 .\trading\forms.py:91
+#: .\trading\forms.py:100 .\trading\forms.py:106
 msgid "Для товара в штуках нельзя вводить дробное количество."
 msgstr "Fractional quantity is not allowed for products measured in pieces."
 
-#: .\trading\forms.py:118
+#: .\trading\forms.py:133 .\trading\templates\trading\trading_add.html:526
 msgid "Файл"
 msgstr "File"
 
-#: .\trading\forms.py:140
+#: .\trading\forms.py:155
 msgid "Напишите комментарий..."
 msgstr "Write a comment..."
 
-#: .\trading\models.py:12
+#: .\trading\models.py:11
 #: .\trading\templates\trading\admin_trading_history.html:49
-#: .\trading\templates\trading\trading_detail.html:462
+#: .\trading\templates\trading\trading_detail.html:574
 #: .\trading\templates\trading\trading_list.html:1014
 msgid "Продажа"
 msgstr "Sale"
 
-#: .\trading\models.py:13
+#: .\trading\models.py:12
 #: .\trading\templates\trading\admin_trading_history.html:45
-#: .\trading\templates\trading\trading_detail.html:460
+#: .\trading\templates\trading\trading_detail.html:572
 #: .\trading\templates\trading\trading_list.html:1012
 msgid "Покупка"
 msgstr "Purchase"
 
-#: .\trading\models.py:17 .\trading\templates\trading\trading_detail.html:443
-#: .\trading\templates\trading\trading_detail.html:522
-#: .\trading\templates\trading\trading_list.html:1018
+#: .\trading\models.py:15 .\trading\templates\trading\trading_detail.html:555
+#: .\trading\templates\trading\trading_detail.html:634
+#: .\trading\templates\trading\trading_list.html:1018 .\trading\views.py:346
 msgid "В процессе"
 msgstr "In progress"
 
-#: .\trading\models.py:18
+#: .\trading\models.py:16
 #, fuzzy
 #| msgid "Завершено"
 msgid "Завершена"
 msgstr "Completed"
 
-#: .\trading\models.py:39
-msgid "Статус"
+#: .\trading\models.py:69 .\trading\models.py:304 .\trading\models.py:360
+#: .\trading\templates\trading\trading_detail.html:580
+msgid "Пользователь"
+msgstr "User"
+
+#: .\trading\models.py:81 .\trading\models.py:202
+#, fuzzy
+#| msgid "Количество"
+msgid "Количество до"
+msgstr "Quantity"
+
+#: .\trading\models.py:86 .\trading\models.py:207
+#, fuzzy
+#| msgid "Количество"
+msgid "Количество после"
+msgstr "Quantity"
+
+#: .\trading\models.py:91
+#, fuzzy
+#| msgid "Тип операции"
+msgid "Время операции"
+msgstr "Operation type"
+
+#: .\trading\models.py:96 .\trading\models.py:212
+#: .\trading\templates\trading\trading_detail.html:590
+msgid "Создано"
+msgstr "Created"
+
+#: .\trading\models.py:101 .\trading\models.py:217 .\trading\models.py:374
+#: .\trading\templates\trading\trading_detail.html:595
+msgid "Обновлено"
+msgstr "Updated"
+
+#: .\trading\models.py:106 .\trading\models.py:107
+#, fuzzy
+#| msgid "История сделок"
+msgid "История склада"
+msgstr "Deal history"
+
+#: .\trading\models.py:133
+#, fuzzy
+#| msgid "Топ товаров"
+msgid "Без товаров"
+msgstr "Top products"
+
+#: .\trading\models.py:163 .\trading\models.py:289 .\trading\models.py:353
+#: .\trading\templates\trading\trading_detail.html:4
+msgid "Сделка"
+msgstr "Deal"
+
+#: .\trading\models.py:191
+msgid "Нужно"
 msgstr ""
+
+#: .\trading\models.py:197
+#, fuzzy
+#| msgid "Удалить"
+msgid "Отдали"
+msgstr "Remove"
+
+#: .\trading\models.py:238
+msgid "Ожидает"
+msgstr ""
+
+#: .\trading\models.py:239
+msgid "Частично"
+msgstr ""
+
+#: .\trading\models.py:246
+#, fuzzy
+#| msgid "Нет позиций сделки"
+msgid "Позиция сделки"
+msgstr "No deal items"
+
+#: .\trading\models.py:247
+#, fuzzy
+#| msgid "Нет позиций сделки"
+msgid "Позиции сделки"
+msgstr "No deal items"
+
+#: .\trading\models.py:274
+#, fuzzy, python-format
+#| msgid "Название сделки"
+msgid "Файл для сделки #%(id)s"
+msgstr "Deal name"
+
+#: .\trading\models.py:279
+#, fuzzy
+#| msgid "Создано"
+msgid "Создание"
+msgstr "Created"
+
+#: .\trading\models.py:280
+#, fuzzy
+#| msgid "Редактировать"
+msgid "Редактирование"
+msgstr "Edit"
+
+#: .\trading\models.py:281
+#, fuzzy
+#| msgid "Выполнено"
+msgid "Дополнение"
+msgstr "Fulfilled"
+
+#: .\trading\models.py:282
+#, fuzzy
+#| msgid "Удалить"
+msgid "Удаление"
+msgstr "Remove"
+
+#: .\trading\models.py:283
+#, fuzzy
+#| msgid "Со склада"
+msgid "Откат склада"
+msgstr "From warehouse"
+
+#: .\trading\models.py:295
+#, fuzzy
+#| msgid "Сделки"
+msgid "ID сделки"
+msgstr "Deals"
+
+#: .\trading\models.py:322
+#: .\trading\templates\trading\admin_trading_history.html:26
+msgid "Было"
+msgstr "Before"
+
+#: .\trading\models.py:328
+#: .\trading\templates\trading\admin_trading_history.html:27
+msgid "Стало"
+msgstr "After"
+
+#: .\trading\models.py:333 .\trading\models.py:369
+#: .\trading\templates\trading\admin_trading_history.html:20
+#: .\warehouses\templates\warehouse_transfer_history.html:424
+msgid "Дата"
+msgstr "Date"
+
+#: .\trading\models.py:338
+#, fuzzy
+#| msgid "Новая сделка"
+msgid "Аудит сделки"
+msgstr "New operation"
+
+#: .\trading\models.py:339
+#, fuzzy
+#| msgid "История сделок"
+msgid "Аудит сделок"
+msgstr "Deal history"
+
+#: .\trading\models.py:342
+#, python-format
+msgid "%(action)s — сделка #%(id)s"
+msgstr ""
+
+#: .\trading\models.py:380 .\trading\templates\trading\trading_detail.html:708
+msgid "Комментарии"
+msgstr "Comments"
+
+#: .\trading\models.py:387
+#, fuzzy, python-format
+#| msgid "Комментарий (необязательно)"
+msgid "Комментарий к сделке #%(id)s"
+msgstr "Comment (optional)"
 
 #: .\trading\templates\trading\admin_trading_history.html:7
 msgid "История операций (Админ)"
@@ -324,254 +829,234 @@ msgstr "Operations history (Admin)"
 msgid "Все действия менеджеров"
 msgstr "All manager actions"
 
-#: .\trading\templates\trading\admin_trading_history.html:20
-#: .\warehouses\templates\warehouse_transfer_history.html:424
-msgid "Дата"
-msgstr "Date"
-
 #: .\trading\templates\trading\admin_trading_history.html:21
 msgid "Кто сделал"
 msgstr "Performed by"
 
 #: .\trading\templates\trading\admin_trading_history.html:22
-#: .\trading\templates\trading\trading_detail.html:457
-#: .\trading\templates\trading\trading_fulfill.html:19
+#: .\trading\templates\trading\trading_detail.html:569
+#: .\trading\templates\trading\trading_fulfill.html:110
 msgid "Тип"
 msgstr "Type"
-
-#: .\trading\templates\trading\admin_trading_history.html:26
-msgid "Было"
-msgstr "Before"
-
-#: .\trading\templates\trading\admin_trading_history.html:27
-msgid "Стало"
-msgstr "After"
 
 #: .\trading\templates\trading\admin_trading_history.html:71
 msgid "История пуста"
 msgstr "History is empty"
 
 #: .\trading\templates\trading\trading_add.html:5
-#: .\trading\templates\trading\trading_add.html:439
+#: .\trading\templates\trading\trading_add.html:473
 msgid "Редактирование сделки"
 msgstr "Edit operation"
 
 #: .\trading\templates\trading\trading_add.html:5
-#: .\trading\templates\trading\trading_add.html:439
+#: .\trading\templates\trading\trading_add.html:473
 msgid "Создание сделки"
 msgstr "Create operation"
 
-#: .\trading\templates\trading\trading_add.html:437
-#: .\trading\templates\trading\trading_detail.html:416
+#: .\trading\templates\trading\trading_add.html:471
+#: .\trading\templates\trading\trading_detail.html:528
 #: .\trading\templates\trading\trading_list.html:880
 msgid "Операции склада"
 msgstr "Stock / Warehouses"
 
-#: .\trading\templates\trading\trading_add.html:442
+#: .\trading\templates\trading\trading_add.html:476
 msgid ""
 "Заполните основные данные, добавьте товары, склад и количество выполнения."
 msgstr ""
 "Fill in the main information, add products, warehouse and fulfillment "
 "quantity."
 
-#: .\trading\templates\trading\trading_add.html:450
+#: .\trading\templates\trading\trading_add.html:484
 msgid "Изменить данные"
 msgstr "Edit information"
 
-#: .\trading\templates\trading\trading_add.html:450
+#: .\trading\templates\trading\trading_add.html:484
 msgid "Новая сделка"
 msgstr "New operation"
 
-#: .\trading\templates\trading\trading_add.html:452
+#: .\trading\templates\trading\trading_add.html:486
 msgid "Основная информация по сделке"
 msgstr "Basic operation information"
 
-#: .\trading\templates\trading\trading_add.html:481
+#: .\trading\templates\trading\trading_add.html:515
 msgid "Прикрепить файлы"
 msgstr "Attach files"
 
-#: .\trading\templates\trading\trading_add.html:482
+#: .\trading\templates\trading\trading_add.html:516
 msgid "Добавьте документы, фото или накладные"
 msgstr "Add documents, photos, or delivery notes"
 
-#: .\trading\templates\trading\trading_add.html:508
+#: .\trading\templates\trading\trading_add.html:542
 msgid "Товары в сделке"
 msgstr "Products in operation"
 
-#: .\trading\templates\trading\trading_add.html:509
+#: .\trading\templates\trading\trading_add.html:543
 msgid "Выберите товар, склад и количество"
 msgstr "Select product, warehouse and quantity"
 
-#: .\trading\templates\trading\trading_add.html:521
-#: .\trading\templates\trading\trading_add.html:572
-#: .\trading\templates\trading\trading_detail.html:577
-#: .\trading\templates\trading\trading_detail.html:596
-msgid "Удалить"
-msgstr "Remove"
+#: .\trading\templates\trading\trading_add.html:553
+#: .\trading\templates\trading\trading_add.html:607
+#: .\trading\templates\trading\trading_add.html:684
+msgid "Позиция"
+msgstr "Item"
 
-#: .\trading\templates\trading\trading_add.html:550
-#: .\trading\templates\trading\trading_add.html:586
+#: .\trading\templates\trading\trading_add.html:556
+#, fuzzy
+#| msgid "Редактировать"
+msgid "Зафиксировано"
+msgstr "Edit"
+
+#: .\trading\templates\trading\trading_add.html:587
+#: .\trading\templates\trading\trading_add.html:623
 #: .\warehouses\templates\warehouse_detail.html:337
 msgid "Остаток на складе"
 msgstr "Warehouse stock"
 
-#: .\trading\templates\trading\trading_add.html:552
-#: .\trading\templates\trading\trading_add.html:588
-#: .\trading\templates\trading\trading_add.html:911
+#: .\trading\templates\trading\trading_add.html:589
+#: .\trading\templates\trading\trading_add.html:625
+#: .\trading\templates\trading\trading_add.html:970
 msgid "Выберите товар и склад"
 msgstr "Select product and warehouse"
 
-#: .\trading\templates\trading\trading_add.html:564
+#: .\trading\templates\trading\trading_add.html:601
 msgid "Добавить товар"
 msgstr "Add product"
 
-#: .\trading\templates\trading\trading_add.html:600
+#: .\trading\templates\trading\trading_add.html:637
 msgid "Назад к списку"
 msgstr "Back to list"
 
-#: .\trading\templates\trading\trading_add.html:625
-msgid "Позиция"
-msgstr "Item"
+#: .\trading\templates\trading\trading_add.html:667
+msgid "Позиция зафиксирована"
+msgstr ""
 
-#: .\trading\templates\trading\trading_add.html:672
+#: .\trading\templates\trading\trading_add.html:731
 msgid "Начните писать для поиска..."
 msgstr "Start typing to search..."
 
-#: .\trading\templates\trading\trading_add.html:700
+#: .\trading\templates\trading\trading_add.html:759
 msgid "Ничего не найдено"
 msgstr "Nothing found"
 
-#: .\trading\templates\trading\trading_add.html:761
+#: .\trading\templates\trading\trading_add.html:820
 #: .\warehouses\templates\warehouse_transfer_form.html:218
 msgid "Нажмите и начните писать название товара..."
 msgstr "Click and start typing product name..."
 
-#: .\trading\templates\trading\trading_add.html:766
+#: .\trading\templates\trading\trading_add.html:825
 msgid "Нажмите и начните писать склад..."
 msgstr "Click and start typing warehouse..."
 
-#: .\trading\templates\trading\trading_add.html:896
+#: .\trading\templates\trading\trading_add.html:955
 msgid "кол-во"
 msgstr "quantity"
 
-#: .\trading\templates\trading\trading_add.html:915
+#: .\trading\templates\trading\trading_add.html:974
 msgid "Загрузка..."
 msgstr "Loading..."
 
-#: .\trading\templates\trading\trading_add.html:932
+#: .\trading\templates\trading\trading_add.html:988
+#: .\trading\templates\trading\trading_detail.html:624
+msgid "Остаток"
+msgstr "Remaining"
+
+#: .\trading\templates\trading\trading_add.html:991
 msgid "Ошибка загрузки"
 msgstr "Loading error"
 
-#: .\trading\templates\trading\trading_detail.html:4
-msgid "Сделка"
-msgstr "Deal"
-
-#: .\trading\templates\trading\trading_detail.html:435
+#: .\trading\templates\trading\trading_detail.html:547
 msgid "Детальный просмотр сделки, позиций, документов и комментариев."
 msgstr "Detailed view of the deal, items, documents, and comments."
 
-#: .\trading\templates\trading\trading_detail.html:441
+#: .\trading\templates\trading\trading_detail.html:553
 #: .\trading\templates\trading\trading_list.html:1020
 #: .\trading\templates\trading\trading_list.html:1064
 #: .\trading\templates\trading\trading_list.html:1069
 msgid "Завершено"
 msgstr "Completed"
 
-#: .\trading\templates\trading\trading_detail.html:452
-#: .\trading\templates\trading\trading_fulfill.html:14
+#: .\trading\templates\trading\trading_detail.html:564
+#: .\trading\templates\trading\trading_fulfill.html:105
 msgid "Название"
 msgstr "Name"
 
-#: .\trading\templates\trading\trading_detail.html:453
+#: .\trading\templates\trading\trading_detail.html:565
 msgid "Без названия"
 msgstr "Untitled"
 
-#: .\trading\templates\trading\trading_detail.html:468
-msgid "Пользователь"
-msgstr "User"
-
-#: .\trading\templates\trading\trading_detail.html:474
+#: .\trading\templates\trading\trading_detail.html:586
 msgid "—"
 msgstr "—"
 
-#: .\trading\templates\trading\trading_detail.html:478
-msgid "Создано"
-msgstr "Created"
-
-#: .\trading\templates\trading\trading_detail.html:483
-msgid "Обновлено"
-msgstr "Updated"
-
-#: .\trading\templates\trading\trading_detail.html:490
-#: .\trading\templates\trading\trading_fulfill.html:26
+#: .\trading\templates\trading\trading_detail.html:602
+#: .\trading\templates\trading\trading_fulfill.html:118
 msgid "Позиции"
 msgstr "Items"
 
-#: .\trading\templates\trading\trading_detail.html:512
-msgid "Остаток"
-msgstr "Remaining"
-
-#: .\trading\templates\trading\trading_detail.html:520
+#: .\trading\templates\trading\trading_detail.html:632 .\trading\views.py:342
 msgid "Не выполнено"
 msgstr "Not fulfilled"
 
-#: .\trading\templates\trading\trading_detail.html:529
+#: .\trading\templates\trading\trading_detail.html:641
 msgid "Нет позиций сделки"
 msgstr "No deal items"
 
-#: .\trading\templates\trading\trading_detail.html:534
+#: .\trading\templates\trading\trading_detail.html:646
 msgid "Документы"
 msgstr "Documents"
 
-#: .\trading\templates\trading\trading_detail.html:545
+#: .\trading\templates\trading\trading_detail.html:657
 msgid "Нет документов"
 msgstr "No documents"
 
-#: .\trading\templates\trading\trading_detail.html:550
-msgid "Комментарии"
-msgstr "Comments"
+#: .\trading\templates\trading\trading_detail.html:662
+msgid "История доотправок"
+msgstr "Fulfillment history"
 
-#: .\trading\templates\trading\trading_detail.html:558
-msgid "Добавить комментарий"
-msgstr "Add comment"
-
-#: .\trading\templates\trading\trading_detail.html:575
-msgid "Удалить комментарий?"
-msgstr "Delete comment?"
-
-#: .\trading\templates\trading\trading_detail.html:582
-msgid "Комментариев пока нет"
-msgstr "No comments yet"
-
-#: .\trading\templates\trading\trading_detail.html:589
-msgid "Редактировать"
-msgstr "Edit"
-
-#: .\trading\templates\trading\trading_detail.html:602
-#: .\trading\templates\trading\trading_fulfill.html:4
-#: .\trading\templates\trading\trading_fulfill.html:7
-msgid "Дополнить заказ"
-msgstr "Fulfill order"
-
-#: .\trading\templates\trading\trading_fulfill.html:10
-msgid "Информация"
-msgstr "Information"
-
-#: .\trading\templates\trading\trading_fulfill.html:36
+#: .\trading\templates\trading\trading_detail.html:690
+#: .\trading\templates\trading\trading_fulfill.html:131
 msgid "Осталось"
 msgstr "Left"
 
-#: .\trading\templates\trading\trading_fulfill.html:37
-#: .\trading\templates\trading\trading_fulfill.html:92
-msgid "Дополнить"
-msgstr "Fulfill"
+#: .\trading\templates\trading\trading_detail.html:703
+msgid "Доотправок пока нет"
+msgstr "No fulfillment history yet"
 
-#: .\trading\templates\trading\trading_list.html:4
-#: .\users\templates\base_manager.html:576
-msgid "Сделки"
-msgstr "Deals"
+#: .\trading\templates\trading\trading_detail.html:716
+msgid "Добавить комментарий"
+msgstr "Add comment"
 
-#: .\trading\templates\trading\trading_list.html:881
+#: .\trading\templates\trading\trading_detail.html:733
+msgid "Удалить комментарий?"
+msgstr "Delete comment?"
+
+#: .\trading\templates\trading\trading_detail.html:740
+msgid "Комментариев пока нет"
+msgstr "No comments yet"
+
+#: .\trading\templates\trading\trading_detail.html:747
+msgid "Редактировать"
+msgstr "Edit"
+
+#: .\trading\templates\trading\trading_detail.html:760
+#: .\trading\templates\trading\trading_fulfill.html:4
+#: .\trading\templates\trading\trading_fulfill.html:97
+msgid "Дополнить заказ"
+msgstr "Fulfill order"
+
+#: .\trading\templates\trading\trading_fulfill.html:132
+#, fuzzy
+#| msgid "Сколько заказано"
+msgid "Сколько дополнить"
+msgstr "Requested quantity"
+
+#: .\trading\templates\trading\trading_fulfill.html:184
+#, fuzzy
+#| msgid "Дата добавления"
+msgid "Подтвердить дополнения"
+msgstr "Date added"
+
+#: .\trading\templates\trading\trading_list.html:881 .\trading\views.py:159
 msgid "История сделок"
 msgstr "Deal history"
 
@@ -586,11 +1071,6 @@ msgstr "Create deal"
 #: .\trading\templates\trading\trading_list.html:916
 msgid "Поиск по названию сделки, товару, складу или комментарию..."
 msgstr "Search by deal name, product, warehouse, or comment..."
-
-#: .\trading\templates\trading\trading_list.html:930
-#: .\users\templates\users\manager_dashboard.html:610
-msgid "Все"
-msgstr "All"
 
 #: .\trading\templates\trading\trading_list.html:935
 msgid "Покупки"
@@ -646,11 +1126,6 @@ msgstr "more"
 msgid "позиций"
 msgstr "items"
 
-#: .\trading\templates\trading\trading_list.html:1091
-#: .\users\templates\warehouse_list.html:305
-msgid "Открыть"
-msgstr "Open"
-
 #: .\trading\templates\trading\trading_list.html:1100
 msgid "Нет записей"
 msgstr "No records"
@@ -680,48 +1155,155 @@ msgstr "Next"
 msgid "Последняя страница"
 msgstr "Last page"
 
+#: .\trading\views.py:414
+#, fuzzy
+#| msgid "Комментариев пока нет"
+msgid "Комментарий добавлен."
+msgstr "No comments yet"
+
+#: .\trading\views.py:440
+#, fuzzy
+#| msgid "Удалить комментарий?"
+msgid "Можно удалить только свой комментарий."
+msgstr "Delete comment?"
+
+#: .\trading\views.py:444
+msgid "Удаление комментария доступно только через POST-запрос."
+msgstr ""
+
+#: .\trading\views.py:447
+#, fuzzy
+#| msgid "Комментарий"
+msgid "Комментарий удален."
+msgstr "Comment"
+
+#: .\trading\views.py:479
+#, fuzzy
+#| msgid "Нет позиций сделки"
+msgid "Добавьте хотя бы одну позицию сделки."
+msgstr "No deal items"
+
+#: .\trading\views.py:584
+#, fuzzy, python-format
+#| msgid "Создание сделки"
+msgid "Создана сделка #%(id)s"
+msgstr "Create operation"
+
+#: .\trading\views.py:608
+msgid "Можно редактировать только незавершенные сделки."
+msgstr ""
+
+#: .\trading\views.py:678
+#, python-format
+msgid "Выполнено не может быть больше заказано: %(product)s"
+msgstr ""
+
+#: .\trading\views.py:741
+#, fuzzy, python-format
+#| msgid "Редактирование сделки"
+msgid "Отредактирована сделка #%(id)s"
+msgstr "Edit operation"
+
+#: .\trading\views.py:751
+#, fuzzy
+#| msgid "Обновлено"
+msgid "Сделка обновлена."
+msgstr "Updated"
+
+#: .\trading\views.py:782
+msgid "Менеджер может удалить сделку только в течение 24 часов после создания."
+msgstr ""
+
+#: .\trading\views.py:814
+#, python-format
+msgid ""
+"Нельзя удалить сделку: на складе недостаточно товара для отката %(product)s. "
+"На складе: %(available)s, нужно откатить: %(needed)s."
+msgstr ""
+
+#: .\trading\views.py:832
+#, python-format
+msgid "Удалена сделка #%(id)s, склад откатан"
+msgstr ""
+
+#: .\trading\views.py:839
+msgid "Сделка удалена, склад откатан."
+msgstr ""
+
+#: .\trading\views.py:894
+#, fuzzy
+#| msgid "Товар, маршрут, количество и дата операции"
+msgid "Введите количество хотя бы для одной позиции."
+msgstr "Product, route, quantity, and operation date"
+
+#: .\trading\views.py:934
+#, python-format
+msgid ""
+"Недостаточно товара на складе для %(product)s. Доступно: %(available)s, "
+"нужно: %(needed)s."
+msgstr ""
+
+#: .\trading\views.py:982
+#, fuzzy, python-format
+#| msgid "Создание сделки"
+msgid "Дополнена сделка #%(id)s"
+msgstr "Create operation"
+
+#: .\trading\views.py:990
+#, fuzzy, python-format
+#| msgid "Товар"
+msgid "Товар: %(product)s"
+msgstr "Product"
+
+#: .\trading\views.py:991
+#, python-format
+msgid "Склад: %(warehouse)s"
+msgstr ""
+
+#: .\trading\views.py:992
+#, python-format
+msgid "Доотправлено: %(quantity)s%(unit)s"
+msgstr ""
+
+#: .\trading\views.py:996
+#, python-format
+msgid "Выполнено: %(before)s → %(after)s%(unit)s"
+msgstr ""
+
+#: .\trading\views.py:1001
+#, python-format
+msgid "Осталось: %(quantity)s%(unit)s"
+msgstr ""
+
+#: .\trading\views.py:1005
+#, fuzzy, python-format
+#| msgid "Остаток на складе"
+msgid "Остаток на складе: %(before)s → %(after)s%(unit)s"
+msgstr "Warehouse stock"
+
+#: .\trading\views.py:1024
+msgid "Заказ полностью выполнен."
+msgstr ""
+
+#: .\trading\views.py:1028
+msgid "Заказ частично дополнен."
+msgstr ""
+
+#: .\trading\views.py:1030
+#, fuzzy
+#| msgid "Не удалось загрузить остаток товара"
+msgid "Не удалось дополнить заказ. Проверьте остатки на складе."
+msgstr "Could not load product stock"
+
 #: .\users\templates\base_manager.html:7
 #: .\users\templates\users\manager_dashboard.html:4
 #: .\users\templates\users\manager_dashboard.html:549
 msgid "Панель менеджера"
 msgstr "Manager Dashboard"
 
-#: .\users\templates\base_manager.html:565
-msgid "Добро пожаловать"
-msgstr "Welcome"
-
-#: .\users\templates\base_manager.html:572
-msgid "Панель"
-msgstr "Dashboard"
-
-#: .\users\templates\base_manager.html:580
-msgid "Заказы"
-msgstr "Orders"
-
-#: .\users\templates\base_manager.html:585
-msgid "История"
-msgstr "History"
-
-#: .\users\templates\base_manager.html:598
-#: .\warehouses\templates\warehouse_transfer_history.html:357
-msgid "Перемещения"
-msgstr "Transfers"
-
-#: .\users\templates\base_manager.html:603
+#: .\users\templates\base_manager.html:641
 msgid "Выбор языка"
 msgstr "Language selector"
-
-#: .\users\templates\base_manager.html:619
-msgid "Поиск по системе..."
-msgstr "Search in system..."
-
-#: .\users\templates\base_manager.html:620
-msgid "Поиск"
-msgstr "Search"
-
-#: .\users\templates\base_manager.html:625
-msgid "Выход"
-msgstr "Logout"
 
 # Login page compatibility
 #: .\users\templates\login.html:6

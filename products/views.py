@@ -4,6 +4,8 @@ from django.core.paginator import Paginator
 from django.db.models import Sum, Q
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404, Http404
+from django.utils.translation import gettext as _
+
 from .models import Product, Inventory
 from warehouses.models import Warehouse
 from .forms import ProductForm, InventoryQuantityForm
@@ -18,10 +20,12 @@ def product_list_view(request):
     query = request.GET.get("q", "").strip()
 
     in_stock = request.GET.get("in_stock")
-    if in_stock in ["None", ""]: in_stock = None
+    if in_stock in ["None", ""]:
+        in_stock = None
 
     sort = request.GET.get("sort")
-    if sort in ["None", ""]: sort = None
+    if sort in ["None", ""]:
+        sort = None
 
     # ОПРЕДЕЛЯЕМ СКЛАД: Приоритет у жесткой привязки пользователя
     if user.is_authenticated and user.warehouse_id:
@@ -31,7 +35,8 @@ def product_list_view(request):
         user_warehouse = user.warehouse
     else:
         warehouse_id = request.GET.get("warehouse")
-        if warehouse_id in ["None", ""]: warehouse_id = None
+        if warehouse_id in ["None", ""]:
+            warehouse_id = None
         # Админы и старшие видят все склады в фильтре
         warehouses = Warehouse.objects.all().order_by("city")
         user_warehouse = None
@@ -139,7 +144,7 @@ def inventory_create_view(request, product_id, warehouse_id):
     user = request.user
     # Защита: менеджер склада не может плодить остатки на чужом складе через URL
     if user.warehouse_id and str(user.warehouse_id) != str(warehouse_id):
-        raise Http404("Вы не имеете доступа к этому складу.")
+        raise Http404(_("Вы не имеете доступа к этому складу."))
 
     product = get_object_or_404(Product, id=product_id)
     warehouse = get_object_or_404(Warehouse, id=warehouse_id)
@@ -167,7 +172,7 @@ def inventory_update_view(request, pk):
 
     # Защита: проверка изменения остатков
     if user.warehouse_id and inventory.warehouse_id != user.warehouse_id:
-        raise Http404("Вы не имеете доступа к этому складу.")
+        raise Http404(_("Вы не имеете доступа к этому складу."))
 
     if request.method == "POST":
         form = InventoryQuantityForm(request.POST, instance=inventory)
@@ -190,7 +195,7 @@ def inventory_adjust_view(request, pk, action):
 
     # Защита: проверка быстрых кнопок +/- 1
     if user.warehouse_id and inventory.warehouse_id != user.warehouse_id:
-        raise Http404("Вы не имеете доступа к этому складу.")
+        raise Http404(_("Вы не имеете доступа к этому складу."))
 
     if request.method == "POST":
         if action == "increase":
@@ -222,7 +227,7 @@ def warehouse_reader_detail_view(request, pk):
 
     # Защита: если передан ID чужого склада, шлём 404
     if user.is_authenticated and user.warehouse_id and str(user.warehouse_id) != str(pk):
-        raise Http404("Вы не имеете доступа к просмотру этого склада.")
+        raise Http404(_("Вы не имеете доступа к просмотру этого склада."))
 
     warehouse = get_object_or_404(Warehouse, pk=pk)
     query = request.GET.get("q", "").strip()

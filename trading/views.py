@@ -4,6 +4,7 @@ from django.db import transaction, models
 from django.http import JsonResponse, HttpResponseForbidden
 from django.forms import formset_factory
 from django.core.paginator import Paginator
+from django.utils.translation import gettext as _
 
 from .models import Trading, TradingItem, TradingAuditLog, TradingComment
 from .forms import TradingForm, TradingItemForm, AttachmentFormSet, TradingCommentForm
@@ -155,7 +156,7 @@ def trading_list(request):
         'tradings': page_obj,
         'page_obj': page_obj,
         'current_type': current_type,
-        'page_title': 'История сделок',
+        'page_title': _('История сделок'),
         'is_orders_page': False,
         'date_from': date_from,
         'date_to': date_to,
@@ -266,7 +267,7 @@ def orders_list(request):
         'tradings': page_obj,
         'page_obj': page_obj,
         'current_type': current_type,
-        'page_title': 'Заказы',
+        'page_title': _('Заказы'),
         'is_orders_page': True,
         'date_from': date_from,
         'date_to': date_to,
@@ -338,11 +339,11 @@ def trading_detail(request, pk):
         )
 
         if grouped_item['fulfilled_quantity'] == 0:
-            grouped_item['fulfillment_status_display'] = 'Не выполнено'
+            grouped_item['fulfillment_status_display'] = _('Не выполнено')
         elif grouped_item['remaining_quantity'] == 0:
-            grouped_item['fulfillment_status_display'] = 'Выполнено'
+            grouped_item['fulfillment_status_display'] = _('Выполнено')
         else:
-            grouped_item['fulfillment_status_display'] = 'В процессе'
+            grouped_item['fulfillment_status_display'] = _('В процессе')
 
     grouped_items = list(grouped_items_dict.values())
 
@@ -350,6 +351,53 @@ def trading_detail(request, pk):
         item['remaining_quantity'] > 0
         for item in grouped_items
     )
+
+    # 🔥 ИСТОРИЯ ДООТПРАВОК / ДОПОЛНЕНИЙ
+    fulfillment_logs = trading.audit_logs.select_related("user").filter(
+        action=TradingAuditLog.Action.FULFILLED
+    )
+
+    for log in fulfillment_logs:
+        display_items = []
+
+        before_items = {}
+        after_items = {}
+
+        for item_data in log.before_data.get("items", []):
+            key = (
+                item_data.get("product"),
+                item_data.get("warehouse"),
+            )
+            before_items[key] = item_data
+
+        for item_data in log.after_data.get("items", []):
+            key = (
+                item_data.get("product"),
+                item_data.get("warehouse"),
+            )
+            after_items[key] = item_data
+
+        for key, after_item in after_items.items():
+            before_item = before_items.get(key, {})
+
+            fulfilled_before = before_item.get("fulfilled_quantity", 0) or 0
+            fulfilled_after = after_item.get("fulfilled_quantity", 0) or 0
+            requested_quantity = after_item.get("requested_quantity", 0) or 0
+            added_quantity = fulfilled_after - fulfilled_before
+
+            if added_quantity <= 0:
+                continue
+
+            display_items.append({
+                "product": after_item.get("product") or "—",
+                "warehouse": after_item.get("warehouse") or "—",
+                "added_quantity": added_quantity,
+                "fulfilled_before": fulfilled_before,
+                "fulfilled_after": fulfilled_after,
+                "remaining_after": max(requested_quantity - fulfilled_after, 0),
+            })
+
+        log.display_items = display_items
 
     # 🔥 КОММЕНТАРИИ
     comments = trading.comments.select_related("user").all()
@@ -363,7 +411,7 @@ def trading_detail(request, pk):
             comment.user = request.user
             comment.save()
 
-            messages.success(request, "Комментарий добавлен.")
+            messages.success(request, _("Комментарий добавлен."))
             return redirect("trading_detail", pk=trading.pk)
     else:
         comment_form = TradingCommentForm()
@@ -372,6 +420,7 @@ def trading_detail(request, pk):
         'trading': trading,
         'grouped_items': grouped_items,
         'has_remaining': has_remaining,
+        'fulfillment_logs': fulfillment_logs,
         'comments': comments,
         'comment_form': comment_form,
     })
@@ -388,14 +437,14 @@ def trading_comment_delete(request, pk, comment_id):
     )
 
     if comment.user != request.user:
-        messages.error(request, "Можно удалить только свой комментарий.")
+        messages.error(request, _("Можно удалить только свой комментарий."))
         return redirect("trading_detail", pk=trading.pk)
 
     if request.method != "POST":
-        return HttpResponseForbidden("Удаление комментария доступно только через POST-запрос.")
+        return HttpResponseForbidden(_("Удаление комментария доступно только через POST-запрос."))
 
     comment.delete()
-    messages.success(request, "Комментарий удален.")
+    messages.success(request, _("Комментарий удален."))
     return redirect("trading_detail", pk=trading.pk)
 
 
@@ -427,7 +476,7 @@ def trading_create(request):
                     })
 
             if not valid_items:
-                form.add_error(None, 'Добавьте хотя бы одну позицию сделки.')
+                form.add_error(None, _('Добавьте хотя бы одну позицию сделки.'))
                 return render(request, 'trading/trading_add.html', {
                     'form': form,
                     'item_formset': item_formset,
@@ -532,7 +581,7 @@ def trading_create(request):
                     trading=trading,
                     user=request.user,
                     action=TradingAuditLog.Action.CREATED,
-                    description=f'Создана сделка #{trading.id}',
+                    description=_('Создана сделка #%(id)s') % {'id': trading.id},
                     before_data={},
                     after_data=make_trading_snapshot(trading),
                 )
@@ -556,7 +605,7 @@ def trading_update(request, pk):
     trading = get_object_or_404(Trading, pk=pk)
 
     if not trading.can_be_edited:
-        messages.error(request, "Можно редактировать только незавершенные сделки.")
+        messages.error(request, _("Можно редактировать только незавершенные сделки."))
         return redirect('trading_detail', pk=trading.pk)
 
     TradingItemEditFormSet = formset_factory(
@@ -626,7 +675,7 @@ def trading_update(request, pk):
                             if fulfilled_quantity > requested_quantity:
                                 messages.error(
                                     request,
-                                    f'Выполнено не может быть больше заказано: {product}'
+                                    _('Выполнено не может быть больше заказано: %(product)s') % {'product': product}
                                 )
                                 return redirect('trading_update', pk=trading.pk)
 
@@ -668,71 +717,12 @@ def trading_update(request, pk):
 
                         continue
 
-                    if cleaned_data.get('DELETE'):
-                        if item.fulfilled_quantity > 0:
-                            messages.error(
-                                request,
-                                f'Нельзя удалить позицию, по которой уже есть выполнение: {item.product}'
-                            )
-                            return redirect('trading_update', pk=trading.pk)
-
-                        item.delete()
-                        continue
-
-                    requested_quantity = cleaned_data.get('requested_quantity')
-                    fulfilled_quantity = cleaned_data.get('fulfilled_quantity')
-
-                    if requested_quantity is None:
-                        continue
-
-                    if fulfilled_quantity is None:
-                        fulfilled_quantity = item.fulfilled_quantity
-
-                    if fulfilled_quantity > requested_quantity:
-                        messages.error(
-                            request,
-                            f'Выполнено не может быть больше заказано: {item.product}'
-                        )
-                        return redirect('trading_update', pk=trading.pk)
-
-                    quantity_delta = fulfilled_quantity - item.fulfilled_quantity
-
-                    inventory, _ = Inventory.objects.select_for_update().get_or_create(
-                        product=item.product,
-                        warehouse=item.warehouse,
-                        defaults={'quantity': 0},
-                    )
-
-                    quantity_before = inventory.quantity
-
-                    if trading.trade_type == Trading.TradeType.PURCHASE:
-                        inventory.quantity += quantity_delta
-
-                    elif trading.trade_type == Trading.TradeType.SELL:
-                        if quantity_delta > inventory.quantity:
-                            messages.error(
-                                request,
-                                f'Недостаточно товара на складе для {item.product}. '
-                                f'Доступно: {inventory.quantity}, нужно ещё: {quantity_delta}.'
-                            )
-                            return redirect('trading_update', pk=trading.pk)
-
-                        inventory.quantity -= quantity_delta
-
-                    inventory.save()
-
-                    item.requested_quantity = requested_quantity
-                    item.fulfilled_quantity = fulfilled_quantity
-                    item.quantity = fulfilled_quantity
-                    item.quantity_before = quantity_before
-                    item.quantity_after = inventory.quantity
-                    item.save(update_fields=[
-                        'requested_quantity',
-                        'fulfilled_quantity',
-                        'quantity',
-                        'quantity_before',
-                        'quantity_after',
-                    ])
+                    # Существующие позиции сделки нельзя менять через редактирование.
+                    # Это защищает складские остатки, историю fulfill и аудит:
+                    # товар, склад, заказано, выполнено и удаление старой позиции игнорируются.
+                    # Если нужно изменить объём или добавить тот же товар ещё раз —
+                    # добавляем новую позицию отдельной строкой.
+                    continue
 
                 all_done = not TradingItem.objects.filter(
                     trading=trading,
@@ -748,7 +738,7 @@ def trading_update(request, pk):
                     trading=trading,
                     user=request.user,
                     action=TradingAuditLog.Action.UPDATED,
-                    description=f'Отредактирована сделка #{trading.id}',
+                    description=_('Отредактирована сделка #%(id)s') % {'id': trading.id},
                     before_data=before_snapshot,
                     after_data=make_trading_snapshot(trading),
                 )
@@ -758,7 +748,7 @@ def trading_update(request, pk):
             for _ in storage:
                 pass
 
-            messages.success(request, 'Сделка обновлена.')
+            messages.success(request, _('Сделка обновлена.'))
             return redirect('trading_detail', pk=trading.pk)
 
     else:
@@ -789,7 +779,7 @@ def trading_delete(request, pk):
     )
 
     if manager_24h_limit_expired(request.user, trading):
-        messages.error(request, "Менеджер может удалить сделку только в течение 24 часов после создания.")
+        messages.error(request, _("Менеджер может удалить сделку только в течение 24 часов после создания."))
         return redirect('trading_detail', pk=trading.pk)
 
     if request.method == 'POST':
@@ -821,8 +811,11 @@ def trading_delete(request, pk):
                     if rollback_quantity > inventory.quantity:
                         messages.error(
                             request,
-                            f'Нельзя удалить сделку: на складе недостаточно товара для отката {item.product}. '
-                            f'На складе: {inventory.quantity}, нужно откатить: {rollback_quantity}.'
+                            _('Нельзя удалить сделку: на складе недостаточно товара для отката %(product)s. На складе: %(available)s, нужно откатить: %(needed)s.') % {
+                                'product': item.product,
+                                'available': inventory.quantity,
+                                'needed': rollback_quantity,
+                            }
                         )
                         return redirect('trading_detail', pk=trading.pk)
 
@@ -836,14 +829,14 @@ def trading_delete(request, pk):
                 trading=trading,
                 user=request.user,
                 action=TradingAuditLog.Action.DELETED,
-                description=f'Удалена сделка #{trading.id}, склад откатан',
+                description=_('Удалена сделка #%(id)s, склад откатан') % {'id': trading.id},
                 before_data=before_snapshot,
                 after_data={'deleted': True},
             )
 
             trading.delete()
 
-        messages.success(request, 'Сделка удалена, склад откатан.')
+        messages.success(request, _('Сделка удалена, склад откатан.'))
         return redirect('trading_list')
 
     return render(request, 'trading/trading_confirm_delete.html', {
@@ -881,16 +874,28 @@ def trading_fulfill(request, pk):
     )
 
     if request.method == 'POST':
-        try:
-            quantity_to_add = int(request.POST.get('quantity', 0))
-        except ValueError:
-            quantity_to_add = 0
+        requested_additions = {}
 
-        if quantity_to_add <= 0:
-            messages.error(request, 'Введите корректное количество.')
+        for item in trading.items.all():
+            raw_quantity = request.POST.get(f'quantity_{item.id}', '').strip()
+
+            if not raw_quantity:
+                continue
+
+            try:
+                quantity_to_add = int(raw_quantity)
+            except ValueError:
+                quantity_to_add = 0
+
+            if quantity_to_add > 0:
+                requested_additions[item.id] = quantity_to_add
+
+        if not requested_additions:
+            messages.error(request, _('Введите количество хотя бы для одной позиции.'))
             return redirect('trading_fulfill', pk=pk)
 
         was_fulfilled = False
+        fulfillment_details = []
 
         with transaction.atomic():
             trading = Trading.objects.select_for_update().get(pk=pk)
@@ -899,9 +904,14 @@ def trading_fulfill(request, pk):
             items = trading.items.select_related(
                 'product',
                 'warehouse'
-            ).select_for_update()
+            ).select_for_update().order_by('id')
 
             for item in items:
+                quantity_to_add = requested_additions.get(item.id, 0)
+
+                if quantity_to_add <= 0:
+                    continue
+
                 remaining = item.requested_quantity - item.fulfilled_quantity
 
                 if remaining <= 0:
@@ -918,10 +928,16 @@ def trading_fulfill(request, pk):
                 quantity_before = inventory.quantity
 
                 if trading.trade_type == Trading.TradeType.SELL:
-                    add_quantity = min(add_quantity, inventory.quantity)
-
-                    if add_quantity <= 0:
-                        continue
+                    if add_quantity > inventory.quantity:
+                        messages.error(
+                            request,
+                            _('Недостаточно товара на складе для %(product)s. Доступно: %(available)s, нужно: %(needed)s.') % {
+                                'product': item.product,
+                                'available': inventory.quantity,
+                                'needed': add_quantity,
+                            }
+                        )
+                        return redirect('trading_fulfill', pk=pk)
 
                     inventory.quantity -= add_quantity
 
@@ -930,17 +946,32 @@ def trading_fulfill(request, pk):
 
                 inventory.save()
 
+                fulfilled_before = item.fulfilled_quantity
+
                 item.fulfilled_quantity += add_quantity
                 item.quantity += add_quantity
                 item.quantity_before = quantity_before
                 item.quantity_after = inventory.quantity
                 item.save()
 
-                was_fulfilled = True
-                quantity_to_add -= add_quantity
+                fulfilled_after = item.fulfilled_quantity
+                remaining_after = max(item.requested_quantity - item.fulfilled_quantity, 0)
 
-                if quantity_to_add <= 0:
-                    break
+                fulfillment_details.append(
+                    {
+                        'product': str(item.product),
+                        'warehouse': str(item.warehouse),
+                        'unit': item.product.get_unit_display() if item.product else '',
+                        'added_quantity': add_quantity,
+                        'fulfilled_before': fulfilled_before,
+                        'fulfilled_after': fulfilled_after,
+                        'remaining_after': remaining_after,
+                        'stock_before': quantity_before,
+                        'stock_after': inventory.quantity,
+                    }
+                )
+
+                was_fulfilled = True
 
         all_done = not TradingItem.objects.filter(
             trading=trading,
@@ -948,11 +979,41 @@ def trading_fulfill(request, pk):
         ).exists()
 
         if was_fulfilled:
+            detail_lines = [_('Дополнена сделка #%(id)s') % {'id': trading.id}]
+
+            for detail in fulfillment_details:
+                unit = detail.get('unit') or ''
+                unit_suffix = f" {unit}" if unit else ""
+
+                detail_lines.extend([
+                    '',
+                    _('Товар: %(product)s') % {'product': detail['product']},
+                    _('Склад: %(warehouse)s') % {'warehouse': detail['warehouse']},
+                    _('Доотправлено: %(quantity)s%(unit)s') % {
+                        'quantity': detail['added_quantity'],
+                        'unit': unit_suffix,
+                    },
+                    _('Выполнено: %(before)s → %(after)s%(unit)s') % {
+                        'before': detail['fulfilled_before'],
+                        'after': detail['fulfilled_after'],
+                        'unit': unit_suffix,
+                    },
+                    _('Осталось: %(quantity)s%(unit)s') % {
+                        'quantity': detail['remaining_after'],
+                        'unit': unit_suffix,
+                    },
+                    _('Остаток на складе: %(before)s → %(after)s%(unit)s') % {
+                        'before': detail['stock_before'],
+                        'after': detail['stock_after'],
+                        'unit': unit_suffix,
+                    },
+                ])
+
             create_trading_audit_log(
                 trading=trading,
                 user=request.user,
                 action=TradingAuditLog.Action.FULFILLED,
-                description=f'Дополнена сделка #{trading.id}',
+                description='\n'.join(detail_lines),
                 before_data=before_snapshot,
                 after_data=make_trading_snapshot(trading),
             )
@@ -960,13 +1021,13 @@ def trading_fulfill(request, pk):
         if all_done:
             trading.status = Trading.Status.COMPLETED
             trading.save()
-            messages.success(request, 'Заказ полностью выполнен.')
+            messages.success(request, _('Заказ полностью выполнен.'))
         elif was_fulfilled:
             trading.status = Trading.Status.PENDING
             trading.save()
-            messages.success(request, 'Заказ частично дополнен.')
+            messages.success(request, _('Заказ частично дополнен.'))
         else:
-            messages.warning(request, 'Не удалось дополнить заказ. Проверьте остатки на складе.')
+            messages.warning(request, _('Не удалось дополнить заказ. Проверьте остатки на складе.'))
 
         return redirect('trading_detail', pk=pk)
 

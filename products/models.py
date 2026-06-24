@@ -57,7 +57,7 @@ class Inventory(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(
+            models.UniqueConstraint(        
                 fields=["product", "warehouse"],
                 name="unique_product_warehouse",
             )

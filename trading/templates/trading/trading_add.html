@@ -240,6 +240,40 @@
         box-shadow: 0 10px 24px rgba(31, 59, 74, 0.09);
     }
 
+    .item-block.locked-existing-item {
+        background: linear-gradient(135deg, #f3f7fa 0%, #edf4f8 100%) !important;
+        border: 2px solid #9fb5c2 !important;
+    }
+
+    .item-block.locked-existing-item::before {
+        background: #8ea5b3;
+    }
+
+    .locked-item-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: #eef3f7;
+        color: #4e5f6d;
+        border: 1px solid #c8d6df;
+        font-size: 12px;
+        font-weight: 950;
+    }
+
+    .locked-existing-item .form-row input,
+    .locked-existing-item .custom-searchable-input {
+        background: #eef3f7 !important;
+        color: #4e5f6d !important;
+        border-color: #c8d6df !important;
+        cursor: not-allowed;
+    }
+
+    .locked-existing-item .custom-searchable-dropdown {
+        pointer-events: none;
+    }
+
     .item-block > div:first-child {
         padding-left: 6px;
     }
@@ -489,7 +523,7 @@
                         {% for attachment_form in formset %}
                             <div class="attachment-item">
                                 {{ attachment_form.id }}
-                                <label>File {{ forloop.counter }}:</label>
+                                <label>{% trans "Файл" %} {{ forloop.counter }}:</label>
                                 {{ attachment_form.file }}
 
                                 {% if attachment_form.file.errors %}
@@ -516,8 +550,11 @@
                 {% for item_form in item_formset %}
                     <div class="item-block">
                         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                            <h4 class="item-title" style="margin:0;">Item {{ forloop.counter }}</h4>
-                            {% if not form.instance.pk %}
+                            <h4 class="item-title" style="margin:0;">{% trans "Позиция" %} {{ forloop.counter }}</h4>
+
+                            {% if form.instance.pk %}
+                                <span class="locked-item-badge">🔒 {% trans "Зафиксировано" %}</span>
+                            {% else %}
                                 <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">{% trans "Удалить" %}</button>
                             {% endif %}
                         </div>
@@ -567,7 +604,7 @@
             <template id="empty-item-template">
                 <div class="item-block">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-                        <h4 class="item-title" style="margin:0;">Item __number__</h4>
+                        <h4 class="item-title" style="margin:0;">{% trans "Позиция" %} __number__</h4>
                         {% if not form.instance.pk %}
                             <button type="button" class="remove-item-btn action-link" style="background:none; border:none; cursor:pointer;">{% trans "Удалить" %}</button>
                         {% endif %}
@@ -612,6 +649,28 @@ document.addEventListener("DOMContentLoaded", function () {
     const saveBtn = document.getElementById("save-btn");
     const totalFormsInput = document.getElementById("id_items-TOTAL_FORMS");
     const emptyTemplate = document.getElementById("empty-item-template");
+    const initialFormsInput = document.getElementById("id_items-INITIAL_FORMS");
+    const initialItemCount = initialFormsInput ? parseInt(initialFormsInput.value || "0", 10) : 0;
+    const isEditMode = initialItemCount > 0;
+
+    function freezeExistingItemBlock(block) {
+        block.classList.add("locked-existing-item");
+
+        block.querySelectorAll('input[name$="-requested_quantity"], input[name$="-fulfilled_quantity"]').forEach(function(input) {
+            input.readOnly = true;
+            input.tabIndex = -1;
+        });
+
+        block.querySelectorAll(".custom-searchable-input").forEach(function(input) {
+            input.readOnly = true;
+            input.tabIndex = -1;
+            input.placeholder = "{% trans "Позиция зафиксирована" %}";
+        });
+
+        block.querySelectorAll('input[name$="-DELETE"]').forEach(function(input) {
+            input.checked = false;
+        });
+    }
 
     function updateTitles() {
         const blocks = itemsContainer.querySelectorAll(".item-block");
@@ -926,7 +985,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(function (data) {
-                stockInfo.innerText = `Stock: ${data.quantity} ${data.unit}`;
+                stockInfo.innerText = `{% trans "Остаток" %}: ${data.quantity} ${data.unit}`;
             })
             .catch(function () {
                 stockInfo.innerText = "{% trans "Ошибка загрузки" %}";
@@ -934,9 +993,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const existingBlocks = itemsContainer.querySelectorAll(".item-block");
-    existingBlocks.forEach(function (block) {
+    existingBlocks.forEach(function (block, index) {
         initSearch(block);
-        bindRemoveButton(block);
+
+        if (isEditMode && index < initialItemCount) {
+            freezeExistingItemBlock(block);
+        } else {
+            bindRemoveButton(block);
+        }
     });
 
     updateTitles();

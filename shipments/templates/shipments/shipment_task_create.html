@@ -1,0 +1,794 @@
+{% extends "base_manager.html" %}
+{% load i18n %}
+
+{% block title %}Создать отправку{% endblock %}
+
+{% block manager_content %}
+<style>
+    @keyframes pageFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(22px);
+            filter: blur(4px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0);
+        }
+    }
+
+    @keyframes cardFadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(18px) scale(0.985);
+            filter: blur(3px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0);
+        }
+    }
+
+    .shipment-create-page {
+        max-width: 1280px;
+        margin: 0 auto;
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .shipment-hero {
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        gap: 24px;
+        margin-bottom: 24px;
+        padding: 32px;
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(121, 174, 200, 0.20), transparent 36%),
+            linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 38px rgba(31, 59, 74, 0.10);
+        animation: pageFadeUp 0.55s ease both;
+    }
+
+    .shipment-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+    }
+
+    .hero-left,
+    .hero-right {
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
+    }
+
+    .shipment-title {
+        margin: 0;
+        color: #07172f;
+        font-size: 44px;
+        line-height: 1.05;
+        font-weight: 950;
+        letter-spacing: -0.8px;
+    }
+
+    .shipment-subtitle {
+        margin: 12px 0 0;
+        color: #6f7a89;
+        font-size: 16px;
+        line-height: 1.55;
+        font-weight: 650;
+    }
+
+    .form-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 22px;
+    }
+
+    .form-card {
+        position: relative;
+        overflow: visible;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbfd 100%);
+        border: 1px solid #d4e3eb;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.07);
+        animation: cardFadeUp 0.45s ease both;
+    }
+
+    .form-card::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 18px;
+        bottom: 18px;
+        width: 5px;
+        border-radius: 0 999px 999px 0;
+        background: #417690;
+    }
+
+    .form-card-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .form-icon {
+        display: grid;
+        place-items: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 16px;
+        background: #e8f3f8;
+        color: #417690;
+        border: 1px solid #c7dfeb;
+        font-size: 22px;
+        flex-shrink: 0;
+    }
+
+    .form-card h2 {
+        margin: 0;
+        color: #07172f;
+        font-size: 24px;
+        font-weight: 950;
+        letter-spacing: -0.25px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .form-row {
+        margin-bottom: 16px;
+    }
+
+    .form-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .form-row label {
+        display: block;
+        margin-bottom: 7px;
+        color: #6f7a89;
+        font-size: 12px;
+        font-weight: 950;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+    }
+
+    .form-row input,
+    .form-row textarea,
+    .form-row select,
+    .form-control {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #dce5eb;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font: inherit;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        font-weight: 700;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    }
+
+    .form-row textarea {
+        min-height: 110px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .form-row input:focus,
+    .form-row textarea:focus,
+    .form-row select:focus,
+    .form-control:focus {
+        border-color: #417690;
+        box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
+        background: #ffffff;
+    }
+
+    .items-card {
+        animation-delay: 0.08s;
+    }
+
+    .item-row {
+        display: grid;
+        grid-template-columns: 1fr 160px 96px;
+        gap: 12px;
+        align-items: end;
+        padding: 16px;
+        background: #f3f8fb;
+        border: 1px solid #d4e3eb;
+        border-radius: 18px;
+        margin-bottom: 12px;
+        animation: cardFadeUp 0.45s ease both;
+    }
+
+    .item-row.is-hidden {
+        display: none;
+    }
+
+    .product-select-wrap {
+        position: relative;
+    }
+
+    .product-select-wrap select {
+        display: none;
+    }
+
+    .product-search-input {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid #dce5eb;
+        border-radius: 14px;
+        padding: 12px 14px;
+        font: inherit;
+        background: #ffffff;
+        color: #172033;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    .product-search-input:focus {
+        outline: none;
+        border-color: #417690;
+        box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
+    }
+
+    .product-results {
+        display: none;
+        position: absolute;
+        z-index: 9999;
+        left: 0;
+        right: 0;
+        top: 100%;
+        margin-top: 6px;
+        max-height: 420px;
+        overflow-y: auto;
+        background: #ffffff;
+        border: 1px solid #c7dfeb;
+        border-radius: 14px;
+        box-shadow: 0 16px 34px rgba(31, 59, 74, 0.16);
+    }
+
+    .product-result-item {
+        padding: 12px 14px;
+        cursor: pointer;
+        border-bottom: 1px solid #eef2f5;
+        color: #172033;
+        background: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+        transition: background 0.2s;
+    }
+
+    .product-result-item:hover {
+        background: #e8f3f8;
+    }
+
+    .product-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-result-empty {
+        padding: 12px 14px;
+        color: #6f7a89;
+        background: #ffffff;
+        font-size: 14px;
+        font-weight: 800;
+    }
+
+    .delete-wrap {
+        display: none;
+    }
+
+    .remove-item-btn {
+        width: 100%;
+        min-height: 44px;
+        border: 1px solid #f2c1bc;
+        border-radius: 14px;
+        background: #fff0f0;
+        color: #c0392b;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .remove-item-btn:hover {
+        background: #ffe1e1;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(198, 40, 40, 0.10);
+    }
+
+    .shipment-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        min-height: 44px;
+        padding: 0 18px;
+        border-radius: 14px;
+        background: #417690;
+        color: #ffffff;
+        border: none;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 900;
+        cursor: pointer;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.18);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+        white-space: nowrap;
+    }
+
+    .shipment-btn:hover {
+        background: #2b5063;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 24px rgba(43, 80, 99, 0.22);
+    }
+
+    .shipment-btn.light {
+        background: #e8f3f8;
+        color: #2b5063;
+        border: 1px solid #c7dfeb;
+        box-shadow: none;
+        margin-bottom: 18px;
+    }
+
+    .shipment-btn.light:hover {
+        background: #d8ebf3;
+        box-shadow: 0 10px 20px rgba(31, 59, 74, 0.09);
+    }
+
+    .actions-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        background: #ffffff;
+        border: 1px solid #d4e3eb;
+        border-radius: 24px;
+        padding: 18px;
+        box-shadow: 0 10px 26px rgba(31, 59, 74, 0.05);
+        animation: cardFadeUp 0.45s ease both;
+        animation-delay: 0.12s;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 16px;
+        border-radius: 14px;
+        color: #2b5063;
+        background: #e8f3f8;
+        border: 1px solid #c7dfeb;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 900;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .back-link:hover {
+        background: #d8ebf3;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(31, 59, 74, 0.09);
+    }
+
+    .errorlist {
+        color: #c0392b;
+        margin: 8px 0 0;
+        padding-left: 18px;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .formset-errors {
+        margin-top: 12px;
+        color: #c0392b;
+        font-weight: 800;
+    }
+
+    @media (max-width: 900px) {
+        .shipment-hero {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .item-row {
+            grid-template-columns: 1fr;
+        }
+
+        .actions-card {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .shipment-btn,
+        .back-link {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .shipment-hero {
+            padding: 24px;
+            border-radius: 22px;
+        }
+
+        .shipment-title {
+            font-size: 34px;
+        }
+
+        .form-card {
+            border-radius: 22px;
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="shipment-create-page">
+
+    <section class="shipment-hero">
+        <div class="hero-left">
+            <div class="page-eyebrow">🚚 {% trans "Новое задание" %}</div>
+
+            <h1 class="shipment-title">
+                {% trans "Создать отправку" %}
+            </h1>
+
+            <p class="shipment-subtitle">
+                {% trans "Укажите исполнителя, получателя и список товаров для отправки." %}
+            </p>
+        </div>
+    </section>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-layout">
+            <div class="form-card">
+                <div class="form-card-title">
+                    <div class="form-icon">👤</div>
+                    <h2>{% trans "Получатель и исполнитель" %}</h2>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-row">
+                        {{ form.assigned_to.label_tag }}
+                        {{ form.assigned_to }}
+                        {{ form.assigned_to.errors }}
+                    </div>
+
+                    <div class="form-row">
+                        {{ form.recipient_name.label_tag }}
+                        {{ form.recipient_name }}
+                        {{ form.recipient_name.errors }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card">
+                <div class="form-card-title">
+                    <div class="form-icon">💬</div>
+                    <h2>{% trans "Комментарий" %}</h2>
+                </div>
+
+                <div class="form-row">
+                    {{ form.comment.label_tag }}
+                    {{ form.comment }}
+                    {{ form.comment.errors }}
+                </div>
+            </div>
+
+            <div class="form-card items-card">
+                <div class="form-card-title">
+                    <div class="form-icon">📦</div>
+                    <h2>{% trans "Что отправить" %}</h2>
+                </div>
+
+                {{ formset.management_form }}
+
+                <div id="shipment-items-container">
+                    {% for item_form in formset %}
+                        <div class="item-row {% if forloop.counter > 1 and not item_form.product.value and not item_form.quantity.value %}is-hidden{% endif %}">
+                            <div class="form-row product-select-wrap">
+                                {{ item_form.product.label_tag }}
+
+                                <input
+                                    type="text"
+                                    class="product-search-input"
+                                    placeholder="{% trans 'Выберите товар или начните поиск...' %}"
+                                    autocomplete="off"
+                                    readonly
+                                >
+
+                                <div class="product-results"></div>
+
+                                {{ item_form.product }}
+                                {{ item_form.product.errors }}
+                            </div>
+
+                            <div class="form-row">
+                                {{ item_form.quantity.label_tag }}
+                                {{ item_form.quantity }}
+                                {{ item_form.quantity.errors }}
+                            </div>
+
+                            <div class="form-row">
+                                <div class="delete-wrap">
+                                    {% if item_form.DELETE %}
+                                        {{ item_form.DELETE }}
+                                    {% endif %}
+                                </div>
+
+                                {% if not forloop.first %}
+                                    <button type="button" class="remove-item-btn">
+                                        {% trans "Удалить" %}
+                                    </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <button type="button" id="add-shipment-item-btn" class="shipment-btn light">
+                    + {% trans "Добавить ещё товар" %}
+                </button>
+
+                <div class="formset-errors">
+                    {{ formset.non_form_errors }}
+                </div>
+            </div>
+
+            <div class="actions-card">
+                <button type="submit" class="shipment-btn">
+                    {% trans "Создать задание" %}
+                </button>
+
+                <a href="{% url 'shipments:shipment_task_list' %}" class="back-link">
+                    ← {% trans "Назад" %}
+                </a>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    (function () {
+        const addButton = document.getElementById("add-shipment-item-btn");
+        const container = document.getElementById("shipment-items-container");
+
+        if (!addButton || !container) {
+            return;
+        }
+
+        function getHiddenRows() {
+            return Array.from(container.querySelectorAll(".item-row.is-hidden"));
+        }
+
+        function updateAddButtonVisibility() {
+            addButton.style.display = getHiddenRows().length === 0 ? "none" : "inline-flex";
+        }
+
+        function setupProductSearch(row) {
+            const searchInput = row.querySelector(".product-search-input");
+            const resultsBox = row.querySelector(".product-results");
+            const productSelect = row.querySelector("select");
+
+            if (!searchInput || !resultsBox || !productSelect) {
+                return;
+            }
+
+            const options = Array.from(productSelect.options)
+                .filter(function (option) {
+                    return option.value !== "";
+                })
+                .map(function (option) {
+                    return {
+                        value: option.value,
+                        text: option.text
+                    };
+                });
+
+            function closeResults() {
+                resultsBox.style.display = "none";
+            }
+
+            function openResults() {
+                resultsBox.style.display = "block";
+            }
+
+            function renderResults() {
+                const searchText = searchInput.value.trim().toLowerCase();
+                let matches = options;
+
+                if (searchText && searchInput.dataset.selectedText !== searchInput.value) {
+                    matches = options.filter(function (option) {
+                        return option.text.toLowerCase().includes(searchText);
+                    });
+                }
+
+                resultsBox.innerHTML = "";
+
+                if (matches.length === 0) {
+                    const empty = document.createElement("div");
+                    empty.className = "product-result-empty";
+                    empty.textContent = "Ничего не найдено";
+                    resultsBox.appendChild(empty);
+                    openResults();
+                    return;
+                }
+
+                matches.forEach(function (option) {
+                    const item = document.createElement("div");
+                    item.className = "product-result-item";
+                    item.textContent = option.text;
+                    item.dataset.value = option.value;
+
+                    item.addEventListener("mousedown", function (event) {
+                        event.preventDefault();
+                        productSelect.value = option.value;
+                        searchInput.value = option.text;
+                        searchInput.dataset.selectedText = option.text;
+                        searchInput.readOnly = true;
+                        closeResults();
+                    });
+
+                    resultsBox.appendChild(item);
+                });
+
+                openResults();
+            }
+
+            searchInput.addEventListener("focus", function () {
+                searchInput.readOnly = false;
+
+                if (searchInput.dataset.selectedText === searchInput.value) {
+                    searchInput.value = "";
+                }
+
+                renderResults();
+            });
+
+            searchInput.addEventListener("input", function () {
+                productSelect.value = "";
+                searchInput.dataset.selectedText = "";
+                renderResults();
+            });
+
+            searchInput.addEventListener("blur", function () {
+                setTimeout(function () {
+                    closeResults();
+
+                    if (!productSelect.value) {
+                        searchInput.value = "";
+                        searchInput.dataset.selectedText = "";
+                    }
+
+                    searchInput.readOnly = true;
+                }, 150);
+            });
+
+            productSelect.addEventListener("change", function () {
+                const selected = options.find(function (option) {
+                    return option.value === productSelect.value;
+                });
+
+                searchInput.value = selected ? selected.text : "";
+                searchInput.dataset.selectedText = selected ? selected.text : "";
+            });
+
+            if (productSelect.value) {
+                const selected = options.find(function (option) {
+                    return option.value === productSelect.value;
+                });
+
+                if (selected) {
+                    searchInput.value = selected.text;
+                    searchInput.dataset.selectedText = selected.text;
+                }
+            }
+        }
+
+        function setupAllProductSearches() {
+            container.querySelectorAll(".item-row").forEach(function (row) {
+                setupProductSearch(row);
+            });
+        }
+
+        addButton.addEventListener("click", function () {
+            const hiddenRows = getHiddenRows();
+
+            if (hiddenRows.length === 0) {
+                return;
+            }
+
+            hiddenRows[0].classList.remove("is-hidden");
+            updateAddButtonVisibility();
+        });
+
+        container.addEventListener("click", function (event) {
+            if (!event.target.classList.contains("remove-item-btn")) {
+                return;
+            }
+
+            const row = event.target.closest(".item-row");
+
+            if (!row) {
+                return;
+            }
+
+            const deleteCheckbox = row.querySelector("input[type='checkbox'][name$='-DELETE']");
+            const searchInput = row.querySelector(".product-search-input");
+            const productSelect = row.querySelector("select");
+            const inputs = row.querySelectorAll("input");
+
+            if (deleteCheckbox) {
+                deleteCheckbox.checked = true;
+            }
+
+            if (productSelect) {
+                productSelect.value = "";
+            }
+
+            if (searchInput) {
+                searchInput.value = "";
+                searchInput.dataset.selectedText = "";
+            }
+
+            inputs.forEach(function (input) {
+                if (input.type !== "hidden" && input.type !== "checkbox" && !input.classList.contains("product-search-input")) {
+                    input.value = "";
+                }
+            });
+
+            row.classList.add("is-hidden");
+            updateAddButtonVisibility();
+        });
+
+        setupAllProductSearches();
+        updateAddButtonVisibility();
+    })();
+</script>
+{% endblock %}

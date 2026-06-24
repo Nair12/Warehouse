@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'products',
     'warehouses',
     'trading',
+    'shipments',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
+                'shipments.context_processors.shipment_notifications',
             ],
         },
     },
