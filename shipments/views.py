@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_POST
 
 from users.decorators import role_required
@@ -65,7 +66,7 @@ def shipment_task_create(request):
             formset.instance = task
             formset.save()
 
-            messages.success(request, "Задание на отправку создано.")
+            messages.success(request, _("Задание на отправку создано."))
             return redirect("shipments:shipment_task_list")
     else:
         form = ShipmentTaskForm()
@@ -108,11 +109,11 @@ def shipment_task_mark_shipped(request, pk):
     task = get_object_or_404(ShipmentTask, pk=pk)
 
     if task.assigned_to != request.user and request.user.role != "senior_manager":
-        messages.error(request, "Вы не можете закрыть это задание.")
+        messages.error(request, _("Вы не можете закрыть это задание."))
         return redirect("shipments:shipment_task_detail", pk=task.pk)
 
     task.mark_shipped()
-    messages.success(request, "Задание отмечено как отправленное.")
+    messages.success(request, _("Задание отмечено как отправленное."))
     return redirect("shipments:shipment_task_detail", pk=task.pk)
 
 
@@ -122,9 +123,9 @@ def shipment_task_mark_problem(request, pk):
     task = get_object_or_404(ShipmentTask, pk=pk)
 
     if task.assigned_to != request.user and request.user.role != "senior_manager":
-        messages.error(request, "Вы не можете изменить это задание.")
+        messages.error(request, _("Вы не можете изменить это задание."))
         return redirect("shipments:shipment_task_detail", pk=task.pk)
 
     task.mark_problem()
-    messages.success(request, "Задание отмечено как проблемное.")
+    messages.success(request, _("Задание отмечено как проблемное."))
     return redirect("shipments:shipment_task_detail", pk=task.pk)

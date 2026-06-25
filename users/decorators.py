@@ -10,7 +10,7 @@ def role_required(allowed_roles):
 
             # если не вошёл → на логин
             if not request.user.is_authenticated:
-                return redirect('/login/')
+                return redirect('login')
 
             # если роль не подходит
             if request.user.role not in allowed_roles:

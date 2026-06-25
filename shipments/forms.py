@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
 from .models import ShipmentTask, ShipmentTaskItem
 
@@ -26,9 +27,9 @@ class ShipmentTaskForm(forms.ModelForm):
             is_active=True
         ).order_by("username")
 
-        self.fields["assigned_to"].label = "Кому дать задание"
-        self.fields["recipient_name"].label = "Кому отправить"
-        self.fields["comment"].label = "Комментарий для исполнителя"
+        self.fields["assigned_to"].label = _("Кому дать задание")
+        self.fields["recipient_name"].label = _("Кому отправить")
+        self.fields["comment"].label = _("Комментарий для исполнителя")
 
 
 class ShipmentTaskItemForm(forms.ModelForm):
@@ -42,8 +43,8 @@ class ShipmentTaskItemForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields["product"].label = "Что отправить"
-        self.fields["quantity"].label = "Количество"
+        self.fields["product"].label = _("Что отправить")
+        self.fields["quantity"].label = _("Количество")
 
 
 ShipmentTaskItemFormSet = forms.inlineformset_factory(

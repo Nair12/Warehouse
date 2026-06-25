@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Warehouse Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 15:18+0400\n"
+"POT-Creation-Date: 2026-06-25 16:55+0400\n"
 "PO-Revision-Date: 2026-05-07 11:20+0400\n"
 "Last-Translator: Warehouse Team\n"
 "Language-Team: English\n"
@@ -64,7 +64,7 @@ msgid "История"
 msgstr "History"
 
 #: .\products\templates\products\base.html:448
-#: .\products\templates\products\base.html:509
+#: .\products\templates\products\base.html:507
 #: .\users\templates\base_manager.html:614
 #: .\users\templates\users\manager_dashboard.html:569
 #: .\users\templates\warehouse_list.html:271
@@ -72,7 +72,7 @@ msgid "Склады"
 msgstr "Warehouses"
 
 #: .\products\templates\products\base.html:452
-#: .\products\templates\products\base.html:508
+#: .\products\templates\products\base.html:506
 #: .\products\templates\products\product_list.html:547
 #: .\users\templates\base_manager.html:618
 #: .\users\templates\users\manager_dashboard.html:560
@@ -86,27 +86,28 @@ msgid "Перемещения"
 msgstr "Transfers"
 
 #: .\products\templates\products\base.html:460
+#: .\shipments\templates\shipments\shipment_task_list.html:4
 #: .\shipments\templates\shipments\shipment_task_list.html:505
 #: .\users\templates\base_manager.html:626
 msgid "Отправки"
-msgstr ""
+msgstr "Shipments"
 
-#: .\products\templates\products\base.html:490
+#: .\products\templates\products\base.html:488
 #: .\users\templates\base_manager.html:657
 msgid "Поиск по системе..."
 msgstr "Search in system..."
 
-#: .\products\templates\products\base.html:491
+#: .\products\templates\products\base.html:489
 #: .\users\templates\base_manager.html:658
 msgid "Поиск"
 msgstr "Search"
 
-#: .\products\templates\products\base.html:496
+#: .\products\templates\products\base.html:494
 #: .\users\templates\base_manager.html:663
 msgid "Выход"
 msgstr "Logout"
 
-#: .\products\templates\products\base.html:530
+#: .\products\templates\products\base.html:526
 #: .\products\templates\products\product_detail.html:624 .\trading\forms.py:81
 #: .\trading\models.py:60 .\trading\models.py:177
 #: .\trading\templates\trading\admin_trading_history.html:24
@@ -115,13 +116,13 @@ msgstr "Logout"
 msgid "Склад"
 msgstr "Warehouse"
 
-#: .\products\templates\products\base.html:542
+#: .\products\templates\products\base.html:538
 msgid "Выйти"
-msgstr ""
+msgstr "Logout"
 
-#: .\products\templates\products\base.html:546
+#: .\products\templates\products\base.html:542
 msgid "Войти"
-msgstr ""
+msgstr "Login"
 
 #: .\products\templates\products\product_detail.html:573
 msgid "Изображение товара отсутствует"
@@ -156,7 +157,8 @@ msgid "склада"
 msgstr "warehouses"
 
 #: .\products\templates\products\product_detail.html:625
-#: .\shipments\models.py:109 .\trading\models.py:75 .\trading\models.py:184
+#: .\shipments\forms.py:47 .\shipments\models.py:109 .\trading\models.py:75
+#: .\trading\models.py:184
 #: .\trading\templates\trading\admin_trading_history.html:25
 #: .\warehouses\templates\warehouse_transfer_form.html:249
 #: .\warehouses\templates\warehouse_transfer_history.html:406
@@ -305,57 +307,64 @@ msgstr ""
 
 #: .\shipments\admin.py:46
 msgid "Основное"
-msgstr ""
+msgstr "Main"
 
 #: .\shipments\admin.py:53 .\shipments\models.py:100
-#, fuzzy
-#| msgid "Название"
 msgid "Задание"
-msgstr "Name"
+msgstr "Task"
 
 #: .\shipments\admin.py:59
 msgid "Даты"
-msgstr ""
+msgstr "Dates"
+
+#: .\shipments\forms.py:30
+msgid "Кому дать задание"
+msgstr "Assign task to"
+
+#: .\shipments\forms.py:31 .\shipments\models.py:37
+msgid "Кому отправить"
+msgstr "Send to"
+
+#: .\shipments\forms.py:32
+msgid "Комментарий для исполнителя"
+msgstr "Comment for assignee"
+
+#: .\shipments\forms.py:46
+#: .\shipments\templates\shipments\shipment_task_create.html:526
+#: .\shipments\templates\shipments\shipment_task_detail.html:483
+msgid "Что отправить"
+msgstr "What to ship"
 
 #: .\shipments\models.py:16
 msgid "Новое"
-msgstr ""
+msgstr "New"
 
 #: .\shipments\models.py:17
 msgid "Увидел"
-msgstr ""
+msgstr "Seen"
 
 #: .\shipments\models.py:18
 #: .\shipments\templates\shipments\shipment_task_detail.html:517
 #: .\shipments\templates\shipments\shipment_task_list.html:539
-#, fuzzy
-#| msgid "Обновлено"
 msgid "Отправлено"
-msgstr "Updated"
+msgstr "Shipped"
 
 #: .\shipments\models.py:19
 #: .\shipments\templates\shipments\shipment_task_detail.html:524
 msgid "Проблема"
-msgstr ""
+msgstr "Problem"
 
 #: .\shipments\models.py:26
-#, fuzzy
-#| msgid "Кто сделал"
 msgid "Кто создал"
-msgstr "Performed by"
+msgstr "Created by"
 
 #: .\shipments\models.py:32
 msgid "Кому поручено"
-msgstr ""
-
-#: .\shipments\models.py:37
-#, fuzzy
-#| msgid "Добавить"
-msgid "Кому отправить"
-msgstr "Add"
+msgstr "Assigned to"
 
 #: .\shipments\models.py:41
 #: .\shipments\templates\shipments\shipment_task_create.html:513
+#: .\shipments\templates\shipments\shipment_task_create.html:517
 #: .\shipments\templates\shipments\shipment_task_detail.html:503
 #: .\trading\forms.py:33 .\trading\forms.py:160 .\trading\models.py:26
 #: .\trading\models.py:364 .\trading\models.py:379
@@ -365,86 +374,65 @@ msgstr "Comment"
 
 #: .\shipments\models.py:48 .\trading\models.py:39
 msgid "Статус"
-msgstr ""
+msgstr "Status"
 
 #: .\shipments\models.py:54
 msgid "Когда увидел"
-msgstr ""
+msgstr "Seen at"
 
 #: .\shipments\models.py:59
-#, fuzzy
-#| msgid "Дата добавления"
 msgid "Когда отправлено"
-msgstr "Date added"
+msgstr "Shipped at"
 
 #: .\shipments\models.py:64
 #: .\shipments\templates\shipments\shipment_task_detail.html:473
-#, fuzzy
-#| msgid "Дата добавления"
 msgid "Дата создания"
-msgstr "Date added"
+msgstr "Created at"
 
 #: .\shipments\models.py:68
-#, fuzzy
-#| msgid "Дата добавления"
 msgid "Дата обновления"
-msgstr "Date added"
+msgstr "Updated at"
 
 #: .\shipments\models.py:73
+#: .\shipments\templates\shipments\shipment_task_detail.html:4
 #: .\shipments\templates\shipments\shipment_task_detail.html:411
 msgid "Задание на отправку"
-msgstr ""
+msgstr "Shipment task"
 
 #: .\shipments\models.py:74
 #: .\shipments\templates\shipments\shipment_task_list.html:503
 msgid "Задания на отправку"
-msgstr ""
+msgstr "Shipment tasks"
 
 #: .\shipments\models.py:113
 msgid "Товар в задании на отправку"
-msgstr ""
+msgstr "Product in shipment task"
 
 #: .\shipments\models.py:114
-#, fuzzy
-#| msgid "Товары не найдены"
 msgid "Товары в задании на отправку"
-msgstr "No products found"
+msgstr "Products in shipment task"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:4
+#: .\shipments\templates\shipments\shipment_task_create.html:476
+msgid "Создать отправку"
+msgstr "Create shipment"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:473
 #: .\shipments\templates\shipments\shipment_task_list.html:515
-#, fuzzy
-#| msgid "Название"
 msgid "Новое задание"
-msgstr "Name"
-
-#: .\shipments\templates\shipments\shipment_task_create.html:476
-#, fuzzy
-#| msgid "Создать сделку"
-msgid "Создать отправку"
-msgstr "Create deal"
+msgstr "New task"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:480
 msgid "Укажите исполнителя, получателя и список товаров для отправки."
-msgstr ""
+msgstr "Specify the assignee, recipient, and list of products to ship."
 
 #: .\shipments\templates\shipments\shipment_task_create.html:492
-#, fuzzy
-#| msgid "Пользователь"
 msgid "Получатель и исполнитель"
-msgstr "User"
-
-#: .\shipments\templates\shipments\shipment_task_create.html:526
-#: .\shipments\templates\shipments\shipment_task_detail.html:483
-#, fuzzy
-#| msgid "Добавить"
-msgid "Что отправить"
-msgstr "Add"
+msgstr "Recipient and assignee"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:540
-#, fuzzy
-#| msgid "Выберите товар, склад и количество"
 msgid "Выберите товар или начните поиск..."
-msgstr "Select product, warehouse and quantity"
+msgstr "Select a product or start searching..."
 
 #: .\shipments\templates\shipments\shipment_task_create.html:566
 #: .\trading\templates\trading\trading_add.html:558
@@ -452,47 +440,42 @@ msgstr "Select product, warehouse and quantity"
 #: .\trading\templates\trading\trading_detail.html:735
 #: .\trading\templates\trading\trading_detail.html:754
 msgid "Удалить"
-msgstr "Remove"
+msgstr "Delete"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:575
-#, fuzzy
-#| msgid "Добавить товар"
 msgid "Добавить ещё товар"
-msgstr "Add product"
+msgstr "Add another product"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:585
-#, fuzzy
-#| msgid "Создать перемещение"
 msgid "Создать задание"
-msgstr "Create transfer"
+msgstr "Create task"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:657
+#: .\trading\templates\trading\trading_add.html:759
+msgid "Ничего не найдено"
+msgstr "Nothing found"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:414
 #: .\shipments\templates\shipments\shipment_task_list.html:562
-#, fuzzy
-#| msgid "Добавить"
 msgid "Отправить в"
-msgstr "Add"
+msgstr "Ship to"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:418
-#, fuzzy
-#| msgid "Детальный просмотр сделки, позиций, документов и комментариев."
 msgid "Детальный просмотр задания, товаров, исполнителя и текущего статуса."
-msgstr "Detailed view of the deal, items, documents, and comments."
+msgstr "Detailed view of the task, products, assignee, and current status."
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:433
-#, fuzzy
-#| msgid "Пользователь"
 msgid "Получатель"
-msgstr "User"
+msgstr "Recipient"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:438
 #: .\shipments\templates\shipments\shipment_task_list.html:566
 msgid "Кому"
-msgstr ""
+msgstr "Recipient"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:444
 msgid "Контакт"
-msgstr ""
+msgstr "Contact"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:458
 #: .\trading\templates\trading\trading_fulfill.html:100
@@ -501,30 +484,26 @@ msgstr "Information"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:463
 #: .\shipments\templates\shipments\shipment_task_list.html:567
-#, fuzzy
-#| msgid "Дополнить"
 msgid "Исполнитель"
-msgstr "Fulfill"
+msgstr "Assignee"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:468
 #: .\shipments\templates\shipments\shipment_task_list.html:568
-#, fuzzy
-#| msgid "Создан"
 msgid "Создал"
-msgstr "Created"
+msgstr "Created by"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:494
 #: .\shipments\templates\shipments\shipment_task_list.html:588
-#, fuzzy
-#| msgid "Товары не найдены"
 msgid "Товары не указаны"
-msgstr "No products found"
+msgstr "No products specified"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:508
 msgid ""
 "Кому, куда и какие товары нужно отправить. Быстрый контроль статусов и "
 "исполнителей."
 msgstr ""
+"Who, where, and which products need to be shipped. Quick control of statuses "
+"and assignees."
 
 #: .\shipments\templates\shipments\shipment_task_list.html:523
 #: .\trading\templates\trading\trading_list.html:930
@@ -533,26 +512,20 @@ msgid "Все"
 msgstr "All"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:527
-#, fuzzy
-#| msgid "7 дней"
 msgid "Мне"
-msgstr "7 days"
+msgstr "Mine"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:531
-#, fuzzy
-#| msgid "Создание сделки"
 msgid "Созданные мной"
-msgstr "Create operation"
+msgstr "Created by me"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:535
 msgid "Новые"
-msgstr ""
+msgstr "New"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:546
-#, fuzzy
-#| msgid "Поиск по названию сделки, товару, складу или комментарию..."
 msgid "Поиск по получателю, городу или товару"
-msgstr "Search by deal name, product, warehouse, or comment..."
+msgstr "Search by recipient, city, or product"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:595
 #: .\trading\templates\trading\trading_list.html:1091
@@ -561,16 +534,33 @@ msgid "Открыть"
 msgstr "Open"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:604
-#, fuzzy
-#| msgid "Комментариев пока нет"
 msgid "Заданий пока нет"
-msgstr "No comments yet"
+msgstr "No tasks yet"
 
 #: .\shipments\templates\shipments\shipment_task_list.html:605
-#, fuzzy
-#| msgid "Поиск по названию или описанию..."
 msgid "Создайте первое задание на отправку."
-msgstr "Search by name or description..."
+msgstr "Create the first shipment task."
+
+#: .\shipments\views.py:69
+msgid "Задание на отправку создано."
+msgstr "Shipment task created."
+
+# Shipments module
+#: .\shipments\views.py:112
+msgid "Вы не можете закрыть это задание."
+msgstr "You cannot close this task."
+
+#: .\shipments\views.py:116
+msgid "Задание отмечено как отправленное."
+msgstr "Task marked as shipped."
+
+#: .\shipments\views.py:126
+msgid "Вы не можете изменить это задание."
+msgstr "You cannot change this task."
+
+#: .\shipments\views.py:130
+msgid "Задание отмечено как проблемное."
+msgstr "Task marked as problematic."
 
 #: .\trading\forms.py:18
 msgid "Введите название сделки"
@@ -933,10 +923,6 @@ msgstr ""
 #: .\trading\templates\trading\trading_add.html:731
 msgid "Начните писать для поиска..."
 msgstr "Start typing to search..."
-
-#: .\trading\templates\trading\trading_add.html:759
-msgid "Ничего не найдено"
-msgstr "Nothing found"
 
 #: .\trading\templates\trading\trading_add.html:820
 #: .\warehouses\templates\warehouse_transfer_form.html:218

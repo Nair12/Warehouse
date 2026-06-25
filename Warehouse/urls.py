@@ -7,18 +7,19 @@ from django.contrib.auth import views as auth_views
 from django.shortcuts import redirect
 
 from users.decorators import role_required
-from users.views import role_redirect_view
+from users.views import role_redirect_view, switch_language_view
 
 
 def home_redirect(request):
     if request.user.is_authenticated:
-        return redirect('/redirect-by-role/')
-    return redirect('/login/')
+        return redirect('redirect_by_role')
+    return redirect('login')
 
 
 urlpatterns = [
     # Django language switch system
     path('i18n/', include('django.conf.urls.i18n')),
+    path('switch-language/<str:language_code>/', switch_language_view, name='switch_language'),
 ]
 
 
@@ -37,7 +38,7 @@ urlpatterns += i18n_patterns(
 
     path(
         'logout/',
-        auth_views.LogoutView.as_view(next_page='/login/'),
+        auth_views.LogoutView.as_view(next_page='login'),
         name='logout'
     ),
 

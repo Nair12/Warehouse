@@ -473,17 +473,15 @@
 
             <div class="manager-header-actions">
                 <div class="language-switcher">
-                    <form action="{% url 'set_language' %}" method="post" class="language-select-form">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                    <div class="language-select-form">
                         <div class="language-select-wrap">
-                            <select name="language" class="language-select" onchange="this.form.submit()">
-                                <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
-                                <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
-                                <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
+                            <select class="language-select" onchange="if (this.value) window.location.href = this.value;">
+                                <option value="{% url 'switch_language' 'ru' %}" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>Русский</option>
+                                <option value="{% url 'switch_language' 'en' %}" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>English</option>
+                                <option value="{% url 'switch_language' 'tr' %}" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>Türkçe</option>
                             </select>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <form method="get" action="{% url 'global_search' %}" class="manager-search-form">
@@ -511,17 +509,15 @@
 
         <div class="user-block">
             <div class="language-switcher">
-                <form action="{% url 'set_language' %}" method="post" class="language-select-form">
-                    {% csrf_token %}
-                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                <div class="language-select-form">
                     <div class="language-select-wrap">
-                        <select name="language" class="language-select" onchange="this.form.submit()">
-                            <option value="ru" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>RU</option>
-                            <option value="en" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>EN</option>
-                            <option value="tr" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>TR</option>
+                        <select class="language-select" onchange="if (this.value) window.location.href = this.value;">
+                            <option value="{% url 'switch_language' 'ru' %}" {% if CURRENT_LANGUAGE == 'ru' %}selected{% endif %}>Русский</option>
+                            <option value="{% url 'switch_language' 'en' %}" {% if CURRENT_LANGUAGE == 'en' %}selected{% endif %}>English</option>
+                            <option value="{% url 'switch_language' 'tr' %}" {% if CURRENT_LANGUAGE == 'tr' %}selected{% endif %}>Türkçe</option>
                         </select>
                     </div>
-                </form>
+                </div>
             </div>
 
             {% if user.is_authenticated %}

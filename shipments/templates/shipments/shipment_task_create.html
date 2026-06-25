@@ -1,7 +1,7 @@
 {% extends "base_manager.html" %}
 {% load i18n %}
 
-{% block title %}Создать отправку{% endblock %}
+{% block title %}{% trans "Создать отправку" %}{% endblock %}
 
 {% block manager_content %}
 <style>
@@ -514,7 +514,7 @@
                 </div>
 
                 <div class="form-row">
-                    {{ form.comment.label_tag }}
+                    <label for="{{ form.comment.id_for_label }}">{% trans "Комментарий" %}</label>
                     {{ form.comment }}
                     {{ form.comment.errors }}
                 </div>
@@ -654,7 +654,7 @@
                 if (matches.length === 0) {
                     const empty = document.createElement("div");
                     empty.className = "product-result-empty";
-                    empty.textContent = "Ничего не найдено";
+                    empty.textContent = "{% trans 'Ничего не найдено' %}";
                     resultsBox.appendChild(empty);
                     openResults();
                     return;

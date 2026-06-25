@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Warehouse Manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 15:20+0400\n"
+"POT-Creation-Date: 2026-06-25 16:57+0400\n"
 "PO-Revision-Date: 2026-05-07 11:20+0400\n"
 "Last-Translator: Warehouse Team\n"
 "Language-Team: Turkish\n"
@@ -67,7 +67,7 @@ msgid "История"
 msgstr "Geçmiş"
 
 #: .\products\templates\products\base.html:448
-#: .\products\templates\products\base.html:509
+#: .\products\templates\products\base.html:507
 #: .\users\templates\base_manager.html:614
 #: .\users\templates\users\manager_dashboard.html:569
 #: .\users\templates\warehouse_list.html:271
@@ -75,7 +75,7 @@ msgid "Склады"
 msgstr "Depolar"
 
 #: .\products\templates\products\base.html:452
-#: .\products\templates\products\base.html:508
+#: .\products\templates\products\base.html:506
 #: .\products\templates\products\product_list.html:547
 #: .\users\templates\base_manager.html:618
 #: .\users\templates\users\manager_dashboard.html:560
@@ -89,27 +89,28 @@ msgid "Перемещения"
 msgstr "Transferler"
 
 #: .\products\templates\products\base.html:460
+#: .\shipments\templates\shipments\shipment_task_list.html:4
 #: .\shipments\templates\shipments\shipment_task_list.html:505
 #: .\users\templates\base_manager.html:626
 msgid "Отправки"
 msgstr ""
 
-#: .\products\templates\products\base.html:490
+#: .\products\templates\products\base.html:488
 #: .\users\templates\base_manager.html:657
 msgid "Поиск по системе..."
 msgstr "Sistemde ara..."
 
-#: .\products\templates\products\base.html:491
+#: .\products\templates\products\base.html:489
 #: .\users\templates\base_manager.html:658
 msgid "Поиск"
 msgstr "Ara"
 
-#: .\products\templates\products\base.html:496
+#: .\products\templates\products\base.html:494
 #: .\users\templates\base_manager.html:663
 msgid "Выход"
 msgstr "Çıkış yap"
 
-#: .\products\templates\products\base.html:530
+#: .\products\templates\products\base.html:526
 #: .\products\templates\products\product_detail.html:624 .\trading\forms.py:81
 #: .\trading\models.py:60 .\trading\models.py:177
 #: .\trading\templates\trading\admin_trading_history.html:24
@@ -118,11 +119,11 @@ msgstr "Çıkış yap"
 msgid "Склад"
 msgstr "Depo"
 
-#: .\products\templates\products\base.html:542
+#: .\products\templates\products\base.html:538
 msgid "Выйти"
 msgstr ""
 
-#: .\products\templates\products\base.html:546
+#: .\products\templates\products\base.html:542
 msgid "Войти"
 msgstr ""
 
@@ -159,7 +160,8 @@ msgid "склада"
 msgstr "depo"
 
 #: .\products\templates\products\product_detail.html:625
-#: .\shipments\models.py:109 .\trading\models.py:75 .\trading\models.py:184
+#: .\shipments\forms.py:47 .\shipments\models.py:109 .\trading\models.py:75
+#: .\trading\models.py:184
 #: .\trading\templates\trading\admin_trading_history.html:25
 #: .\warehouses\templates\warehouse_transfer_form.html:249
 #: .\warehouses\templates\warehouse_transfer_history.html:406
@@ -320,6 +322,28 @@ msgstr "Ad"
 msgid "Даты"
 msgstr ""
 
+#: .\shipments\forms.py:30
+msgid "Кому дать задание"
+msgstr "Görevi kime ver"
+
+#: .\shipments\forms.py:31 .\shipments\models.py:37
+#, fuzzy
+#| msgid "Добавить"
+msgid "Кому отправить"
+msgstr "Ekle"
+
+#: .\shipments\forms.py:32
+msgid "Комментарий для исполнителя"
+msgstr "Sorumlu için yorum"
+
+#: .\shipments\forms.py:46
+#: .\shipments\templates\shipments\shipment_task_create.html:526
+#: .\shipments\templates\shipments\shipment_task_detail.html:483
+#, fuzzy
+#| msgid "Добавить"
+msgid "Что отправить"
+msgstr "Ekle"
+
 #: .\shipments\models.py:16
 msgid "Новое"
 msgstr ""
@@ -351,14 +375,9 @@ msgstr "İşlemi yapan"
 msgid "Кому поручено"
 msgstr ""
 
-#: .\shipments\models.py:37
-#, fuzzy
-#| msgid "Добавить"
-msgid "Кому отправить"
-msgstr "Ekle"
-
 #: .\shipments\models.py:41
 #: .\shipments\templates\shipments\shipment_task_create.html:513
+#: .\shipments\templates\shipments\shipment_task_create.html:517
 #: .\shipments\templates\shipments\shipment_task_detail.html:503
 #: .\trading\forms.py:33 .\trading\forms.py:160 .\trading\models.py:26
 #: .\trading\models.py:364 .\trading\models.py:379
@@ -394,6 +413,7 @@ msgid "Дата обновления"
 msgstr "Eklenme tarihi"
 
 #: .\shipments\models.py:73
+#: .\shipments\templates\shipments\shipment_task_detail.html:4
 #: .\shipments\templates\shipments\shipment_task_detail.html:411
 msgid "Задание на отправку"
 msgstr ""
@@ -413,18 +433,19 @@ msgstr ""
 msgid "Товары в задании на отправку"
 msgstr "Ürün bulunamadı"
 
+#: .\shipments\templates\shipments\shipment_task_create.html:4
+#: .\shipments\templates\shipments\shipment_task_create.html:476
+#, fuzzy
+#| msgid "Создать сделку"
+msgid "Создать отправку"
+msgstr "İşlem oluştur"
+
 #: .\shipments\templates\shipments\shipment_task_create.html:473
 #: .\shipments\templates\shipments\shipment_task_list.html:515
 #, fuzzy
 #| msgid "Название"
 msgid "Новое задание"
 msgstr "Ad"
-
-#: .\shipments\templates\shipments\shipment_task_create.html:476
-#, fuzzy
-#| msgid "Создать сделку"
-msgid "Создать отправку"
-msgstr "İşlem oluştur"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:480
 msgid "Укажите исполнителя, получателя и список товаров для отправки."
@@ -435,13 +456,6 @@ msgstr ""
 #| msgid "Пользователь"
 msgid "Получатель и исполнитель"
 msgstr "Kullanıcı"
-
-#: .\shipments\templates\shipments\shipment_task_create.html:526
-#: .\shipments\templates\shipments\shipment_task_detail.html:483
-#, fuzzy
-#| msgid "Добавить"
-msgid "Что отправить"
-msgstr "Ekle"
 
 #: .\shipments\templates\shipments\shipment_task_create.html:540
 #, fuzzy
@@ -468,6 +482,11 @@ msgstr "Ürün ekle"
 #| msgid "Создать перемещение"
 msgid "Создать задание"
 msgstr "Transfer oluştur"
+
+#: .\shipments\templates\shipments\shipment_task_create.html:657
+#: .\trading\templates\trading\trading_add.html:759
+msgid "Ничего не найдено"
+msgstr "Hiçbir şey bulunamadı"
 
 #: .\shipments\templates\shipments\shipment_task_detail.html:414
 #: .\shipments\templates\shipments\shipment_task_list.html:562
@@ -574,6 +593,27 @@ msgstr "Henüz yorum yok"
 #| msgid "Поиск по названию или описанию..."
 msgid "Создайте первое задание на отправку."
 msgstr "İsim veya açıklamaya göre ara..."
+
+#: .\shipments\views.py:69
+msgid "Задание на отправку создано."
+msgstr "Gönderim görevi oluşturuldu."
+
+# Shipments module
+#: .\shipments\views.py:112
+msgid "Вы не можете закрыть это задание."
+msgstr "Bu görevi kapatamazsınız."
+
+#: .\shipments\views.py:116
+msgid "Задание отмечено как отправленное."
+msgstr "Görev gönderildi olarak işaretlendi."
+
+#: .\shipments\views.py:126
+msgid "Вы не можете изменить это задание."
+msgstr "Bu görevi değiştiremezsiniz."
+
+#: .\shipments\views.py:130
+msgid "Задание отмечено как проблемное."
+msgstr "Görev sorunlu olarak işaretlendi."
 
 #: .\trading\forms.py:18
 msgid "Введите название сделки"
@@ -935,10 +975,6 @@ msgstr ""
 #: .\trading\templates\trading\trading_add.html:731
 msgid "Начните писать для поиска..."
 msgstr "Aramak için yazmaya başlayın..."
-
-#: .\trading\templates\trading\trading_add.html:759
-msgid "Ничего не найдено"
-msgstr "Hiçbir şey bulunamadı"
 
 #: .\trading\templates\trading\trading_add.html:820
 #: .\warehouses\templates\warehouse_transfer_form.html:218

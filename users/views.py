@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect
+from django.conf import settings
 
 from products.forms import ProductForm
 from products.models import Product, Inventory
@@ -12,6 +13,7 @@ from warehouses.forms import WarehouseForm
 from warehouses.models import Warehouse
 from .decorators import role_required
 import json
+from urllib.parse import urlsplit, urlunsplit
 from datetime import timedelta
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -24,6 +26,44 @@ def test_view(request):
 def home_view(request):
     return HttpResponse("Главная страница")
 
+
+
+
+def switch_language_view(request, language_code):
+    allowed_codes = [code for code, name in settings.LANGUAGES]
+
+    if language_code not in allowed_codes:
+        language_code = settings.LANGUAGE_CODE
+
+    next_url = request.META.get('HTTP_REFERER') or '/'
+    parsed_url = urlsplit(next_url)
+    path_parts = parsed_url.path.split('/')
+
+    if len(path_parts) > 1 and path_parts[1] in allowed_codes:
+        path_parts[1] = language_code
+    else:
+        path_parts.insert(1, language_code)
+
+    new_path = '/'.join(path_parts)
+    if not new_path.startswith('/'):
+        new_path = '/' + new_path
+
+    redirect_url = urlunsplit(('', '', new_path, parsed_url.query, parsed_url.fragment))
+
+    request.session['_language'] = language_code
+
+    response = redirect(redirect_url)
+    response.set_cookie(
+        settings.LANGUAGE_COOKIE_NAME,
+        language_code,
+        max_age=getattr(settings, 'LANGUAGE_COOKIE_AGE', None),
+        path=getattr(settings, 'LANGUAGE_COOKIE_PATH', '/'),
+        domain=getattr(settings, 'LANGUAGE_COOKIE_DOMAIN', None),
+        secure=getattr(settings, 'LANGUAGE_COOKIE_SECURE', False),
+        httponly=getattr(settings, 'LANGUAGE_COOKIE_HTTPONLY', False),
+        samesite=getattr(settings, 'LANGUAGE_COOKIE_SAMESITE', 'Lax'),
+    )
+    return response
 
 def role_redirect_view(request):
     if not request.user.is_authenticated:

@@ -240,14 +240,14 @@
             font-weight: 800;
         }
 
-        .search-form {
+        .header-actions .search-form {
             position: relative;
             display: flex;
             align-items: center;
             margin: 0;
         }
 
-        .search-input {
+        .header-actions .search-input {
             width: 260px;
             height: 44px;
             padding: 0 52px 0 16px;
@@ -262,12 +262,12 @@
             transition: width 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
 
-        .search-input::placeholder {
+        .header-actions .search-input::placeholder {
             color: #7c8797;
             font-weight: 650;
         }
 
-        .search-input:focus {
+        .header-actions .search-input:focus {
             width: 320px;
             border-color: rgba(255, 255, 255, 0.85);
             box-shadow:
@@ -275,7 +275,7 @@
                 0 0 0 4px rgba(255, 255, 255, 0.18);
         }
 
-        .search-btn {
+        .header-actions .search-btn {
             position: absolute;
             right: 5px;
             width: 34px;
@@ -293,7 +293,7 @@
             box-shadow: 0 8px 18px rgba(31, 59, 74, 0.20);
         }
 
-        .search-btn:hover {
+        .header-actions .search-btn:hover {
             background: linear-gradient(135deg, #1f3b4a, #172033);
         }
 
@@ -522,12 +522,12 @@
                 width: 100%;
             }
 
-            .search-form {
+            .header-actions .search-form {
                 width: 100%;
             }
 
             .search-input,
-            .search-input:focus {
+            .header-actions .search-input:focus {
                 width: 100%;
             }
         }
@@ -667,7 +667,7 @@
 </div>
 
 <div class="container">
-    {% block manager_content %}{% endblock %}
+    {% block manager_content %}{% block content %}{% endblock %}{% endblock %}
 </div>
 
 <script>

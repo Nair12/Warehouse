@@ -489,7 +489,7 @@ def trading_create(request):
 
                 first_item = valid_items[0]
 
-                first_inventory, _ = Inventory.objects.get_or_create(
+                first_inventory, first_inventory_created = Inventory.objects.get_or_create(
                     product=first_item['product'],
                     warehouse=first_item['warehouse'],
                     defaults={'quantity': 0},
@@ -525,7 +525,7 @@ def trading_create(request):
                     requested_quantity = item['requested_quantity']
                     fulfilled_quantity = item['fulfilled_quantity']
 
-                    inventory, _ = Inventory.objects.get_or_create(
+                    inventory, inventory_created = Inventory.objects.get_or_create(
                         product=product,
                         warehouse=warehouse,
                         defaults={'quantity': 0},
@@ -679,7 +679,7 @@ def trading_update(request, pk):
                                 )
                                 return redirect('trading_update', pk=trading.pk)
 
-                            inventory, _ = Inventory.objects.select_for_update().get_or_create(
+                            inventory, inventory_created = Inventory.objects.select_for_update().get_or_create(
                                 product=product,
                                 warehouse=warehouse,
                                 defaults={'quantity': 0},
@@ -745,7 +745,7 @@ def trading_update(request, pk):
 
             from django.contrib.messages import get_messages
             storage = get_messages(request)
-            for _ in storage:
+            for stored_message in storage:
                 pass
 
             messages.success(request, _('Сделка обновлена.'))
@@ -798,7 +798,7 @@ def trading_delete(request, pk):
                 if rollback_quantity <= 0:
                     continue
 
-                inventory, _ = Inventory.objects.select_for_update().get_or_create(
+                inventory, inventory_created = Inventory.objects.select_for_update().get_or_create(
                     product=item.product,
                     warehouse=item.warehouse,
                     defaults={'quantity': 0},
@@ -919,7 +919,7 @@ def trading_fulfill(request, pk):
 
                 add_quantity = min(quantity_to_add, remaining)
 
-                inventory, _ = Inventory.objects.select_for_update().get_or_create(
+                inventory, inventory_created = Inventory.objects.select_for_update().get_or_create(
                     product=item.product,
                     warehouse=item.warehouse,
                     defaults={'quantity': 0},
