@@ -93,6 +93,8 @@ def manager_dashboard(request):
         "product",
         "warehouse",
         "user",
+    ).filter(
+        product__isnull=False,
     ).order_by("-created_at")[:5]
 
     now = timezone.now()
@@ -140,7 +142,10 @@ def manager_dashboard(request):
 
     popular_products = (
         Trading.objects
-        .filter(trade_type=Trading.TradeType.SELL)
+        .filter(
+            trade_type=Trading.TradeType.SELL,
+            product__isnull=False,
+        )
         .values("product__id", "product__name")
         .annotate(total_sold=Sum("quantity"))
         .order_by("-total_sold")[:5]

@@ -1,0 +1,319 @@
+{% extends "admin/change_list.html" %}
+{% load i18n admin_urls static admin_list %}
+
+{% block content %}
+<style>
+    #content h1 {
+        display: none;
+    }
+
+    html,
+    body {
+        overflow-x: hidden !important;
+    }
+
+    #content,
+    #content-main,
+    .change-list #content-main {
+        width: 100% !important;
+        max-width: none !important;
+        box-sizing: border-box !important;
+    }
+
+    .row-import-shell,
+    #changelist,
+    #changelist-form,
+    .changelist-form-container,
+    .results,
+    #toolbar,
+    .actions,
+    #result_list {
+        width: calc(100vw - 340px) !important;
+        max-width: calc(100vw - 340px) !important;
+        box-sizing: border-box !important;
+    }
+
+    .row-import-shell {
+        margin: 0 0 32px !important;
+    }
+
+    .row-import-hero {
+        background: linear-gradient(135deg, #123847, #1f5f74);
+        border-radius: 18px;
+        padding: 22px 26px;
+        color: #fff;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, .22);
+        margin-bottom: 16px;
+    }
+
+    .row-import-hero h1 {
+        margin: 0 0 8px;
+        font-size: 28px;
+        font-weight: 900;
+        color: #fff;
+    }
+
+    .row-import-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, .86);
+        line-height: 1.5;
+        font-size: 15px;
+    }
+
+    .row-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(130px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .row-stat-card {
+        border: 1px solid var(--hairline-color);
+        background: rgba(127, 127, 127, .06);
+        border-radius: 16px;
+        padding: 16px 18px;
+    }
+
+    .row-stat-label {
+        color: var(--body-quiet-color);
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+
+    .row-stat-value {
+        font-size: 30px;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .row-stat-card.orange .row-stat-value { color: #f97316; }
+    .row-stat-card.red .row-stat-value { color: #ef4444; }
+    .row-stat-card.blue .row-stat-value { color: #3b82f6; }
+    .row-stat-card.green .row-stat-value { color: #22c55e; }
+
+    .row-import-note {
+        background: rgba(59, 130, 246, .08);
+        border: 1px solid rgba(59, 130, 246, .28);
+        border-radius: 16px;
+        padding: 14px 16px;
+        margin-bottom: 16px;
+        color: var(--body-fg);
+        line-height: 1.55;
+        font-size: 14px;
+    }
+
+    .row-import-note b {
+        font-weight: 900;
+    }
+
+    #changelist,
+    #changelist-form,
+    .changelist-form-container,
+    .results {
+        background: transparent !important;
+        border: 0 !important;
+        margin: 0 !important;
+        overflow-x: hidden !important;
+    }
+
+    #changelist-filter {
+        display: none !important;
+    }
+
+    .filtered #changelist {
+        margin-right: 0 !important;
+    }
+
+    .object-tools {
+        display: none !important;
+    }
+
+    #toolbar,
+    .actions {
+        background: rgba(127, 127, 127, .06) !important;
+        border: 1px solid var(--hairline-color) !important;
+        border-radius: 16px !important;
+        padding: 12px !important;
+        margin-bottom: 14px !important;
+    }
+
+    #toolbar form {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    #toolbar input[type="text"] {
+        width: min(520px, 100%) !important;
+        border-radius: 12px !important;
+        padding: 10px 12px !important;
+    }
+
+    #result_list {
+        min-width: 0 !important;
+        table-layout: fixed !important;
+        border-collapse: separate !important;
+        border-spacing: 0 8px !important;
+        background: transparent !important;
+    }
+
+    #result_list thead th {
+        background: rgba(127, 127, 127, .10) !important;
+        border: 0 !important;
+        padding: 12px 6px !important;
+        font-size: 10px !important;
+        text-transform: uppercase;
+        letter-spacing: .02em;
+        color: var(--body-quiet-color) !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    #result_list tbody tr {
+        background: rgba(127, 127, 127, .045) !important;
+    }
+
+    #result_list tbody td,
+    #result_list tbody th {
+        border-top: 1px solid var(--hairline-color) !important;
+        border-bottom: 1px solid var(--hairline-color) !important;
+        padding: 14px 6px !important;
+        vertical-align: middle !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        box-sizing: border-box !important;
+    }
+
+    #result_list tbody td:first-child,
+    #result_list tbody th:first-child {
+        border-left: 1px solid var(--hairline-color) !important;
+        border-radius: 14px 0 0 14px !important;
+    }
+
+    #result_list tbody td:last-child {
+        border-right: 1px solid var(--hairline-color) !important;
+        border-radius: 0 14px 14px 0 !important;
+    }
+
+    #result_list .action-checkbox-column,
+    #result_list .action-checkbox {
+        width: 3% !important;
+    }
+
+    #result_list .field-row_number {
+        width: 7% !important;
+        font-weight: 900;
+    }
+
+    #result_list .field-raw_code {
+        width: 14% !important;
+        font-weight: 900;
+    }
+
+    #result_list .field-raw_name_short {
+        width: 14% !important;
+    }
+
+    #result_list .field-detected_status_badge {
+        width: 14% !important;
+    }
+
+    #result_list .field-suggested_product_short {
+        width: 14% !important;
+    }
+
+    #result_list .field-note_short {
+        width: 18% !important;
+        font-size: 12px !important;
+        line-height: 1.35 !important;
+        white-space: normal !important;
+    }
+
+    #result_list .field-quick_actions,
+    #result_list thead th.column-quick_actions {
+        width: 16% !important;
+        background: rgba(21, 21, 21, .96) !important;
+        text-align: center !important;
+    }
+
+    #result_list .field-quick_actions a,
+    #result_list .field-quick_actions span {
+        width: 100px !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .paginator {
+        border-radius: 16px !important;
+        background: rgba(127, 127, 127, .06) !important;
+        border: 1px solid var(--hairline-color) !important;
+        margin-top: 14px !important;
+        padding: 14px !important;
+    }
+
+    @media (max-width: 1000px) {
+        .row-import-shell,
+        #changelist,
+        #changelist-form,
+        .changelist-form-container,
+        .results,
+        #toolbar,
+        .actions,
+        #result_list {
+            width: 100% !important;
+            max-width: 100% !important;
+        }
+
+        .row-stat-grid {
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+        }
+    }
+
+    @media (max-width: 700px) {
+        .row-stat-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="row-import-shell">
+    <div class="row-import-hero">
+        <h1>📋 Проверка строк импорта</h1>
+        <p>
+            Здесь видно, что нашла система. Главный ориентир — код товара.
+        </p>
+    </div>
+
+    <div class="row-stat-grid">
+        <div class="row-stat-card green">
+            <div class="row-stat-label">Уже есть</div>
+            <div class="row-stat-value">{{ row_existing_count|default:"0" }}</div>
+        </div>
+
+        <div class="row-stat-card orange">
+            <div class="row-stat-label">Дубли Excel</div>
+            <div class="row-stat-value">{{ row_duplicate_count|default:"0" }}</div>
+        </div>
+
+        <div class="row-stat-card red">
+            <div class="row-stat-label">Ошибки</div>
+            <div class="row-stat-value">{{ row_all_error_count|default:"0" }}</div>
+        </div>
+
+        <div class="row-stat-card blue">
+            <div class="row-stat-label">Новые</div>
+            <div class="row-stat-value">{{ row_new_count|default:"0" }}</div>
+        </div>
+    </div>
+
+    <div class="row-import-note">
+        <b>Проверка:</b> сумма категорий должна совпадать с общим количеством строк: {{ row_total_control_count|default:"0" }} / {{ row_total_count|default:"0" }}.
+    </div>
+
+    {{ block.super }}
+</div>
+{% endblock %}

@@ -1,0 +1,366 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block content %}
+<style>
+    #content h1 {
+        display: none;
+    }
+
+    .analysis-page {
+        max-width: 1280px;
+        margin: 0 auto 32px;
+    }
+
+    .analysis-hero {
+        background: linear-gradient(135deg, #123847, #1f5f74);
+        border-radius: 24px;
+        padding: 28px 30px;
+        color: #fff;
+        box-shadow: 0 14px 34px rgba(0, 0, 0, .22);
+        margin-bottom: 22px;
+    }
+
+    .analysis-hero h1 {
+        display: block;
+        margin: 0 0 10px;
+        font-size: 30px;
+        font-weight: 900;
+        color: #fff;
+    }
+
+    .analysis-hero p {
+        margin: 0;
+        color: rgba(255, 255, 255, .84);
+        font-size: 15px;
+        line-height: 1.55;
+        max-width: 900px;
+    }
+
+    .analysis-card {
+        background: var(--body-bg);
+        border: 1px solid var(--hairline-color);
+        border-radius: 22px;
+        padding: 26px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .08);
+        margin-bottom: 20px;
+    }
+
+    .analysis-top {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 16px;
+        align-items: center;
+        margin-bottom: 22px;
+    }
+
+    .file-title {
+        font-size: 20px;
+        font-weight: 900;
+        color: var(--body-fg);
+        margin-bottom: 6px;
+    }
+
+    .file-meta {
+        color: var(--body-quiet-color);
+        font-size: 14px;
+        line-height: 1.45;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: rgba(59, 130, 246, .14);
+        color: #60a5fa;
+        font-weight: 900;
+        white-space: nowrap;
+    }
+
+    .analysis-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(130px, 1fr));
+        gap: 14px;
+        margin-bottom: 22px;
+    }
+
+    .analysis-stat {
+        border: 1px solid var(--hairline-color);
+        background: rgba(127, 127, 127, .06);
+        border-radius: 18px;
+        padding: 18px;
+        min-height: 90px;
+    }
+
+    .stat-label {
+        color: var(--body-quiet-color);
+        font-size: 13px;
+        margin-bottom: 9px;
+        line-height: 1.3;
+    }
+
+    .stat-value {
+        font-size: 32px;
+        font-weight: 900;
+        line-height: 1;
+    }
+
+    .analysis-stat.total .stat-value {
+        color: var(--body-fg);
+    }
+
+    .analysis-stat.existing .stat-value {
+        color: #3b82f6;
+    }
+
+    .analysis-stat.new .stat-value {
+        color: #22c55e;
+    }
+
+    .analysis-stat.warning .stat-value {
+        color: #f97316;
+    }
+
+    .analysis-stat.error .stat-value {
+        color: #ef4444;
+    }
+
+    .analysis-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .analysis-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        border-radius: 14px;
+        padding: 12px 18px;
+        font-weight: 900;
+        text-decoration: none !important;
+        border: 1px solid var(--hairline-color);
+        background: rgba(127, 127, 127, .10);
+        color: var(--body-fg) !important;
+        font-size: 14px;
+        line-height: 1.2;
+    }
+
+    .analysis-action:hover {
+        background: rgba(127, 127, 127, .18);
+    }
+
+    .analysis-action.primary {
+        background: #22c55e;
+        color: #052e16 !important;
+        border-color: #22c55e;
+        min-width: 230px;
+        cursor: pointer;
+    }
+
+    .analysis-action.primary:hover {
+        background: #86efac;
+    }
+
+    .analysis-action.warn {
+        background: rgba(249, 115, 22, .16);
+        color: #fb923c !important;
+        border-color: rgba(249, 115, 22, .35);
+    }
+
+    .analysis-action.bad {
+        background: rgba(239, 68, 68, .14);
+        color: #f87171 !important;
+        border-color: rgba(239, 68, 68, .35);
+    }
+
+    .import-form-button {
+        display: inline-flex;
+        margin: 0;
+        padding: 0;
+    }
+
+    .analysis-info {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(180px, 1fr));
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .info-box {
+        border: 1px solid var(--hairline-color);
+        background: rgba(127, 127, 127, .05);
+        border-radius: 16px;
+        padding: 14px;
+    }
+
+    .info-label {
+        color: var(--body-quiet-color);
+        font-size: 12px;
+        margin-bottom: 6px;
+    }
+
+    .info-value {
+        font-weight: 900;
+        color: var(--body-fg);
+    }
+
+    .analysis-note {
+        border: 1px solid rgba(59, 130, 246, .28);
+        background: rgba(59, 130, 246, .08);
+        border-radius: 16px;
+        padding: 15px 17px;
+        line-height: 1.55;
+        margin-bottom: 20px;
+        color: var(--body-fg);
+    }
+
+    .analysis-note b {
+        font-weight: 900;
+    }
+
+    .hidden-admin-form {
+        display: none;
+    }
+
+    @media (max-width: 1100px) {
+        .analysis-grid {
+            grid-template-columns: repeat(2, minmax(130px, 1fr));
+        }
+
+        .analysis-info,
+        .analysis-top {
+            grid-template-columns: 1fr;
+        }
+
+        .status-pill {
+            justify-content: flex-start;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .analysis-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .analysis-action,
+        .analysis-action.primary,
+        .import-form-button {
+            width: 100%;
+        }
+    }
+</style>
+
+{% if original %}
+<div class="analysis-page">
+    <div class="analysis-hero">
+        <h1>📊 Результат анализа</h1>
+        <p>
+            Файл проверен. Точные строки можно импортировать. Похожие номера, дубли и ошибки не попадут в базу автоматически.
+        </p>
+    </div>
+
+    <div class="analysis-card">
+        <div class="analysis-top">
+            <div>
+                <div class="file-title">📄 {{ original.title }}</div>
+                <div class="file-meta">
+                    {{ original.created_at|date:"d.m.Y H:i" }} · {{ original.get_import_type_display }}
+                    {% if original.target_warehouse %} · Склад: {{ original.target_warehouse }}{% endif %}
+                </div>
+            </div>
+
+            <div class="status-pill">{{ original.get_status_display }}</div>
+        </div>
+
+        <div class="analysis-grid">
+            <div class="analysis-stat total">
+                <div class="stat-label">Всего строк</div>
+                <div class="stat-value">{{ original.total_rows }}</div>
+            </div>
+
+            <div class="analysis-stat existing">
+                <div class="stat-label">Уже есть</div>
+                <div class="stat-value">{{ original.existing_count }}</div>
+            </div>
+
+            <div class="analysis-stat new">
+                <div class="stat-label">Новые</div>
+                <div class="stat-value">{{ original.new_count }}</div>
+            </div>
+
+            <div class="analysis-stat warning">
+                <div class="stat-label">Требуют проверки</div>
+                <div class="stat-value">{{ attention_rows_count }}</div>
+            </div>
+
+            <div class="analysis-stat error">
+                <div class="stat-label">Ошибки</div>
+                <div class="stat-value">{{ original.error_count|add:original.quantity_error_count }}</div>
+            </div>
+        </div>
+
+        <div class="analysis-actions">
+            <a class="analysis-action" href="{% url 'admin:products_productimportbatch_changelist' %}">
+                ← Назад
+            </a>
+
+            <a class="analysis-action warn" href="{% url 'admin:products_productimportrow_changelist' %}?batch__id__exact={{ original.id }}&detected_status__exact=similar_code">
+                🟠 Похожие коды
+            </a>
+
+            <a class="analysis-action bad" href="{% url 'admin:products_productimportrow_changelist' %}?batch__id__exact={{ original.id }}&detected_status__in=similar_code,similar_name,duplicate_in_file,error,quantity_error">
+                ❌ Все проблемные строки
+            </a>
+
+            {% if original.status != "imported" %}
+                <form class="import-form-button"
+                      method="post"
+                      action="{% url 'admin:products_productimportbatch_confirm_single' original.id %}">
+                    {% csrf_token %}
+                    <button type="submit" class="analysis-action primary">
+                        ✅ Импортировать
+                    </button>
+                </form>
+            {% else %}
+                <span class="analysis-action primary">
+                    ✅ Уже импортировано
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="analysis-info">
+        <div class="info-box">
+            <div class="info-label">Тип импорта</div>
+            <div class="info-value">{{ original.get_import_type_display }}</div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-label">Склад</div>
+            <div class="info-value">{% if original.target_warehouse %}{{ original.target_warehouse }}{% else %}—{% endif %}</div>
+        </div>
+
+        <div class="info-box">
+            <div class="info-label">Статус</div>
+            <div class="info-value">{{ original.get_status_display }}</div>
+        </div>
+    </div>
+
+    <div class="analysis-note">
+        <b>Как работает:</b>
+        точные новые товары импортируются после подтверждения.
+        Товары, которые уже есть по чертежному номеру, будут пропущены.
+        Похожие номера и ошибки нужно проверить отдельно.
+    </div>
+</div>
+{% endif %}
+
+<div class="hidden-admin-form">
+    {{ block.super }}
+</div>
+{% endblock %}

@@ -46,6 +46,7 @@ def warehouse_detail_view(request, pk):
         "query": query,
     })
 
+
 @login_required
 @role_required(["admin", "manager", "senior_manager"])
 def warehouse_transfer_create_view(request):
@@ -130,6 +131,6 @@ def warehouse_inventory_quantity_api(request):
     return JsonResponse({
         "success": True,
         "quantity": inventory.quantity,
-        "unit": inventory.product.get_unit_display(),
-        "message": f"Доступно на складе: {inventory.quantity} {inventory.product.get_unit_display()}",
+        "unit": "",
+        "message": f"Доступно на складе: {inventory.quantity}",
     })

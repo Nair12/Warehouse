@@ -144,13 +144,6 @@
         box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
     }
 
-    .unit-label {
-        display: inline-flex;
-        margin-top: 6px;
-        color: #6f7a89 !important;
-        font-size: 12px;
-        font-weight: 800;
-    }
 
     .errors {
         margin-top: 7px;
@@ -500,7 +493,7 @@
                 {% for field in form %}
                     <div class="form-row">
                         <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                        {{ field }} <span class="unit-label"></span>
+                        {{ field }}
                         {% if field.errors %}
                             <div class="errors">{{ field.errors }}</div>
                         {% endif %}
@@ -569,7 +562,7 @@
                             {% if field.name != "DELETE" %}
                                 <div class="form-row">
                                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                    {{ field }} <span class="unit-label"></span>
+                                    {{ field }}
                                     {% if field.errors %}
                                         <div class="errors">{{ field.errors }}</div>
                                     {% endif %}
@@ -614,7 +607,7 @@
                         {% if field.name != "DELETE" %}
                             <div class="form-row">
                                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                {{ field }} <span class="unit-label"></span>
+                                {{ field }}
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -819,7 +812,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         createSearchableDropdown(productSelect, "{% trans "Нажмите и начните писать название товара..." %}", function() {
             updateStock(block);
-            updateUnit(block);
         });
 
         createSearchableDropdown(warehouseSelect, "{% trans "Нажмите и начните писать склад..." %}", function() {
@@ -829,7 +821,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (productSelect) {
             productSelect.addEventListener("change", function () {
                 updateStock(block);
-                updateUnit(block);
             });
         }
 
@@ -840,7 +831,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         updateStock(block);
-        updateUnit(block);
     }
 
     function bindRemoveButton(block) {
@@ -922,40 +912,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return `/trading/get-stock/?${query}`;
     }
 
-    function updateUnit(block) {
-        const productSelect = block.querySelector('select[name$="-product"]');
-        const unitSpans = block.querySelectorAll(".unit-label");
-
-        if (!productSelect) return;
-
-        const selectedOption = productSelect.options[productSelect.selectedIndex];
-        if (!selectedOption) return;
-
-        const text = selectedOption.text || "";
-        let unit = "";
-
-        if (text.toLowerCase().includes("кг")) unit = "кг";
-        if (text.toLowerCase().includes("шт")) unit = "шт";
-
-        unitSpans.forEach(function(span) {
-            span.innerText = unit ? `(${unit})` : "";
-        });
-
-        const quantityInput = block.querySelector('input[name$="-requested_quantity"]');
-        if (!quantityInput) return;
-
-        quantityInput.step = "1";
-        quantityInput.min = "1";
-
-        if (unit === "кг") {
-            quantityInput.placeholder = "kg";
-        } else if (unit === "шт") {
-            quantityInput.placeholder = "pcs";
-        } else {
-            quantityInput.placeholder = "{% trans "кол-во" %}";
-        }
-    }
-
     function updateStock(block) {
         const productSelect = block.querySelector('select[name$="-product"]');
         const warehouseSelect = block.querySelector('select[name$="-warehouse"]');
@@ -985,7 +941,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 return response.json();
             })
             .then(function (data) {
-                stockInfo.innerText = `{% trans "Остаток" %}: ${data.quantity} ${data.unit}`;
+                stockInfo.innerText = `{% trans "Остаток" %}: ${data.quantity}`;
             })
             .catch(function () {
                 stockInfo.innerText = "{% trans "Ошибка загрузки" %}";

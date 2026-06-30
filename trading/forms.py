@@ -86,25 +86,20 @@ class TradingItemForm(forms.ModelForm):
     def clean(self):
         cleaned_data = super().clean()
 
-        product = cleaned_data.get('product')
         requested_quantity = cleaned_data.get('requested_quantity')
         fulfilled_quantity = cleaned_data.get('fulfilled_quantity')
 
-        if not product:
-            return cleaned_data
+        if requested_quantity is not None and requested_quantity != int(requested_quantity):
+            self.add_error(
+                'requested_quantity',
+                _('Количество должно быть целым числом.'),
+            )
 
-        if product.unit == product.UNIT_PIECE:
-            if requested_quantity is not None and requested_quantity != int(requested_quantity):
-                self.add_error(
-                    'requested_quantity',
-                    _('Для товара в штуках нельзя вводить дробное количество.'),
-                )
-
-            if fulfilled_quantity is not None and fulfilled_quantity != int(fulfilled_quantity):
-                self.add_error(
-                    'fulfilled_quantity',
-                    _('Для товара в штуках нельзя вводить дробное количество.'),
-                )
+        if fulfilled_quantity is not None and fulfilled_quantity != int(fulfilled_quantity):
+            self.add_error(
+                'fulfilled_quantity',
+                _('Количество должно быть целым числом.'),
+            )
 
         return cleaned_data
 

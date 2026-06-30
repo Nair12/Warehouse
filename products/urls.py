@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import (
     product_list_view,
     product_create_view,
@@ -16,6 +16,10 @@ app_name = "products"
 
 urlpatterns = [
     # товары
+    path(
+        "import-center/",
+        include("products.import_center.urls"),
+    ),
     path("", product_list_view, name="product_list"),
     path("create/", product_create_view, name="product_create"),
     path("<uuid:pk>/", product_detail_view, name="product_detail"),

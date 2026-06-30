@@ -611,18 +611,18 @@
         <div class="qty-block">
             <span class="qty-chip qty-requested">
                 <span class="qty-label">{% trans "Заказано" %}</span>
-                {{ item.requested_quantity }} {{ item.product.get_unit_display }}
+                {{ item.requested_quantity }}
             </span>
 
             <span class="qty-chip qty-fulfilled">
                 <span class="qty-label">{% trans "Выполнено" %}</span>
-                {{ item.fulfilled_quantity }} {{ item.product.get_unit_display }}
+                {{ item.fulfilled_quantity }}
             </span>
 
             {% if item.remaining_quantity > 0 %}
                 <span class="qty-chip qty-remaining">
                     <span class="qty-label">{% trans "Остаток" %}</span>
-                    {{ item.remaining_quantity }} {{ item.product.get_unit_display }}
+                    {{ item.remaining_quantity }}
                 </span>
             {% endif %}
         </div>

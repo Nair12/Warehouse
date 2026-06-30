@@ -59,4 +59,4 @@ class WarehouseTransfer(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.product.name}: {self.from_warehouse.city} -> {self.to_warehouse.city} ({self.quantity} {self.product.get_unit_display()})"
+        return f"{self.product.name}: {self.from_warehouse.city} -> {self.to_warehouse.city} ({self.quantity})"

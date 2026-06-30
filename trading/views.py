@@ -858,7 +858,7 @@ def get_stock(request):
 
     return JsonResponse({
         "quantity": inventory.quantity if inventory else 0,
-        "unit": inventory.product.get_unit_display() if inventory else ""
+        "unit": ""
     })
 
 
@@ -961,7 +961,6 @@ def trading_fulfill(request, pk):
                     {
                         'product': str(item.product),
                         'warehouse': str(item.warehouse),
-                        'unit': item.product.get_unit_display() if item.product else '',
                         'added_quantity': add_quantity,
                         'fulfilled_before': fulfilled_before,
                         'fulfilled_after': fulfilled_after,
@@ -982,8 +981,7 @@ def trading_fulfill(request, pk):
             detail_lines = [_('Дополнена сделка #%(id)s') % {'id': trading.id}]
 
             for detail in fulfillment_details:
-                unit = detail.get('unit') or ''
-                unit_suffix = f" {unit}" if unit else ""
+                unit_suffix = ""
 
                 detail_lines.extend([
                     '',
