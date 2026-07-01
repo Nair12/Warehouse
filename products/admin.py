@@ -1,12 +1,11 @@
 import re
-from difflib import SequenceMatcher
-
 from django import forms
 from django.contrib import admin, messages
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from django.urls import path
+from django.urls import path, reverse
 from django.utils.html import format_html
 
 from openpyxl import Workbook, load_workbook
@@ -18,6 +17,7 @@ from .models import (
     Product,
     ProductImportBatch,
     ProductImportRow,
+    ProductCodeAlias,
     normalize_product_code,
 )
 
@@ -57,7 +57,7 @@ class ProductImportExcelForm(forms.Form):
     quantity_mode = forms.ChoiceField(
         label="Как обновлять остатки",
         choices=ProductImportBatch.QUANTITY_MODE_CHOICES,
-        initial=ProductImportBatch.QUANTITY_MODE_REPLACE,
+        initial=ProductImportBatch.QUANTITY_MODE_ADD,
         required=False,
         widget=forms.HiddenInput,
     )
@@ -66,7 +66,7 @@ class ProductImportExcelForm(forms.Form):
         cleaned_data = super().clean()
 
         import_type = cleaned_data.get("import_type") or ProductImportBatch.IMPORT_TYPE_PRODUCTS_ONLY
-        quantity_mode = cleaned_data.get("quantity_mode") or ProductImportBatch.QUANTITY_MODE_REPLACE
+        quantity_mode = cleaned_data.get("quantity_mode") or ProductImportBatch.QUANTITY_MODE_ADD
         target_warehouse = cleaned_data.get("target_warehouse")
 
         cleaned_data["import_type"] = import_type
@@ -159,48 +159,16 @@ def build_import_product_description(raw_code, raw_name):
     return raw_name_text or "Деталь / Part"
 
 
-def text_similarity(first, second):
-    first = str(first or "").strip().upper()
-    second = str(second or "").strip().upper()
-
-    if not first or not second:
-        return 0
-
-    return int(SequenceMatcher(None, first, second).ratio() * 100)
-
-
-def code_similarity(first, second):
-    first = normalize_product_code(first)
-    second = normalize_product_code(second)
-
-    if not first or not second:
-        return 0
-
-    if first == second:
-        return 100
-
-    if first in second or second in first:
-        return 92
-
-    return int(SequenceMatcher(None, first, second).ratio() * 100)
-
-
-def is_exact_code_match(first, second):
-    first = str(first or "").strip().upper()
-    second = str(second or "").strip().upper()
-    return bool(first and second and first == second)
+def _clean_code_text(value):
+    return str(value or "").strip().upper()
 
 
 def _code_without_separators(value):
     if not value:
         return ""
 
-    value = str(value).strip().upper()
+    value = _clean_code_text(value)
     return re.sub(r"[^A-ZА-ЯЁ0-9]", "", value)
-
-
-def _code_without_all_zeros(value):
-    return _code_without_separators(value).replace("0", "")
 
 
 def _code_without_leading_zeros(value):
@@ -208,94 +176,141 @@ def _code_without_leading_zeros(value):
     return value.lstrip("0") or "0"
 
 
+def _only_leading_zeros_are_different(first, second):
+    first_clean = _code_without_separators(first)
+    second_clean = _code_without_separators(second)
+
+    if not first_clean or not second_clean:
+        return False
+
+    if first_clean == second_clean:
+        return False
+
+    return first_clean.lstrip("0") == second_clean.lstrip("0")
+
+
+def _only_separators_are_different(first, second):
+    first_text = _clean_code_text(first)
+    second_text = _clean_code_text(second)
+    first_clean = _code_without_separators(first)
+    second_clean = _code_without_separators(second)
+
+    if not first_text or not second_text:
+        return False
+
+    if first_text == second_text:
+        return False
+
+    if not first_clean or not second_clean:
+        return False
+
+    return first_clean == second_clean
+
+
+def _get_products_with_leading_zero_match(raw_code):
+    raw_key = _code_without_leading_zeros(raw_code)
+    matches = []
+
+    if not raw_key:
+        return matches
+
+    for product in Product.objects.only("id", "name").iterator():
+        if _only_leading_zeros_are_different(raw_code, product.name):
+            matches.append(product)
+
+    return matches
+
+
+def _get_products_with_separator_match(raw_code):
+    matches = []
+
+    for product in Product.objects.only("id", "name").iterator():
+        if _only_separators_are_different(raw_code, product.name):
+            matches.append(product)
+
+    return matches
+
+
+def _get_products_with_same_code_without_separators(raw_code):
+    raw_strict = _code_without_separators(raw_code)
+    matches = []
+
+    if not raw_strict:
+        return matches
+
+    for product in Product.objects.only("id", "name").iterator():
+        product_strict = _code_without_separators(product.name)
+
+        if product_strict and product_strict == raw_strict:
+            matches.append(product)
+
+    return matches
+
+
 def find_best_product_match(raw_code, raw_name=None):
     """
-    Безопасный поиск товара по чертежному номеру.
+    Проверка чертежного номера по утверждённой логике.
 
-    Главное правило:
-    - точное совпадение после удаления разделителей -> можно импортировать автоматически;
-    - совпадение только из-за нулей -> ручная проверка;
-    - отличается реальная цифра/буква -> другой товар.
+    1. Код совпал 100% -> существующий товар.
+    2. Код уже подтверждён как алиас -> существующий товар.
+    3. Отличаются только ведущие нули -> существующий товар.
+    4. Код совпал только после удаления точек/дефисов/пробелов/скобок/слэшей -> похожий код, ручная проверка.
+    5. Отличается любая цифра внутри -> новый товар.
+    6. Название товара в поиске не участвует.
     """
     raw_code_text = str(raw_code or "").strip()
 
-    strict_code = _code_without_separators(raw_code_text)
-    without_leading_zeros = _code_without_leading_zeros(raw_code_text)
-    without_all_zeros = _code_without_all_zeros(raw_code_text)
-
-    if not strict_code:
+    if not raw_code_text:
         return None, ProductImportRow.STATUS_ERROR, "Нет чертежного номера."
 
     exact_product = Product.objects.filter(name__iexact=raw_code_text).first()
     if exact_product:
         return exact_product, ProductImportRow.STATUS_EXISTING, "Точное совпадение по чертежному номеру."
 
-    strict_matches = {}
+    strict_code = _code_without_separators(raw_code_text)
+    if not strict_code:
+        return None, ProductImportRow.STATUS_ERROR, "Нет нормального чертежного номера."
 
-    for product in Product.objects.only("id", "name", "normalized_code").iterator():
-        product_strict = _code_without_separators(product.name)
+    normalized_raw_code = normalize_product_code(raw_code_text)
+    alias = ProductCodeAlias.objects.select_related("product").filter(
+        Q(alias_code__iexact=raw_code_text) |
+        Q(normalized_alias_code=normalized_raw_code)
+    ).first()
+    if alias and alias.product:
+        return alias.product, ProductImportRow.STATUS_EXISTING, "Код уже был подтверждён вручную как вариант существующего товара."
 
-        if product_strict == strict_code:
-            strict_matches[product.id] = product
+    leading_zero_matches = _get_products_with_leading_zero_match(raw_code_text)
 
-            if len(strict_matches) > 1:
-                break
-
-    if len(strict_matches) == 1:
-        product = list(strict_matches.values())[0]
+    if len(leading_zero_matches) == 1:
         return (
-            product,
+            leading_zero_matches[0],
             ProductImportRow.STATUS_EXISTING,
-            (
-                "Товар найден по чертежному номеру. "
-                "Разделители не считаются отличием."
-            ),
+            "Код отличается только ведущими нулями. Считаем тем же товаром.",
         )
 
-    if len(strict_matches) > 1:
+    if len(leading_zero_matches) > 1:
+        names = ", ".join(product.name for product in leading_zero_matches[:10])
         return (
             None,
             ProductImportRow.STATUS_SIMILAR_CODE,
-            (
-                "Найдено несколько товаров с одинаковым кодом после удаления разделителей. "
-                "Нужно проверить вручную."
-            ),
+            f"Найдено несколько товаров с отличием только в ведущих нулях: {names}. Нужно выбрать вручную.",
         )
 
-    zero_related_matches = {}
+    separator_exact_matches = _get_products_with_same_code_without_separators(raw_code_text)
 
-    for product in Product.objects.only("id", "name", "normalized_code").iterator():
-        product_without_leading_zeros = _code_without_leading_zeros(product.name)
-        product_without_all_zeros = _code_without_all_zeros(product.name)
-
-        if (
-            product_without_leading_zeros == without_leading_zeros
-            or product_without_all_zeros == without_all_zeros
-        ):
-            zero_related_matches[product.id] = product
-
-            if len(zero_related_matches) > 1:
-                break
-
-    if len(zero_related_matches) == 1:
-        product = list(zero_related_matches.values())[0]
+    if len(separator_exact_matches) == 1:
         return (
-            product,
+            separator_exact_matches[0],
             ProductImportRow.STATUS_SIMILAR_CODE,
-            (
-                "Код похож на товар в базе только после обработки нулей. "
-                "Нужно проверить вручную, чтобы не добавить количество не туда."
-            ),
+            "Код отличается только точками, дефисами, пробелами, скобками или другими разделителями. Нужно решить вручную.",
         )
 
-    if len(zero_related_matches) > 1:
+    if len(separator_exact_matches) > 1:
+        names = ", ".join(product.name for product in separator_exact_matches[:10])
         return (
             None,
             ProductImportRow.STATUS_SIMILAR_CODE,
-            (
-                "После обработки нулей найдено несколько похожих товаров. "
-                "Автоматически импортировать опасно, нужна ручная проверка."
-            ),
+            f"Найдено несколько товаров с похожим написанием кода после удаления разделителей: {names}. Нужно выбрать вручную.",
         )
 
     return None, ProductImportRow.STATUS_NEW, "Товар не найден в базе. Можно создать новый товар."
@@ -474,6 +489,16 @@ class InventoryAdmin(admin.ModelAdmin):
         return obj.warehouse.city
 
 
+@admin.register(ProductCodeAlias)
+class ProductCodeAliasAdmin(admin.ModelAdmin):
+    list_display = ("alias_code", "product", "confirmed_by", "created_at")
+    search_fields = ("alias_code", "normalized_alias_code", "product__name", "product__description")
+    list_filter = ("created_at",)
+    autocomplete_fields = ("product", "confirmed_by")
+    readonly_fields = ("normalized_alias_code", "created_at", "updated_at")
+    ordering = ("product__name", "alias_code")
+
+
 class ProductImportRowInline(admin.TabularInline):
     model = ProductImportRow
     extra = 0
@@ -648,7 +673,7 @@ class ProductImportBatchAdmin(admin.ModelAdmin):
                 (
                     f"Excel проверен. Всего строк: {batch.total_rows}. "
                     f"Уже есть: {batch.existing_count}. "
-                    f"Требуют проверки: {batch.attention_count}. "
+                    f"Требуют решения: {batch.attention_count}. "
                     f"Новые: {batch.new_count}. "
                     f"Ошибки: {batch.error_count + batch.quantity_error_count}."
                 ),
@@ -705,7 +730,7 @@ class ProductImportBatchAdmin(admin.ModelAdmin):
             obj.get_status_display(),
         )
 
-    @admin.display(description="Требуют проверки")
+    @admin.display(description="Требуют решения")
     def attention_count_display(self, obj):
         count = obj.attention_count
         if count == 0:
@@ -851,6 +876,15 @@ class ProductImportRowAdmin(admin.ModelAdmin):
                 row.action = ProductImportRow.ACTION_LINK
                 row.is_processed = True
 
+                if row.detected_status == ProductImportRow.STATUS_SIMILAR_CODE:
+                    ProductCodeAlias.objects.get_or_create(
+                        alias_code=str(row.raw_code or "").strip(),
+                        defaults={
+                            "product": product,
+                            "confirmed_by": request.user if request.user.is_authenticated else None,
+                        },
+                    )
+
                 if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
                     update_inventory_from_import_row(row=row, product=product)
 
@@ -866,53 +900,28 @@ class ProductImportRowAdmin(admin.ModelAdmin):
                 messages.success(request, f"Строка {row.row_number} привязана к существующему товару.")
 
             elif action == "create":
-                normalized_code = normalize_product_code(row.raw_code)
-                existing_product = Product.objects.filter(normalized_code=normalized_code).first()
+                product = Product.objects.create(
+                    name=str(row.raw_code or "").strip(),
+                    description=build_import_product_description(row.raw_code, row.raw_name),
+                )
 
-                if existing_product:
-                    row.selected_product = existing_product
-                    row.action = ProductImportRow.ACTION_LINK
-                    row.is_processed = True
+                row.created_product = product
+                row.action = ProductImportRow.ACTION_CREATE
+                row.is_processed = True
 
-                    if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
-                        update_inventory_from_import_row(row=row, product=existing_product)
+                if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
+                    update_inventory_from_import_row(row=row, product=product)
 
-                    row.save(update_fields=[
-                        "selected_product",
-                        "action",
-                        "is_processed",
-                        "inventory_updated",
-                        "inventory_before",
-                        "inventory_after",
-                        "updated_at",
-                    ])
-                    messages.warning(
-                        request,
-                        f"Товар уже найден после проверки. Строка {row.row_number} привязана к существующему товару.",
-                    )
-                else:
-                    product = Product.objects.create(
-                        name=row.raw_code.strip(),
-                        description=build_import_product_description(row.raw_code, row.raw_name),
-                    )
-
-                    row.created_product = product
-                    row.action = ProductImportRow.ACTION_CREATE
-                    row.is_processed = True
-
-                    if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
-                        update_inventory_from_import_row(row=row, product=product)
-
-                    row.save(update_fields=[
-                        "created_product",
-                        "action",
-                        "is_processed",
-                        "inventory_updated",
-                        "inventory_before",
-                        "inventory_after",
-                        "updated_at",
-                    ])
-                    messages.success(request, f"Создан новый товар из строки {row.row_number}.")
+                row.save(update_fields=[
+                    "created_product",
+                    "action",
+                    "is_processed",
+                    "inventory_updated",
+                    "inventory_before",
+                    "inventory_after",
+                    "updated_at",
+                ])
+                messages.success(request, f"Создан новый товар из строки {row.row_number}.")
 
             else:
                 messages.error(request, "Неизвестное действие.")
@@ -920,44 +929,51 @@ class ProductImportRowAdmin(admin.ModelAdmin):
         except Exception as e:
             messages.error(request, f"Ошибка обработки строки: {e}")
 
+        recheck_product_import_batch(row.batch)
+
         return redirect(request.META.get("HTTP_REFERER", "../.."))
 
     def changelist_view(self, request, extra_context=None):
         queryset = self.get_queryset(request)
 
-        batch_id = request.GET.get("batch__id__exact")
+        batch_id = (
+            request.GET.get("batch_id__exact")
+            or request.GET.get("batch__id__exact")
+            or request.GET.get("batch")
+        )
+
         if batch_id:
             queryset = queryset.filter(batch_id=batch_id)
 
-        problem_statuses = [
-            ProductImportRow.STATUS_SIMILAR_CODE,
-            ProductImportRow.STATUS_SIMILAR_NAME,
-            ProductImportRow.STATUS_DUPLICATE_IN_FILE,
-            ProductImportRow.STATUS_ERROR,
-            ProductImportRow.STATUS_QUANTITY_ERROR,
-        ]
+        unprocessed_queryset = queryset.filter(is_processed=False)
 
         existing_count = queryset.filter(
             detected_status=ProductImportRow.STATUS_EXISTING
+        ).count() + queryset.filter(
+            action=ProductImportRow.ACTION_LINK,
+            is_processed=True,
         ).count()
 
         new_count = queryset.filter(
             detected_status=ProductImportRow.STATUS_NEW
+        ).count() + queryset.filter(
+            action=ProductImportRow.ACTION_CREATE,
+            is_processed=True,
         ).count()
 
-        similar_code_count = queryset.filter(
+        similar_code_count = unprocessed_queryset.filter(
             detected_status=ProductImportRow.STATUS_SIMILAR_CODE
         ).count()
 
-        duplicate_count = queryset.filter(
+        duplicate_count = unprocessed_queryset.filter(
             detected_status=ProductImportRow.STATUS_DUPLICATE_IN_FILE
         ).count()
 
-        quantity_error_count = queryset.filter(
+        quantity_error_count = unprocessed_queryset.filter(
             detected_status=ProductImportRow.STATUS_QUANTITY_ERROR
         ).count()
 
-        error_count = queryset.filter(
+        error_count = unprocessed_queryset.filter(
             detected_status=ProductImportRow.STATUS_ERROR
         ).count()
 
@@ -971,8 +987,11 @@ class ProductImportRowAdmin(admin.ModelAdmin):
             + all_error_count
         )
 
+        back_batch_id = batch_id or ""
+
         extra_context = extra_context or {}
         extra_context.update({
+            "back_batch_id": back_batch_id,
             "row_total_count": queryset.count(),
             "row_existing_count": existing_count,
             "row_new_count": new_count,
@@ -1047,9 +1066,9 @@ class ProductImportRowAdmin(admin.ModelAdmin):
             "box-sizing:border-box;"
         )
 
-        skip_url = f"{obj.id}/quick-action/skip/"
-        create_url = f"{obj.id}/quick-action/create/"
-        link_url = f"{obj.id}/quick-action/link/"
+        skip_url = reverse("admin:products_productimportrow_quick_action", args=[obj.id, "skip"])
+        create_url = reverse("admin:products_productimportrow_quick_action", args=[obj.id, "create"])
+        link_url = reverse("admin:products_productimportrow_quick_action", args=[obj.id, "link"])
 
         if obj.detected_status == ProductImportRow.STATUS_SIMILAR_CODE and obj.suggested_product:
             return format_html(
@@ -1079,29 +1098,118 @@ class ProductImportRowAdmin(admin.ModelAdmin):
 
     @admin.action(description="Решение: пропустить")
     def set_action_skip(self, request, queryset):
-        updated = queryset.update(action=ProductImportRow.ACTION_SKIP)
-        messages.success(request, f"Обновлено строк: {updated}.")
+        batch_ids = set()
+        updated = 0
+
+        for row in queryset.select_related("batch"):
+            batch_ids.add(row.batch_id)
+            row.action = ProductImportRow.ACTION_SKIP
+            row.is_processed = True
+            row.save(update_fields=["action", "is_processed", "updated_at"])
+            updated += 1
+
+        for batch in ProductImportBatch.objects.filter(id__in=batch_ids):
+            recheck_product_import_batch(batch)
+
+        messages.success(request, f"Пропущено строк: {updated}.")
 
     @admin.action(description="Решение: создать новый товар")
     def set_action_create(self, request, queryset):
-        updated = queryset.update(action=ProductImportRow.ACTION_CREATE)
-        messages.success(request, f"Обновлено строк: {updated}.")
+        batch_ids = set()
+        created = 0
+        linked = 0
+
+        for row in queryset.select_related("batch", "suggested_product", "selected_product"):
+            batch_ids.add(row.batch_id)
+
+            if row.is_processed:
+                continue
+
+            product = Product.objects.create(
+                name=str(row.raw_code or "").strip(),
+                description=build_import_product_description(row.raw_code, row.raw_name),
+            )
+            row.created_product = product
+            row.action = ProductImportRow.ACTION_CREATE
+            created += 1
+
+            if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
+                update_inventory_from_import_row(row=row, product=product)
+
+            row.is_processed = True
+            row.save(update_fields=[
+                "selected_product",
+                "created_product",
+                "action",
+                "is_processed",
+                "inventory_updated",
+                "inventory_before",
+                "inventory_after",
+                "updated_at",
+            ])
+
+        for batch in ProductImportBatch.objects.filter(id__in=batch_ids):
+            recheck_product_import_batch(batch)
+
+        messages.success(request, f"Создано товаров: {created}. Привязано к существующим: {linked}.")
 
     @admin.action(description="Решение: привязать к предложенному товару")
     def set_action_link_to_suggested(self, request, queryset):
+        batch_ids = set()
         updated = 0
+        skipped = 0
 
-        for row in queryset:
-            if row.suggested_product:
-                row.selected_product = row.suggested_product
-                row.action = ProductImportRow.ACTION_LINK
-                row.save(update_fields=["selected_product", "action", "updated_at"])
-                updated += 1
+        for row in queryset.select_related("batch", "suggested_product"):
+            batch_ids.add(row.batch_id)
 
-        messages.success(request, f"Привязано строк к предложенным товарам: {updated}.")
+            if row.is_processed:
+                skipped += 1
+                continue
+
+            if not row.suggested_product:
+                skipped += 1
+                continue
+
+            row.selected_product = row.suggested_product
+            row.action = ProductImportRow.ACTION_LINK
+
+            if row.detected_status == ProductImportRow.STATUS_SIMILAR_CODE:
+                ProductCodeAlias.objects.get_or_create(
+                    alias_code=str(row.raw_code or "").strip(),
+                    defaults={
+                        "product": row.suggested_product,
+                        "confirmed_by": request.user if request.user.is_authenticated else None,
+                    },
+                )
+
+            if row.batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
+                update_inventory_from_import_row(row=row, product=row.suggested_product)
+
+            row.is_processed = True
+            row.save(update_fields=[
+                "selected_product",
+                "action",
+                "is_processed",
+                "inventory_updated",
+                "inventory_before",
+                "inventory_after",
+                "updated_at",
+            ])
+            updated += 1
+
+        for batch in ProductImportBatch.objects.filter(id__in=batch_ids):
+            recheck_product_import_batch(batch)
+
+        messages.success(
+            request,
+            f"Привязано и обработано строк: {updated}. Пропущено: {skipped}."
+        )
 
 
 def update_inventory_from_import_row(row, product):
+    if row.inventory_updated:
+        return
+
     if row.quantity is None or not row.batch.target_warehouse:
         return
 
@@ -1210,13 +1318,13 @@ def create_product_import_batch_from_excel(
         file=excel_file,
         import_type=import_type,
         target_warehouse=target_warehouse,
-        quantity_mode=quantity_mode or ProductImportBatch.QUANTITY_MODE_ADD,
+        quantity_mode=ProductImportBatch.QUANTITY_MODE_ADD,
         created_by=user if user and user.is_authenticated else None,
         status=ProductImportBatch.STATUS_DRAFT,
     )
 
     parsed_rows = []
-    normalized_code_rows = {}
+    exact_code_rows = {}
 
     for row_number in range(header_row + 1, sheet.max_row + 1):
         raw_code = sheet.cell(row=row_number, column=code_index).value
@@ -1247,12 +1355,13 @@ def create_product_import_batch_from_excel(
             "normalized_code": normalized_code,
         })
 
-        if normalized_code:
-            normalized_code_rows.setdefault(normalized_code, []).append(row_number)
+        exact_code_key = _clean_code_text(raw_code)
+        if exact_code_key:
+            exact_code_rows.setdefault(exact_code_key, []).append(row_number)
 
-    duplicate_normalized_codes = {
+    duplicate_exact_codes = {
         code
-        for code, row_numbers in normalized_code_rows.items()
+        for code, row_numbers in exact_code_rows.items()
         if len(row_numbers) > 1
     }
 
@@ -1275,8 +1384,9 @@ def create_product_import_batch_from_excel(
                 detected_status = ProductImportRow.STATUS_QUANTITY_ERROR
                 note = f"{note}\n{quantity_note}"
 
-        if normalized_code and normalized_code in duplicate_normalized_codes:
-            rows_text = ", ".join(str(number) for number in normalized_code_rows[normalized_code])
+        exact_code_key = _clean_code_text(raw_code)
+        if exact_code_key and exact_code_key in duplicate_exact_codes:
+            rows_text = ", ".join(str(number) for number in exact_code_rows[exact_code_key])
             detected_status = ProductImportRow.STATUS_DUPLICATE_IN_FILE
             suggested_product = None
             note = f"Дубль внутри Excel. Этот код встречается в строках: {rows_text}."
@@ -1576,21 +1686,12 @@ def confirm_product_import_batch(batch):
                 continue
 
         if row.action == ProductImportRow.ACTION_CREATE:
-            normalized_code = normalize_product_code(row.raw_code)
-            existing_product = Product.objects.filter(normalized_code=normalized_code).first()
-
-            if existing_product:
-                product = existing_product
-                row.selected_product = existing_product
-                row.action = ProductImportRow.ACTION_LINK
-                linked += 1
-            else:
-                product = Product.objects.create(
-                    name=row.raw_code.strip(),
-                    description=build_import_product_description(row.raw_code, row.raw_name),
-                )
-                row.created_product = product
-                created += 1
+            product = Product.objects.create(
+                name=str(row.raw_code or "").strip(),
+                description=build_import_product_description(row.raw_code, row.raw_name),
+            )
+            row.created_product = product
+            created += 1
 
         if batch.import_type == ProductImportBatch.IMPORT_TYPE_PRODUCTS_WITH_STOCK:
             if product and row.quantity is not None and batch.target_warehouse:
@@ -1602,10 +1703,7 @@ def confirm_product_import_batch(batch):
 
                 before = inventory.quantity
 
-                if batch.quantity_mode == ProductImportBatch.QUANTITY_MODE_ADD:
-                    after = before + row.quantity
-                else:
-                    after = row.quantity
+                after = before + row.quantity
 
                 inventory.quantity = after
                 inventory.save(update_fields=["quantity", "updated_at"])

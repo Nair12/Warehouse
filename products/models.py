@@ -89,6 +89,68 @@ class Product(models.Model):
         return self.name
 
 
+class ProductCodeAlias(models.Model):
+    """
+    Подтверждённый вручную вариант написания чертежного номера.
+
+    Если при проверке импорта админ нажал "Тот же товар",
+    система запоминает код из Excel и в следующих импортах
+    автоматически привязывает его к выбранному товару.
+    """
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="code_aliases",
+        verbose_name=_("Товар"),
+    )
+
+    alias_code = models.CharField(
+        max_length=255,
+        db_index=True,
+        verbose_name=_("Вариант кода"),
+    )
+
+    normalized_alias_code = models.CharField(
+        max_length=255,
+        blank=True,
+        db_index=True,
+        verbose_name=_("Нормализованный вариант кода"),
+    )
+
+    confirmed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
+        related_name="confirmed_product_code_aliases",
+        verbose_name=_("Кто подтвердил"),
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("Вариант кода товара")
+        verbose_name_plural = _("Варианты кодов товаров")
+        ordering = ["product__name", "alias_code"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["alias_code"],
+                name="unique_product_code_alias",
+            )
+        ]
+
+    def save(self, *args, **kwargs):
+        self.alias_code = str(self.alias_code or "").strip()
+        self.normalized_alias_code = normalize_product_code(self.alias_code)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.alias_code} -> {self.product.name}"
+
+
 class Inventory(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -182,7 +244,7 @@ class ProductImportBatch(models.Model):
     quantity_mode = models.CharField(
         max_length=20,
         choices=QUANTITY_MODE_CHOICES,
-        default=QUANTITY_MODE_REPLACE,
+        default=QUANTITY_MODE_ADD,
         verbose_name=_("Как обновлять количество"),
     )
 

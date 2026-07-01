@@ -37,6 +37,27 @@
         margin: 0 0 32px !important;
     }
 
+    .row-import-back {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0 0 14px;
+        padding: 11px 16px;
+        border-radius: 14px;
+        background: rgba(127, 127, 127, .10);
+        border: 1px solid var(--hairline-color);
+        color: var(--body-fg) !important;
+        text-decoration: none !important;
+        font-weight: 900;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, .14);
+    }
+
+    .row-import-back:hover {
+        background: rgba(59, 130, 246, .14);
+        border-color: rgba(59, 130, 246, .35);
+    }
+
     .row-import-hero {
         background: linear-gradient(135deg, #123847, #1f5f74);
         border-radius: 18px;
@@ -62,7 +83,7 @@
 
     .row-stat-grid {
         display: grid;
-        grid-template-columns: repeat(4, minmax(130px, 1fr));
+        grid-template-columns: repeat(5, minmax(120px, 1fr));
         gap: 12px;
         margin-bottom: 16px;
     }
@@ -90,6 +111,7 @@
     .row-stat-card.red .row-stat-value { color: #ef4444; }
     .row-stat-card.blue .row-stat-value { color: #3b82f6; }
     .row-stat-card.green .row-stat-value { color: #22c55e; }
+    .row-stat-card.amber .row-stat-value { color: #f59e0b; }
 
     .row-import-note {
         background: rgba(59, 130, 246, .08);
@@ -255,6 +277,12 @@
         padding: 14px !important;
     }
 
+    @media (max-width: 1100px) {
+        .row-stat-grid {
+            grid-template-columns: repeat(2, minmax(150px, 1fr));
+        }
+    }
+
     @media (max-width: 1000px) {
         .row-import-shell,
         #changelist,
@@ -267,10 +295,6 @@
             width: 100% !important;
             max-width: 100% !important;
         }
-
-        .row-stat-grid {
-            grid-template-columns: repeat(2, minmax(150px, 1fr));
-        }
     }
 
     @media (max-width: 700px) {
@@ -281,6 +305,12 @@
 </style>
 
 <div class="row-import-shell">
+    {% if request.GET.batch__id__exact %}
+        <a class="row-import-back" href="../productimportbatch/{{ request.GET.batch__id__exact }}/change/">
+            ← Назад к анализу текущего импорта
+        </a>
+    {% endif %}
+
     <div class="row-import-hero">
         <h1>📋 Проверка строк импорта</h1>
         <p>
@@ -294,6 +324,16 @@
             <div class="row-stat-value">{{ row_existing_count|default:"0" }}</div>
         </div>
 
+        <div class="row-stat-card blue">
+            <div class="row-stat-label">Новые</div>
+            <div class="row-stat-value">{{ row_new_count|default:"0" }}</div>
+        </div>
+
+        <div class="row-stat-card amber">
+            <div class="row-stat-label">Похожие</div>
+            <div class="row-stat-value">{{ row_similar_code_count|default:"0" }}</div>
+        </div>
+
         <div class="row-stat-card orange">
             <div class="row-stat-label">Дубли Excel</div>
             <div class="row-stat-value">{{ row_duplicate_count|default:"0" }}</div>
@@ -303,15 +343,12 @@
             <div class="row-stat-label">Ошибки</div>
             <div class="row-stat-value">{{ row_all_error_count|default:"0" }}</div>
         </div>
-
-        <div class="row-stat-card blue">
-            <div class="row-stat-label">Новые</div>
-            <div class="row-stat-value">{{ row_new_count|default:"0" }}</div>
-        </div>
     </div>
 
     <div class="row-import-note">
-        <b>Проверка:</b> сумма категорий должна совпадать с общим количеством строк: {{ row_total_control_count|default:"0" }} / {{ row_total_count|default:"0" }}.
+        <b>Проверка:</b> сумма категорий должна совпадать с общим количеством строк:
+        {{ row_total_control_count|default:"0" }} / {{ row_total_count|default:"0" }}.
+        Если похожих кодов 0, значит остались только дубли Excel или ошибки.
     </div>
 
     {{ block.super }}
