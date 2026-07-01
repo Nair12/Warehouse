@@ -1466,15 +1466,37 @@ def looks_like_section_title(raw_code, raw_name, raw_quantity):
 
 def recheck_product_import_batch(batch):
     rows = batch.rows.all().order_by("row_number")
+    unprocessed_rows = rows.filter(is_processed=False)
 
     total_rows = rows.count()
-    existing_count = rows.filter(detected_status=ProductImportRow.STATUS_EXISTING).count()
-    similar_code_count = rows.filter(detected_status=ProductImportRow.STATUS_SIMILAR_CODE).count()
-    similar_name_count = rows.filter(detected_status=ProductImportRow.STATUS_SIMILAR_NAME).count()
-    duplicate_in_file_count = rows.filter(detected_status=ProductImportRow.STATUS_DUPLICATE_IN_FILE).count()
-    new_count = rows.filter(detected_status=ProductImportRow.STATUS_NEW).count()
-    error_count = rows.filter(detected_status=ProductImportRow.STATUS_ERROR).count()
-    quantity_error_count = rows.filter(detected_status=ProductImportRow.STATUS_QUANTITY_ERROR).count()
+
+    existing_count = rows.filter(
+        detected_status=ProductImportRow.STATUS_EXISTING
+    ).count()
+
+    new_count = rows.filter(
+        detected_status=ProductImportRow.STATUS_NEW
+    ).count()
+
+    similar_code_count = unprocessed_rows.filter(
+        detected_status=ProductImportRow.STATUS_SIMILAR_CODE
+    ).count()
+
+    similar_name_count = unprocessed_rows.filter(
+        detected_status=ProductImportRow.STATUS_SIMILAR_NAME
+    ).count()
+
+    duplicate_in_file_count = unprocessed_rows.filter(
+        detected_status=ProductImportRow.STATUS_DUPLICATE_IN_FILE
+    ).count()
+
+    error_count = unprocessed_rows.filter(
+        detected_status=ProductImportRow.STATUS_ERROR
+    ).count()
+
+    quantity_error_count = unprocessed_rows.filter(
+        detected_status=ProductImportRow.STATUS_QUANTITY_ERROR
+    ).count()
 
     batch.total_rows = total_rows
     batch.existing_count = existing_count
@@ -1484,7 +1506,10 @@ def recheck_product_import_batch(batch):
     batch.new_count = new_count
     batch.error_count = error_count
     batch.quantity_error_count = quantity_error_count
-    batch.status = ProductImportBatch.STATUS_CHECKED
+
+    if batch.status != ProductImportBatch.STATUS_IMPORTED:
+        batch.status = ProductImportBatch.STATUS_CHECKED
+
     batch.save(update_fields=[
         "total_rows",
         "existing_count",
