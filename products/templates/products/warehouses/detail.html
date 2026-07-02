@@ -4,47 +4,235 @@
 {% block content %}
 
 <style>
-    .container {
-        max-width: 1300px;
-        margin: 40px auto;
+    .warehouse-detail-page {
+        max-width: 1180px;
+        margin: 34px auto 70px;
         padding: 0 20px;
     }
 
-    .title {
-        font-size: 34px;
-        font-weight: 700;
-        margin-bottom: 30px;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        background: white;
-        border-radius: 18px;
+    .warehouse-hero {
+        position: relative;
         overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 22px;
+        margin-bottom: 24px;
+        padding: 30px;
+        border-radius: 28px;
+        background:
+            radial-gradient(circle at 12% 0%, rgba(121, 174, 200, 0.22), transparent 38%),
+            linear-gradient(135deg, #ffffff 0%, #f7fbfd 100%);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 38px rgba(31, 59, 74, 0.10);
     }
 
-    .table thead {
+    .warehouse-hero::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(65, 118, 144, 0.045) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(65, 118, 144, 0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        pointer-events: none;
+        mask-image: linear-gradient(to bottom, rgba(0,0,0,0.75), transparent);
+    }
+
+    .hero-main,
+    .hero-badge {
+        position: relative;
+        z-index: 1;
+    }
+
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
+        background: #e8f3f8;
+        color: #2b5063;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        border: 1px solid #c7dfeb;
+    }
+
+    .warehouse-title {
+        margin: 0;
+        color: #07172f;
+        font-size: 42px;
+        line-height: 1.05;
+        font-weight: 950;
+        letter-spacing: -0.7px;
+    }
+
+    .warehouse-subtitle {
+        margin: 12px 0 0;
+        color: #6f7a89;
+        font-size: 16px;
+        line-height: 1.5;
+        font-weight: 650;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: #eef8f2;
+        color: #2e7d32;
+        border: 1px solid #cbead6;
+        font-size: 13px;
+        font-weight: 950;
+        white-space: nowrap;
+    }
+
+    .toolbar-card {
+        margin-bottom: 24px;
+        padding: 16px;
+        border-radius: 24px;
+        background: rgba(255,255,255,0.96);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 12px 28px rgba(31, 59, 74, 0.07);
+    }
+
+    .search-form {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        flex: 1;
+        min-width: 320px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid #dce5eb;
+        padding: 8px 8px 8px 14px;
+        transition: border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .search-box:focus-within {
+        border-color: #417690;
+        box-shadow: 0 0 0 4px rgba(65, 118, 144, 0.10);
+    }
+
+    .search-icon {
+        display: grid;
+        place-items: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 13px;
+        background: #e8f3f8;
+        color: #417690;
+        font-size: 15px;
+        flex: 0 0 auto;
+        border: 1px solid #c7dfeb;
+    }
+
+    .search-input {
+        flex: 1;
+        min-width: 120px;
+        border: none;
+        outline: none;
+        font-size: 15px;
+        color: #172033;
+        background: transparent;
+        font-weight: 650;
+    }
+
+    .search-input::placeholder {
+        color: #9aa4b2;
+    }
+
+    .search-btn,
+    .reset-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 42px;
+        padding: 0 18px;
+        border-radius: 14px;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 950;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .search-btn {
+        background: #417690;
+        color: #ffffff;
+        box-shadow: 0 8px 18px rgba(65, 118, 144, 0.14);
+    }
+
+    .search-btn:hover {
+        background: #2b5063;
+    }
+
+    .reset-link {
+        background: #eef3f6;
+        color: #2b5063;
+        border: 1px solid #d4e3eb;
+    }
+
+    .inventory-shell {
+        overflow: hidden;
+        border-radius: 28px;
+        background: #ffffff;
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 16px 36px rgba(31, 59, 74, 0.10);
+    }
+
+    .inventory-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        background: transparent;
+    }
+
+    .inventory-table thead {
         background: #f7f9fb;
     }
 
-    .table th {
+    .inventory-table th {
         text-align: left;
         padding: 18px 24px;
-        font-size: 14px;
+        font-size: 12px;
         text-transform: uppercase;
-        color: #888;
+        letter-spacing: 0.6px;
+        color: #7c8797;
+        border-bottom: 1px solid #e8eef2;
     }
 
-    .table td {
-        padding: 20px 24px;
-        border-top: 1px solid #eee;
+    .inventory-table td {
+        padding: 22px 24px;
+        border-bottom: 1px solid #eef2f5;
         vertical-align: middle;
     }
 
-    .table tr:hover {
-        background: #f9fbfd;
+    .inventory-table tbody tr {
+        cursor: pointer;
+        transition: background 0.2s ease;
+    }
+
+    .inventory-table tbody tr:hover {
+        background: #f8fbfd;
+    }
+
+    .inventory-table tbody tr:last-child td {
+        border-bottom: none;
     }
 
     .product-cell {
@@ -53,48 +241,97 @@
         gap: 18px;
     }
 
+    .product-img,
+    .placeholder {
+        width: 82px;
+        height: 82px;
+        border-radius: 22px;
+        flex: 0 0 auto;
+    }
+
     .product-img {
-        width: 80px;
-        height: 80px;
-        border-radius: 14px;
         object-fit: cover;
-        background: #eee;
+        background: #eef2f5;
+        box-shadow: 0 10px 20px rgba(31, 59, 74, 0.08);
     }
 
     .placeholder {
-        width: 80px;
-        height: 80px;
-        border-radius: 14px;
-        background: #eee;
+        background: #eef2f5;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 13px;
-        color: #999;
+        font-size: 12px;
+        color: #94a0ad;
+        border: 1px solid #e1e7eb;
     }
 
     .product-name {
+        color: #172033;
         font-size: 18px;
-        font-weight: 600;
+        font-weight: 950;
+        line-height: 1.35;
     }
 
-    .qty {
-        padding: 6px 12px;
-        border-radius: 20px;
-        font-weight: 600;
-        display: inline-block;
+    .product-meta {
+        margin-top: 6px;
+        color: #93a0ad;
+        font-size: 13px;
+        font-weight: 700;
     }
 
-    .empty {
+    .qty-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 82px;
+        padding: 8px 13px;
+        border-radius: 999px;
+        font-weight: 950;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .qty-badge.empty-stock {
+        background: #fff0f0;
+        color: #c0392b;
+    }
+
+    .qty-badge.in-stock {
+        background: #e9f8ef;
+        color: #2e7d32;
+    }
+
+    .empty-box {
+        padding: 60px 24px;
         text-align: center;
-        margin-top: 60px;
-        font-size: 18px;
-        color: #777;
+        border-radius: 26px;
+        background: #ffffff;
+        border: 1px dashed #cfdfe8;
+        box-shadow: 0 8px 24px rgba(31, 59, 74, 0.08);
+        color: #6f7a89;
     }
 
-    /* Легкие и плавные стили для пагинации */
+    .empty-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 18px;
+        display: grid;
+        place-items: center;
+        border-radius: 22px;
+        background: #e8f3f8;
+        color: #417690;
+        font-size: 32px;
+    }
+
+    .empty-title {
+        color: #172033;
+        font-size: 22px;
+        font-weight: 950;
+        margin-bottom: 8px;
+    }
+
     .pagination-wrapper {
-        margin-top: 30px;
+        margin-top: 32px;
         display: flex;
         justify-content: center;
     }
@@ -103,133 +340,161 @@
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 8px 14px;
-        border-radius: 14px;
+        padding: 10px 16px;
+        border-radius: 20px;
         background: #ffffff;
-        border: 1px solid #dde4ec;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
+        border: 1px solid #d4e3eb;
+        box-shadow: 0 10px 24px rgba(31, 59, 74, 0.05);
     }
 
     .pagination-link {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 36px;
-        height: 36px;
-        padding: 0 10px;
-        border-radius: 10px;
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 12px;
         font-size: 14px;
-        font-weight: 700;
-        color: #417690;
+        font-weight: 800;
+        color: #5f6b7a;
         text-decoration: none;
-        transition: background 0.2s, color 0.2s;
+        transition: background 0.2s ease, color 0.2s ease;
+        border: 1px solid transparent;
     }
 
     .pagination-link:hover {
         background: #e8f3f8;
-        color: #2b5063;
+        color: #417690;
+        border-color: #c7dfeb;
     }
 
     .pagination-current {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 36px;
-        height: 36px;
-        padding: 0 10px;
-        border-radius: 10px;
+        min-width: 38px;
+        height: 38px;
+        padding: 0 12px;
+        border-radius: 12px;
         font-size: 14px;
-        font-weight: 700;
+        font-weight: 950;
         background: #417690;
         color: #ffffff;
+        box-shadow: 0 6px 14px rgba(65, 118, 144, 0.2);
+    }
+
+    @media (max-width: 900px) {
+        .warehouse-hero {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .warehouse-title {
+            font-size: 34px;
+        }
+
+        .search-box {
+            min-width: 100%;
+        }
+
+        .inventory-shell {
+            overflow-x: auto;
+        }
+
+        .inventory-table {
+            min-width: 760px;
+        }
     }
 </style>
 
-<div class="container">
+<div class="warehouse-detail-page">
 
-    <div class="title">
-        Склад: {{ warehouse.city }}
-    </div>
+    <section class="warehouse-hero">
+        <div class="hero-main">
+            <div class="eyebrow">🏢 {% trans "Складская локация" %}</div>
 
-    <form method="get" style="display:flex; gap:12px; align-items:center; margin-bottom:30px;">
-        <div style="
-            display:flex;
-            align-items:center;
-            background:white;
-            border-radius:14px;
-            border:1px solid #ddd;
-            padding:6px 10px;
-            min-width:320px;
-        ">
-            <span style="margin-right:8px; color:#888;">🔍</span>
-            <input type="text"
-                   name="q"
-                   value="{{ query }}"
-                   placeholder="Поиск товаров на складе..."
-                   style="border:none; outline:none; font-size:15px; width:100%;">
+            <h1 class="warehouse-title">
+                {% trans "Склад" %}: {{ warehouse.city }}
+            </h1>
+
+            <p class="warehouse-subtitle">
+                {% trans "Просмотр товаров и остатков на выбранном складе." %}
+            </p>
         </div>
 
-        <button type="submit" style="
-            background:#417690;
-            color:white;
-            border:none;
-            padding:12px 18px;
-            border-radius:10px;
-            cursor:pointer;
-            font-weight:600;
-        ">
-            Найти
-        </button>
+        <div class="hero-badge">
+            👁 {% trans "Только просмотр" %}
+        </div>
+    </section>
 
-        {% if query %}
-            <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}"
-               style="color:#417690; font-weight:600; text-decoration:none;">
-                Сбросить
-            </a>
-        {% endif %}
-    </form>
+    <div class="toolbar-card">
+        <form method="get" class="search-form">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="{% trans 'Поиск товаров на складе...' %}"
+                       class="search-input">
+
+                <button type="submit" class="search-btn">
+                    {% trans "Найти" %}
+                </button>
+            </div>
+
+            {% if query %}
+                <a href="{% url 'products:warehouse_reader_detail' warehouse.id %}" class="reset-link">
+                    {% trans "Сбросить" %}
+                </a>
+            {% endif %}
+        </form>
+    </div>
 
     {% if page_obj %}
-        <table class="table">
-            <thead>
-            <tr>
-                <th>Товар</th>
-                <th>Количество</th>
-            </tr>
-            </thead>
-
-            <tbody>
-            {% for item in page_obj %}
-                <tr onclick="window.location.href='{% url 'products:product_detail' item.product.id %}'"
-                    style="cursor:pointer;">
-
-                    <td>
-                        <div class="product-cell">
-                            {% if item.product.picture %}
-                                <img src="{{ item.product.picture.url }}" class="product-img">
-                            {% else %}
-                                <div class="placeholder">Нет фото</div>
-                            {% endif %}
-
-                            <div class="product-name">
-                                {{ item.product.name }}
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>
-                        <span class="qty"
-                              style="
-                              background: {% if item.quantity == 0 %}#ffecec{% else %}#e6f7ec{% endif %};
-                              color: {% if item.quantity == 0 %}#c0392b{% else %}#2e7d32{% endif %};
-                              ">
-                            {{ item.quantity }} {{ item.product.get_unit_display }}
-                        </span>
-                    </td>
+        <div class="inventory-shell">
+            <table class="inventory-table">
+                <thead>
+                <tr>
+                    <th>{% trans "Товар" %}</th>
+                    <th>{% trans "Количество" %}</th>
                 </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+                </thead>
+
+                <tbody>
+                {% for item in page_obj %}
+                    <tr onclick="window.location.href='{% url 'products:product_detail' item.product.id %}'">
+                        <td>
+                            <div class="product-cell">
+                                {% if item.product.picture %}
+                                    <img src="{{ item.product.picture.url }}" class="product-img" alt="{{ item.product.name }}">
+                                {% else %}
+                                    <div class="placeholder">{% trans "Нет фото" %}</div>
+                                {% endif %}
+
+                                <div>
+                                    <div class="product-name">
+                                        {{ item.product.name }}
+                                    </div>
+
+                                    <div class="product-meta">
+                                        {% trans "Нажмите, чтобы открыть карточку" %}
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <span class="qty-badge {% if item.quantity == 0 %}empty-stock{% else %}in-stock{% endif %}">
+                                {{ item.quantity }} {{ item.product.get_unit_display }}
+                            </span>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
         {% if page_obj.has_other_pages %}
             <div class="pagination-wrapper">
@@ -237,7 +502,7 @@
 
                     {% if page_obj.has_previous %}
                         <a class="pagination-link" href="?page=1&q={{ query }}">&laquo;</a>
-                        <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">Назад</a>
+                        <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}&q={{ query }}">{% trans "Назад" %}</a>
                     {% endif %}
 
                     <span class="pagination-current">
@@ -245,7 +510,7 @@
                     </span>
 
                     {% if page_obj.has_next %}
-                        <a class="pagination-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">Вперед</a>
+                        <a class="pagination-link" href="?page={{ page_obj.next_page_number }}&q={{ query }}">{% trans "Вперед" %}</a>
                         <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query }}">&raquo;</a>
                     {% endif %}
 
@@ -254,7 +519,11 @@
         {% endif %}
 
     {% else %}
-        <div class="empty">На этом складе нет товаров</div>
+        <div class="empty-box">
+            <div class="empty-icon">📦</div>
+            <div class="empty-title">{% trans "Товары не найдены" %}</div>
+            <div>{% trans "На этом складе нет товаров или поиск не дал результатов." %}</div>
+        </div>
     {% endif %}
 
 </div>
