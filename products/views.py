@@ -211,7 +211,17 @@ def inventory_adjust_view(request, pk, action):
 @role_required(["admin", "manager", "reader", "senior_manager"])
 def warehouse_reader_list_view(request):
     user = request.user
-    warehouses = Warehouse.objects.all().order_by("city")
+
+    warehouses = (
+        Warehouse.objects
+        .annotate(
+            total_quantity=Coalesce(
+                Sum("inventory_items__quantity"),
+                0
+            )
+        )
+        .order_by("city")
+    )
 
     if user.is_authenticated and user.warehouse_id:
         warehouses = warehouses.filter(id=user.warehouse_id)
