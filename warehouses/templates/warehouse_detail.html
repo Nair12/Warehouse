@@ -333,8 +333,15 @@
                                     {{ item.product.name }}
                                 </div>
 
-                                <div class="product-meta">
-                                    {% trans "Остаток на складе" %}
+                                <div class="product-meta" style="display:flex;flex-direction:column;gap:4px;">
+                                    {% if item.product.description %}
+                                        <div style="color:#6f7c88;font-size:14px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">
+                                            {{ item.product.description }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        {% trans "Остаток на складе" %}
+                                    </div>
                                 </div>
                             </div>
                         </div>

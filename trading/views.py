@@ -324,6 +324,7 @@ def trading_detail(request, pk):
         if key not in grouped_items_dict:
             grouped_items_dict[key] = {
                 'product': item.product,
+                'description': item.product.description if item.product else "",
                 'warehouse': item.warehouse,
                 'requested_quantity': 0,
                 'fulfilled_quantity': 0,

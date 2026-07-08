@@ -2,6 +2,8 @@ from django import forms
 from django.contrib import admin, messages
 from django.contrib.auth.models import Group
 from django.db import transaction
+from django.core.exceptions import ValidationError
+from django.db import models
 from django.db.models import Q
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
@@ -45,6 +47,7 @@ class TradingExcelImportForm(forms.Form):
 class TradingItemInline(admin.TabularInline):
     model = TradingItem
     extra = 1
+    raw_id_fields = ("product", "warehouse")
     fields = (
         "product",
         "warehouse",
@@ -54,6 +57,119 @@ class TradingItemInline(admin.TabularInline):
         "quantity_before",
         "quantity_after",
     )
+
+
+def apply_stock_change_for_admin(trading, item, old_item=None, delete=False):
+    """Apply stock impact for one TradingItem edit made from Django admin."""
+    if delete:
+        product = old_item.product
+        warehouse = old_item.warehouse
+        quantity = old_item.fulfilled_quantity or 0
+
+        if quantity <= 0:
+            return
+
+        inventory, _ = Inventory.objects.select_for_update().get_or_create(
+            product=product,
+            warehouse=warehouse,
+            defaults={"quantity": 0},
+        )
+
+        quantity_before = inventory.quantity
+
+        if trading.trade_type == Trading.TradeType.PURCHASE:
+            if quantity > inventory.quantity:
+                raise ValidationError(
+                    f"Нельзя удалить позицию {product}: на складе {inventory.quantity}, нужно откатить {quantity}."
+                )
+            inventory.quantity -= quantity
+        else:
+            inventory.quantity += quantity
+
+        inventory.save(update_fields=["quantity", "updated_at"])
+        return
+
+    new_quantity = item.fulfilled_quantity or 0
+
+    if old_item is None:
+        delta = new_quantity
+        product = item.product
+        warehouse = item.warehouse
+    else:
+        old_product_id = old_item.product_id
+        old_warehouse_id = old_item.warehouse_id
+        new_product_id = item.product_id
+        new_warehouse_id = item.warehouse_id
+
+        if old_product_id != new_product_id or old_warehouse_id != new_warehouse_id:
+            apply_stock_change_for_admin(trading, item=None, old_item=old_item, delete=True)
+            delta = new_quantity
+            product = item.product
+            warehouse = item.warehouse
+        else:
+            delta = new_quantity - (old_item.fulfilled_quantity or 0)
+            product = item.product
+            warehouse = item.warehouse
+
+    inventory, _ = Inventory.objects.select_for_update().get_or_create(
+        product=product,
+        warehouse=warehouse,
+        defaults={"quantity": 0},
+    )
+
+    quantity_before = inventory.quantity
+
+    if trading.trade_type == Trading.TradeType.PURCHASE:
+        quantity_after = quantity_before + delta
+        if quantity_after < 0:
+            raise ValidationError(
+                f"Нельзя уменьшить позицию {product}: на складе {quantity_before}, нужно откатить {-delta}."
+            )
+    else:
+        quantity_after = quantity_before - delta
+        if quantity_after < 0:
+            raise ValidationError(
+                f"Недостаточно товара на складе для {product}: доступно {quantity_before}, нужно списать {delta}."
+            )
+
+    inventory.quantity = quantity_after
+    inventory.save(update_fields=["quantity", "updated_at"])
+
+    item.quantity = new_quantity
+    item.quantity_before = quantity_before
+    item.quantity_after = quantity_after
+
+
+def refresh_trading_totals_from_items(trading):
+    first_item = trading.items.order_by("created_at", "id").first()
+    total_fulfilled = trading.items.aggregate(total=models.Sum("fulfilled_quantity"))["total"] or 0
+    has_pending_items = trading.items.filter(
+        fulfilled_quantity__lt=models.F("requested_quantity")
+    ).exists()
+
+    trading.quantity = total_fulfilled
+    trading.status = Trading.Status.PENDING if has_pending_items else Trading.Status.COMPLETED
+
+    if first_item:
+        trading.product = first_item.product
+        trading.warehouse = first_item.warehouse
+        trading.quantity_before = first_item.quantity_before
+        trading.quantity_after = first_item.quantity_after
+    else:
+        trading.product = None
+        trading.warehouse = None
+        trading.quantity_before = 0
+        trading.quantity_after = 0
+
+    trading.save(update_fields=[
+        "quantity",
+        "status",
+        "product",
+        "warehouse",
+        "quantity_before",
+        "quantity_after",
+        "updated_at",
+    ])
 
 
 @admin.register(Trading)
@@ -87,6 +203,83 @@ class TradingAdmin(admin.ModelAdmin):
     ordering = ("-created_at",)
     inlines = [TradingItemInline]
     change_list_template = "admin/trading/change_list.html"
+
+    def has_change_permission(self, request, obj=None):
+        if not super().has_change_permission(request, obj):
+            return False
+        return getattr(request.user, "role", None) == "admin" or request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        if not super().has_delete_permission(request, obj):
+            return False
+        return getattr(request.user, "role", None) == "admin" or request.user.is_superuser
+
+    def save_formset(self, request, form, formset, change):
+        if formset.model != TradingItem:
+            return super().save_formset(request, form, formset, change)
+
+        trading = form.instance
+        before_data = build_trading_after_data(trading) if trading.pk else {}
+
+        try:
+            with transaction.atomic():
+                old_items = {
+                    item.pk: item
+                    for item in TradingItem.objects.select_for_update().filter(
+                        trading=trading,
+                    )
+                }
+
+                instances = formset.save(commit=False)
+
+                for deleted_item in getattr(formset, "deleted_objects", []):
+                    old_item = old_items.get(deleted_item.pk)
+                    if old_item:
+                        apply_stock_change_for_admin(
+                            trading=trading,
+                            item=None,
+                            old_item=old_item,
+                            delete=True,
+                        )
+                        old_item.delete()
+
+                for instance in instances:
+                    instance.trading = trading
+
+                    if instance.fulfilled_quantity > instance.requested_quantity:
+                        raise ValidationError(
+                            f"В позиции {instance.product} выполнено больше, чем заказано."
+                        )
+
+                    old_item = old_items.get(instance.pk) if instance.pk else None
+
+                    apply_stock_change_for_admin(
+                        trading=trading,
+                        item=instance,
+                        old_item=old_item,
+                        delete=False,
+                    )
+                    instance.save()
+
+                formset.save_m2m()
+                refresh_trading_totals_from_items(trading)
+
+                after_data = build_trading_after_data(trading)
+
+                if before_data != after_data:
+                    TradingAuditLog.objects.create(
+                        trading=trading,
+                        trading_id_snapshot=trading.id,
+                        user=request.user,
+                        action=TradingAuditLog.Action.UPDATED,
+                        description="Сделка отредактирована через Django admin. Остатки склада пересчитаны.",
+                        before_data=before_data,
+                        after_data=after_data,
+                    )
+
+        except ValidationError as error:
+            messages.error(request, error.messages[0] if hasattr(error, "messages") else str(error))
+            raise
 
     def get_urls(self):
         urls = super().get_urls()

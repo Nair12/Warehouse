@@ -605,6 +605,13 @@
     <div class="item-card">
         <div class="item-left">
             <div class="item-title">{{ item.product }}</div>
+
+            {% if item.description %}
+                <div class="item-meta" style="font-size:14px;color:#6f7c88;max-width:520px;line-height:1.45;">
+                    {{ item.description }}
+                </div>
+            {% endif %}
+
             <div class="item-meta">{{ item.warehouse|default:"—" }}</div>
         </div>
 
