@@ -1,0 +1,26 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+    <h1>Импорт сделки из Excel</h1>
+
+    <p>Excel должен содержать колонки:</p>
+
+    <ul>
+        <li><strong>name</strong> — код товара</li>
+        <li><strong>description</strong> — описание товара как в базе</li>
+        <li><strong>warehouse</strong> — склад</li>
+        <li><strong>requested_quantity</strong> — заказано</li>
+        <li><strong>fulfilled_quantity</strong> — получено / отдано</li>
+    </ul>
+
+    <p><strong>Важно:</strong> если будет ошибка — сделка не создастся и остатки не изменятся.</p>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="default">
+            Создать сделку из Excel
+        </button>
+    </form>
+{% endblock %}

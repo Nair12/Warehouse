@@ -573,7 +573,7 @@ class ProductImportBatchAdmin(admin.ModelAdmin):
         "created_at",
         "updated_at",
     )
-    inlines = (ProductImportRowInline,)
+    inlines = ()
     actions = ("recheck_import_rows", "confirm_import_rows", "cancel_import")
     change_list_template = "admin/products/productimportbatch/change_list.html"
     change_form_template = "admin/products/productimportbatch/change_form.html"
